@@ -1,0 +1,40 @@
+{
+  "name": "surface",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:node": "tsc && vite build && rollup -c rollup.config.mjs",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "start": "cross-env NODE_ENV=production node dist/server.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.9.1",
+    "cross-env": "^7.0.3",
+    "hono": "^4.2.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@hono/vite-dev-server": "^0.10.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/bun": "^1.0.12",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "glob": "^10.3.12",
+    "rollup": "^4.14.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  }
+}
