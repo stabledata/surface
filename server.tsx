@@ -11,7 +11,15 @@ import { getCookie, setCookie } from "hono/cookie";
 const isProd = process.env["NODE_ENV"] === "production";
 
 const app = new Hono()
-  .use("/assets/*", serveStatic({ root: isProd ? "build/" : "./" })) // path must end with '/'
+  .use(
+    "/assets/*",
+    serveStatic({
+      root: isProd ? "build/" : "./views/",
+      onNotFound: (path) => {
+        console.log("not found!", path);
+      },
+    })
+  ) // path must end with '/'
   .get("/api", (c) => {
     setCookie(c, "delicious_cookie", "cool");
     return c.json({ message: "Hello, from /api! Check your cookies now." });

@@ -1,10 +1,7 @@
-import {
-  Link,
-  Outlet,
-  createRootRouteWithContext,
-} from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { DehydrateRouter } from "@tanstack/react-router-server/client";
 import { RouterContext } from "../router";
+import { Header } from "../views/header";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
@@ -13,33 +10,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootComponent() {
   return (
     <>
-      <div className="p-2 flex gap-2 text-lg">
-        <Link
-          to="/"
-          activeProps={{
-            className: "font-bold",
-          }}
-          activeOptions={{ exact: true }}
-        >
-          Home
-        </Link>
-        <Link
-          to="/about"
-          activeProps={{
-            className: "font-bold",
-          }}
-        >
-          About
-        </Link>
-        <Link
-          to="/test"
-          activeProps={{
-            className: "font-bold",
-          }}
-        >
-          Test
-        </Link>
-      </div>
+      <Header />
       <Outlet />
       <DehydrateRouter />
     </>

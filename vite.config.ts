@@ -24,13 +24,13 @@ export default defineConfig({
         // We need to override this option since the default setting doesn't fit
         /.*\.tsx?($|\?)/,
         /.*\.(s?css|less)($|\?)/,
-        /.*\.(svg|png)($|\?)/,
         /^\/@.+$/,
         /^\/favicon\.ico$/,
-        /^\/(public|assets|static)\/.+/,
+        /^\/(public|static)\/.+/,
         /^\/node_modules\/.*/,
       ],
-      injectClientScript: false, // This option is buggy, disable it and inject the code manually
+      // This option is buggy, disable it and inject the code manually
+      injectClientScript: false,
     }),
   ],
 });
