@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "build:node": "tsc && vite build && rollup -c rollup.config.mjs",
+    "build": "tsc && vite build && cp -r views/assets/* build/assets/",
+    "build:node": "npm run build && rollup -c rollup.config.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "start": "cross-env NODE_ENV=production node dist/server.js"
+    "start:node": "cross-env NODE_ENV=production node dist/server.node.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.9.1",

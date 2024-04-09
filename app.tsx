@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { readFile } from "node:fs/promises";
 import { createRouter } from "./router";
@@ -10,7 +9,7 @@ import { getCookie, setCookie } from "hono/cookie";
 
 const isProd = process.env["NODE_ENV"] === "production";
 
-const app = new Hono()
+export const app = new Hono()
   .use(
     "/assets/*",
     serveStatic({
@@ -52,14 +51,5 @@ const app = new Hono()
     return c.html(html, statusCode);
   });
 
-app;
-
+// hono dev server needs a default export
 export default app;
-
-const port = Number(process.env.PORT || 4002);
-const host = process.env.HOST || "localhost";
-if (isProd) {
-  serve({ ...app, port }, () => {
-    console.log(`Surface production server stared on http://${host}:${port}`);
-  });
-}

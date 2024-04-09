@@ -19,7 +19,7 @@ export default defineConfig({
       generatedRouteTree: "routes.tree.ts",
     }),
     devServer({
-      entry: "server.tsx",
+      entry: "app.tsx",
       exclude: [
         // We need to override this option since the default setting doesn't fit
         /.*\.tsx?($|\?)/,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Zap } from "lucide-react";
+import { FileDigit } from "lucide-react";
 function App() {
   const [count, setCount] = useState(0);
   return (
@@ -13,8 +13,8 @@ function App() {
       </h3>
 
       <p className="text-center w-full leading-7 text-sm">
-        <strong>Surface isn't a framework or a package</strong>. It's a simple
-        way of building, designed to unify your client and service gateway.
+        <strong>Surface isn't a framework or a package</strong>. It's a way of
+        building designed to unify your clients and service gateways.
       </p>
 
       <div className="text-center mt-4">
@@ -22,11 +22,12 @@ function App() {
           onClick={() => setCount((count) => count + 1)}
           className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors duration-150 w-48"
         >
-          local count is {count}
+          count is {count}
         </button>
       </div>
       <p className="text-xs flex gap-1 items-center">
-        <span>A homage to Vite default page</span> <Zap size={13} />
+        <span>Counter is a homage to Vite default page</span>{" "}
+        <FileDigit size={13} />
       </p>
     </div>
   );

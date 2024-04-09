@@ -11,3 +11,13 @@ h1 {
   font-weight: 500;
   text-transform: uppercase;
 }
+
+.background-gradient {
+  background-position: -50% 0;
+  background: rgb(254, 254, 240);
+  background: radial-gradient(
+    circle,
+    rgba(254, 254, 240, 1) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}

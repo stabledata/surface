@@ -14,18 +14,9 @@ import image from "@rollup/plugin-image";
 export default {
   input: Object.fromEntries(
     glob
-      .sync(
-        [
-          "server.tsx",
-          "api/**/*.ts",
-          "models/**/*.ts",
-          "services/**/*.ts",
-          "utils/**/*.ts",
-        ],
-        {
-          ignore: ["**/*.d.ts", "**/*.test.ts"],
-        }
-      )
+      .sync(["server.node.ts"], {
+        ignore: ["**/*.d.ts", "**/*.test.ts"],
+      })
       .map((file) => [
         file.slice(0, file.length - extname(file).length),
         fileURLToPath(new URL(file, import.meta.url)),

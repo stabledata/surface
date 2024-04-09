@@ -1,0 +1,16 @@
+FROM oven/bun:latest as base
+
+WORKDIR /app
+COPY ./tsconfig.json /app/tsconfig.json
+COPY ./package.json /app/package.json
+COPY ./bun.lockb /app/bun.lockb
+COPY . /app
+
+RUN bun install
+
+FROM base as dev
+COPY .env /app/.env
+CMD ["bun", "run", "dev"]
+
+FROM base as prod
+CMD ["bun", "server.bun.ts"]
