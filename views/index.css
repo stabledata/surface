@@ -5,19 +5,75 @@
 
 body {
   font-family: Poppins, sans-serif;
+  @apply text-zinc-900;
+  font-weight: 300;
 }
 
 h1 {
-  font-weight: 500;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
+h3 {
+  font-weight: 600;
+  @apply text-xl;
+}
+
+a {
+  @apply text-gray-700 transition-colors duration-300 ease-out;
+  font-weight: 600;
+}
+
+a:hover {
+  @apply text-gray-600;
+}
+
+button {
+  @apply bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors duration-150 w-48;
+}
+
 .background-gradient {
-  background-position: -50% 0;
-  background: rgb(254, 254, 240);
-  background: radial-gradient(
-    circle,
+  background-position: -150% 0;
+  background-image: radial-gradient(
+    at top center,
     rgba(254, 254, 240, 1) 0%,
     rgba(255, 255, 255, 1) 100%
   );
+}
+
+.background-base {
+  background-color: #fff;
+}
+
+.header {
+  @apply flex gap-10 items-center justify-center py-4 border-b mb-3 text-sm background-base;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    @apply text-zinc-300;
+  }
+
+  .header {
+    @apply border-b-gray-500;
+  }
+
+  a {
+    @apply text-gray-300 transition-colors duration-300 ease-out;
+  }
+
+  a:hover {
+    @apply text-gray-400;
+  }
+
+  .background-base {
+    background-color: #000;
+  }
+  .background-gradient {
+    background-image: radial-gradient(
+      at top center,
+      rgb(46, 46, 44) 0%,
+      rgb(23, 23, 23) 100%
+    );
+  }
 }

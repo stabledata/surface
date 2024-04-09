@@ -12,7 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as PlayImport } from './routes/play'
-import { Route as AboutImport } from './routes/about'
+import { Route as DocsImport } from './routes/docs'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
@@ -22,8 +22,8 @@ const PlayRoute = PlayImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AboutRoute = AboutImport.update({
-  path: '/about',
+const DocsRoute = DocsImport.update({
+  path: '/docs',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -40,8 +40,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      preLoaderRoute: typeof AboutImport
+    '/docs': {
+      preLoaderRoute: typeof DocsImport
       parentRoute: typeof rootRoute
     }
     '/play': {
@@ -55,7 +55,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  AboutRoute,
+  DocsRoute,
   PlayRoute,
 ])
 

@@ -9,7 +9,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootComponent() {
   return (
-    <div className="background-gradient h-[100vh] w-full">
+    <div className="background-base background-gradient h-[100vh] w-full">
       <Header />
       <Outlet />
       <DehydrateRouter />

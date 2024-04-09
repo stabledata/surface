@@ -18,10 +18,7 @@ function App() {
       </p>
 
       <div className="text-center mt-4">
-        <button
-          onClick={() => setCount((count) => count + 1)}
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors duration-150 w-48"
-        >
+        <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
       </div>
