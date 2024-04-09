@@ -19,7 +19,8 @@ function Posts() {
   // const ctx = Route.useRouteContext();
   const [count, setCount] = React.useState(0);
   return (
-    <div>
+    <div className="text-center leading-8">
+      <h2>Doing some experimenting here... More soon</h2>
       <h1>
         {count} manual, and posts is {posts.length}
       </h1>

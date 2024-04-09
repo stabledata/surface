@@ -6,8 +6,9 @@ export const Route = createFileRoute("/about")({
 
 function About() {
   return (
-    <div className="p-2">
-      Hello from About! why HMR gone... seriously? this is okay whatever man!
+    <div className="p-8 text-center">
+      Hello from About! BTW, You can't use lazy routes or things go badly with
+      SSR.
     </div>
   );
 }
