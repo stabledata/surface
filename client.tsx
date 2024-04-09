@@ -1,23 +1,9 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
-
+import { StartClient } from "@tanstack/react-router-server";
+import { createRouter } from "./router";
 import "./views/index.css";
 
-// Import the generated route tree
-import { routeTree } from "./routes.tree.ts";
+const router = createRouter();
+const root = document.getElementById("root")!;
 
-const router = createRouter({ routeTree });
-
-// Register the router instance for type safety
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
-);
+ReactDOM.hydrateRoot(root, <StartClient router={router} />);

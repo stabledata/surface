@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,7 +7,7 @@
     <title>Vite + Hono + React + TS</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/client.tsx"></script>
+    <div id="root"><!--ssr-injection--></div>
   </body>
+  <script type="module" defer src="/client.tsx"></script>
 </html>

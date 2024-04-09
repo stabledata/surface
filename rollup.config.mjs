@@ -1,6 +1,7 @@
 // This is used by the NodeJS build (build:node) that requires ts
 // compilation. If you are only intending to use Bun, you are free to
 // delete this file.
+import ignoreImport from "rollup-plugin-ignore-import";
 import { glob } from "glob";
 import { extname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,13 +9,14 @@ import { builtinModules } from "node:module";
 import typescript from "@rollup/plugin-typescript";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
+import image from "@rollup/plugin-image";
 
 export default {
   input: Object.fromEntries(
     glob
       .sync(
         [
-          "server.ts",
+          "server.tsx",
           "api/**/*.ts",
           "models/**/*.ts",
           "services/**/*.ts",
@@ -43,5 +45,12 @@ export default {
     typescript({ moduleResolution: "bundler" }),
     resolve({ preferBuiltins: true }),
     commonjs({ ignoreDynamicRequires: true, ignore: builtinModules }),
+    image(),
+    ignoreImport({
+      // Ignore all .scss and .css file imports while building the bundle
+      extensions: [".css"],
+      // Optional: replace body for ignored files. Default value is "export default undefined;"
+      body: "export default undefined;",
+    }),
   ],
 };

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "./assets/vite.svg";
-import "./App.css";
+// import { useRouterState } from "@tanstack/react-router";
 
 function App() {
   const [count, setCount] = useState(0);
-
+  // const state = useRouterState();
+  // console.log("trans?", state.isTransitioning, state.isLoading);
   return (
-    <>
+    <div className="flex flex-col gap-5">
       <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
@@ -22,13 +23,12 @@ function App() {
           count is {count}
         </button>
         <p>
-          Edit <code>src/App.tsx</code> and save to test HMR..... SICK
+          Edit <code>src/App.tsx</code> and save to test HMR ok there it is for
+          dev at least..
         </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <p className="read-the-docs"></p>
+    </div>
   );
 }
 
