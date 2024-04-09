@@ -9,7 +9,7 @@
     "build:node": "npm run build && rollup -c rollup.config.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "start:node": "cross-env NODE_ENV=production node dist/server.node.js"
+    "start:node": "cross-env NODE_ENV=production node dist/surface.server.node.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.9.1",

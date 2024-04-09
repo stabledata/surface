@@ -1,6 +1,4 @@
-// This is used by the NodeJS build (build:node) that requires ts
-// compilation. If you are only intending to use Bun, you are free to
-// delete this file.
+// used by nodejs build only
 import ignoreImport from "rollup-plugin-ignore-import";
 import { glob } from "glob";
 import { extname, sep } from "node:path";
@@ -14,7 +12,7 @@ import image from "@rollup/plugin-image";
 export default {
   input: Object.fromEntries(
     glob
-      .sync(["server.node.ts"], {
+      .sync(["surface.server.node.ts"], {
         ignore: ["**/*.d.ts", "**/*.test.ts"],
       })
       .map((file) => [

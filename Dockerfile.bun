@@ -13,4 +13,4 @@ COPY .env /app/.env
 CMD ["bun", "run", "dev"]
 
 FROM base as prod
-CMD ["bun", "server.bun.ts"]
+CMD ["bun", "surface.server.bun.ts"]
