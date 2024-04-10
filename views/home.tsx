@@ -8,13 +8,15 @@ function App() {
         <img src="/assets/surface.svg" className="w-20" alt="Surface logo" />
       </div>
       <h1 className="text-4xl">Surface</h1>
+      <p className="text-sm font-medium">You might have a new BFF.</p>
       <h3 className="text-center w-full leading-8 text-md">
         Built on Vite, React, Hono, and Tanstack.
       </h3>
 
       <p className="text-center w-full leading-7 text-sm">
-        <strong>Surface isn't a framework or a package</strong>. It's a way of
-        building designed to unify your clients and service gateways.
+        <strong className="font-semibold">Surface isn't a framework.</strong>{" "}
+        It's a pattern for building web applications that unifies your client
+        and service gateway.
       </p>
 
       <div className="text-center mt-4">
