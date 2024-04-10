@@ -7,8 +7,11 @@ function App() {
       <div className="flex gap-5 items-center">
         <img src="/assets/surface.svg" className="w-20" alt="Surface logo" />
       </div>
+
       <h1 className="text-4xl">Surface</h1>
+
       <p className="text-sm font-medium">You might have a new BFF.</p>
+
       <h3 className="text-center w-full leading-8 text-md">
         Built on Vite, React, Hono, and Tanstack.
       </h3>
@@ -25,8 +28,7 @@ function App() {
         </button>
       </div>
       <p className="text-xs flex gap-1 items-center">
-        <span>Counter is a homage to Vite default page</span>{" "}
-        <FileDigit size={13} />
+        <span>Homage to Vite default page</span> <FileDigit size={13} />
       </p>
     </div>
   );

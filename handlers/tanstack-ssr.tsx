@@ -4,7 +4,7 @@ import { createMemoryHistory } from "@tanstack/react-router";
 import { StartServer } from "@tanstack/react-router-server/server";
 
 import { ServiceContext } from "../surface.app";
-import { createRouter } from "../router";
+import { createRouter } from "../surface.router";
 
 export async function tanstackSSR(c: ServiceContext) {
   const isProd = process.env["NODE_ENV"] === "production";

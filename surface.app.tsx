@@ -1,10 +1,9 @@
 import hono, { Hono } from "hono";
-
 import { handleStaticAssets } from "./handlers/assets";
-import { logger } from "./logger/logger";
 import { ping } from "./handlers/ping";
 import { tanstackSSR } from "./handlers/tanstack-ssr";
 import { cookies } from "./cookies/cookies";
+import { logger } from "./logger/logger";
 
 export type Dependencies = {
   logger: typeof logger;
@@ -15,19 +14,19 @@ const container: Dependencies = {
   logger,
 };
 
-const honoIgnoreKeys = {
-  "#private": undefined,
-  _var: undefined,
-  layout: undefined,
-  renderer: undefined,
-  notFoundHandler: undefined,
-  event: undefined,
-  executionCtx: undefined,
-  res: undefined,
-  var: undefined,
-};
+type PartialHonoContext = Omit<
+  hono.Context,
+  | "#private"
+  | "_var"
+  | "layout"
+  | "renderer"
+  | "notFoundHandler"
+  | "event"
+  | "executionCtx"
+  | "res"
+  | "var"
+>;
 
-type PartialHonoContext = Omit<hono.Context, keyof typeof honoIgnoreKeys>;
 export type ServiceContext = PartialHonoContext & Partial<Dependencies>;
 
 export const app = (injections: Partial<Dependencies> = {}) => {

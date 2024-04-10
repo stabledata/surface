@@ -1,5 +1,5 @@
 import { createRouter as tanStackCreateRouter } from "@tanstack/react-router";
-import { routeTree } from "./routes.tree";
+import { routeTree } from "./.routes.tree";
 
 export type RouterContext = {
   foo: string;

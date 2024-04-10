@@ -16,7 +16,7 @@ export default defineConfig({
     react(),
     TanStackRouterVite({
       routesDirectory: "./routes",
-      generatedRouteTree: "routes.tree.ts",
+      generatedRouteTree: ".routes.tree.ts",
     }),
     devServer({
       entry: "surface.app.tsx",
