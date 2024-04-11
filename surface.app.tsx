@@ -1,7 +1,7 @@
 import hono, { Hono } from "hono";
 import { handleStaticAssets } from "./services/assets";
 import { ping } from "./services/ping";
-import { tanstackSSR } from "./services/renderer";
+import { render } from "./services/renderer";
 import { cookies } from "./cookies/cookies";
 import { logger } from "./logger/logger";
 import { authHandler, logoutHandler } from "./services/auth";
@@ -57,7 +57,7 @@ export const app = (injections: Partial<Dependencies> = {}) => {
       .get("/auth", inject(authHandler))
       .get("/auth/logout", inject(logoutHandler))
       // add more service handlers here
-      .get("/*", inject(tanstackSSR))
+      .get("/*", inject(render))
   );
 };
 

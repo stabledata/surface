@@ -7,7 +7,7 @@ import { ServiceContext } from "../surface.app";
 import { createRouter } from "../surface.router";
 import { getUser } from "./auth";
 
-export async function tanstackSSR(c: ServiceContext) {
+export async function render(c: ServiceContext) {
   const isProd = process.env["NODE_ENV"] === "production";
   const index = isProd ? "build/index.html" : "./index.dev.html";
   const indexContents = await readFile(index, "utf-8");
