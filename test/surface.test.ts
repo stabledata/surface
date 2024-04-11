@@ -39,4 +39,10 @@ describe("surface app tests", () => {
     expect(response.status).toEqual(200);
     expect(response.headers.get("content-type")).toInclude("text/html");
   });
+
+  test("redirects and sets cookie in auth", async () => {
+    const response = await app({ logger: mockLogger }).request("/auth");
+    expect(response.headers.getSetCookie()[0]).toBeDefined();
+    expect(response.status).toEqual(302);
+  });
 });

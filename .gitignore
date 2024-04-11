@@ -27,3 +27,4 @@ dist-ssr
 
 # generated tree file from tanstack router
 .routes.tree.ts
+.env

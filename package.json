@@ -17,6 +17,7 @@
     "@tanstack/react-router-server": "^1.26.12",
     "cross-env": "^7.0.3",
     "debug": "^4.3.4",
+    "dotenv": "^16.4.5",
     "hono": "^4.2.2",
     "install": "^0.13.0",
     "lucide-react": "^0.366.0",
