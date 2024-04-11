@@ -10,7 +10,7 @@ export type RouterContext = {
   user?: User;
 };
 
-export function createRouter(injections: Partial<RouterContext>) {
+export function createRouter(injections?: Partial<RouterContext>) {
   return tanStackCreateRouter({
     routeTree,
     context: {

@@ -20,6 +20,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   },
 });
 
+// eslint-disable-next-line react-refresh/only-export-components
 export let userState: User | undefined = undefined;
 
 export const UserCtx = React.createContext<User | undefined>(undefined);
