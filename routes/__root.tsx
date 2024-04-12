@@ -12,7 +12,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     // can use the data to render the tree via SSR
 
     // however -- when you navigate this becomes the client context
-    // which is different and possibly lacking the data it previous had.
+    // which is different lacking the data it had on the server.
     // to capture this, you should set data you need in state via the
     // hydrate function in surface.router.ts and
 
