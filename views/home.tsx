@@ -10,10 +10,10 @@ function App() {
 
       <h1 className="text-4xl">Surface</h1>
 
-      <p className="text-sm font-medium">You might have a new BFF.</p>
+      <p className="text-md font-medium">You might have a new BFF.</p>
 
       <h3 className="text-center w-full leading-8 text-md">
-        Built on Vite, React, Hono, and Tanstack.
+        Built with Vite, React, Hono, Tanstack and Zustand.
       </h3>
 
       <p className="text-center w-full leading-7 text-sm">

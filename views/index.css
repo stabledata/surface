@@ -16,7 +16,7 @@ h1 {
 
 h3 {
   font-weight: 600;
-  @apply text-xl;
+  @apply text-2xl;
 }
 
 a {

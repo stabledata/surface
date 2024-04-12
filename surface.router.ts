@@ -1,12 +1,9 @@
 import { createRouter as tanStackCreateRouter } from "@tanstack/react-router";
 import { routeTree } from "./.routes.tree";
 import { User } from "./services/auth";
-// import { ServiceContext } from "./surface.app";
+import { useUserStore } from "./state/user.state";
 
 export type RouterContext = {
-  // this gets injected server side so page loaders can access services... but what if they can't....
-  // serverContext?: ServiceContext;
-  // probably do TRPC or something like that here as well, or hono's built in RPC
   user?: User;
 };
 
@@ -22,7 +19,9 @@ export function createRouter(injections?: Partial<RouterContext>) {
       };
     },
     hydrate: (context) => {
-      console.log("neat! we can put things in state here", context);
+      // everything passed down from the server context via dehydrate (injection)
+      // can now be used to hydrate client state
+      useUserStore.setState({ user: context.user });
     },
   });
 }
@@ -32,3 +31,4 @@ declare module "@tanstack/react-router" {
     router: ReturnType<typeof createRouter>;
   }
 }
+export { useUserStore };

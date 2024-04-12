@@ -1,8 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Github, RefreshCw } from "lucide-react";
 import { useBusyRouter } from "./hooks/use-busy-router";
-import React from "react";
-import { UserCtx, userState } from "../routes/__root";
+import { useUserStore } from "../state/user.state";
 
 const activeProps = {
   className: "underline",
@@ -11,7 +10,7 @@ const activeProps = {
 export function Header() {
   const isLoading = useBusyRouter();
   const { location } = useRouterState();
-  const user = React.useContext(UserCtx) ?? userState;
+  const { user } = useUserStore();
   return (
     <div className="header">
       <Link to="/" activeProps={activeProps} activeOptions={{ exact: true }}>
