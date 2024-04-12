@@ -8,9 +8,14 @@ import { createRouter } from "../surface.router";
 import { getUser } from "./auth";
 
 export async function render(c: ServiceContext) {
+  // get index.html
   const isProd = process.env["NODE_ENV"] === "production";
   const index = isProd ? "build/index.html" : "./index.dev.html";
   const indexContents = await readFile(index, "utf-8");
+
+  // build SSR context here.
+  // this get passed through the router
+  // and used to manually hydrate state
   const user = await getUser(c);
   const router = createRouter({ user });
   const memoryHistory = createMemoryHistory({
