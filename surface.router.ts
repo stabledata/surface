@@ -1,7 +1,7 @@
 import { createRouter as tanStackCreateRouter } from "@tanstack/react-router";
 import { routeTree } from "./.routes.tree";
 import { ServiceContext } from "./surface.app.ctx";
-import { User } from "./services/auth";
+import { User } from "./services/auth.service";
 import { inflateState } from "./state/registry";
 import { hc } from "hono/client";
 import { AppType } from "./surface.app";

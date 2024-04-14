@@ -4,7 +4,7 @@ import {
   ErrorComponentProps,
   Link,
 } from "@tanstack/react-router";
-import { User } from "../services/auth";
+import { User } from "../services/auth.service";
 
 export const Route = createFileRoute("/members/$id")({
   loader: async ({ context, params }): Promise<User> => {

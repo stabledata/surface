@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { getUser, User } from "../services/auth";
+import { getUser, User } from "../services/auth.service";
 import { ServiceContext } from "../surface.app.ctx";
 import { RouterContext } from "../surface.router";
 import { registerStateLoader } from "./registry";

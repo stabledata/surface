@@ -1,14 +1,14 @@
 import { Hono } from "hono";
-import { handleStaticAssets } from "./services/assets";
-import { ping } from "./services/ping";
-import { render } from "./services/renderer";
+import { handleStaticAssets } from "./services/assets.service";
+import { ping } from "./services/ping.service";
+import { render } from "./services/renderer.service";
 import { cookies } from "./cookies/cookies";
 import { logger } from "./logger/logger";
-import { authHandler, logoutHandler } from "./services/auth";
+import { authHandler, logoutHandler } from "./services/auth.service";
 import { makeInjectableContext } from "./surface.app.ctx";
 
 import dotenv from "dotenv";
-import { members } from "./services/members";
+import { members } from "./services/members.service";
 import { createRouter } from "./surface.router";
 dotenv.config();
 
