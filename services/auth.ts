@@ -8,7 +8,7 @@ export type User = {
   profilePicture: string;
 };
 
-const fakeUser = {
+export const fakeUser = {
   id: "123",
   name: "Alice",
   email: "alice@domain.com",

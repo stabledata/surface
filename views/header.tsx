@@ -23,8 +23,8 @@ export function Header() {
       <Link to="/docs" activeProps={activeProps}>
         Docs
       </Link>
-      <Link to="/play" activeProps={activeProps}>
-        Play
+      <Link to="/members" activeProps={activeProps}>
+        Members
       </Link>
       {!user ? (
         <a href={`/auth?return=${location.pathname}`}>Login</a>

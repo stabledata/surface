@@ -36,7 +36,7 @@ export const app = (injections: Partial<Dependencies> = {}) => {
       .get("/auth/logout", inject(logoutHandler))
 
       // add more service handlers here
-      .route("/members", members(container, injections))
+      .route("/api/members", members(container, injections))
 
       // catch all will attempt to render UI
       // which can match tanstack ssr or just 404

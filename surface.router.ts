@@ -10,11 +10,8 @@ import { AppType } from "./surface.app";
 // so we can inject it in the RouterContext vs service context.
 // but using it on the server results in a network round trip vs
 // using server context.
-const rpcHost =
-  typeof process !== "undefined"
-    ? process.env.SELF_RPC_HOST
-    : import.meta.env.SELF_RPC_HOST;
-const rpcClient = hc<AppType>(rpcHost ?? "/", {
+const rpcHost = typeof process !== "undefined" ? process.env.SELF_RPC_HOST : "";
+const rpcClient = hc<AppType>(`${rpcHost}`, {
   headers: {
     "Content-Type": "application/json",
   },
