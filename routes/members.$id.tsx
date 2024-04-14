@@ -5,6 +5,7 @@ import {
   Link,
 } from "@tanstack/react-router";
 import { User } from "../services/auth.service";
+import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/members/$id")({
   loader: async ({ context, params }): Promise<User> => {
@@ -30,9 +31,11 @@ function PostComponent() {
 
   return (
     <div className="space-y-2">
+      <Link to="/members" className="flex items-start gap-3 font-light">
+        <ArrowLeft /> Back to members page
+      </Link>
       <h4 className="text-xl font-bold underline">{member.name}</h4>
       <div className="text-sm">{member.email}</div>
-      <Link to="/members">Back to members page</Link>
     </div>
   );
 }

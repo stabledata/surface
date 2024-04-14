@@ -29,12 +29,16 @@ declare module "@tanstack/react-router" {
   }
 }
 
-export function createRouter(injections?: RouterContext) {
+export function createRouter(
+  injections?: RouterContext,
+  serviceContext?: ServiceContext
+) {
   const router = tanStackCreateRouter({
     routeTree,
     context: {
       ...injections,
       rpc: rpcClient,
+      serviceContext,
     },
     dehydrate: (): RouterContext => {
       // async state need to be dehydrated from method above

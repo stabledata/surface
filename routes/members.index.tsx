@@ -19,7 +19,7 @@ function Members() {
       <h2 className="text-2xl flex items-center gap-4">
         <Users size={22} /> Members
       </h2>
-      <div>
+      <div className="flex flex-col gap-3 mt-5">
         {members.map((member: User) => (
           <div key={member.id}>
             <Link
