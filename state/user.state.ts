@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { getUser, User } from "../services/auth";
 import { devtools } from "zustand/middleware";
+import { getUser, User } from "../services/auth";
 import { ServiceContext } from "../surface.app";
-import { registerStateLoader } from "./registry";
 import { RouterContext } from "../surface.router";
+import { registerStateLoader } from "./registry";
 
 type UserStore = {
   user: User | undefined;
@@ -20,7 +20,9 @@ export const useUserStore = create<UserStore>()(
 // "load" returns the state to be sent though the server
 // see the registration method below
 export const load = async (c: ServiceContext) => {
-  return await getUser(c);
+  const user = await getUser(c);
+  useUserStore.setState({ user });
+  return user;
 };
 
 // "inflate" takes the entire client context and can be used to
@@ -30,8 +32,9 @@ export const inflate = (context: RouterContext) => {
   useUserStore.setState({ user: context.user });
 };
 
-// register the state module
-// maybe someday we can make this more magical...
+// register the state module -
+// Don't forget to add your key: Type to RouterContext
+// maybe someday we can make this more magical but
 // the challenge is mostly that it needs to work both on the server
 // and the client
 registerStateLoader("user", { load, inflate });

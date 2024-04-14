@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Github, RefreshCw } from "lucide-react";
 import { useBusyRouter } from "./hooks/use-busy-router";
 import { useUserStore } from "../state/user.state";
+import { useRootSsrCtx } from "./hooks/use-root-ssr-ctx";
 
 const activeProps = {
   className: "underline",
@@ -10,7 +11,9 @@ const activeProps = {
 export function Header() {
   const isLoading = useBusyRouter();
   const { location } = useRouterState();
-  const { user } = useUserStore();
+  const { user: clientStoreUser } = useUserStore();
+  const { user: SSRUser } = useRootSsrCtx();
+  const user = clientStoreUser || SSRUser;
   return (
     <div className="header">
       <Link to="/" activeProps={activeProps} activeOptions={{ exact: true }}>

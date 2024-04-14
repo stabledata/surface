@@ -7,6 +7,7 @@ import { inflateState } from "./state/registry";
 export type RouterContext = {
   serviceContext?: ServiceContext;
   user?: User;
+  foo?: string;
 };
 
 export function createRouter(dehydratedState?: RouterContext) {
