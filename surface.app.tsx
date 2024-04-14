@@ -8,15 +8,19 @@ import { authHandler, logoutHandler } from "./services/auth";
 import { makeInjectableContext } from "./surface.app.ctx";
 
 import dotenv from "dotenv";
+import { members } from "./services/members";
+import { createRouter } from "./surface.router";
 dotenv.config();
 
 export type Dependencies = {
   logger: typeof logger;
   cookies?: ReturnType<typeof cookies>;
+  router: typeof createRouter;
 };
 
-const container: Dependencies = {
+export const container: Dependencies = {
   logger,
+  router: createRouter,
 };
 
 export const app = (injections: Partial<Dependencies> = {}) => {
@@ -26,12 +30,22 @@ export const app = (injections: Partial<Dependencies> = {}) => {
     new Hono()
       .use("/assets/*", handleStaticAssets(dependencies))
       .get("/ping", inject(ping))
+
+      // auth
       .get("/auth", inject(authHandler))
       .get("/auth/logout", inject(logoutHandler))
+
       // add more service handlers here
+      .route("/members", members(container, injections))
+
+      // catch all will attempt to render UI
+      // which can match tanstack ssr or just 404
       .get("/*", inject(render))
   );
 };
+
+// export the app type for for RPC
+export type AppType = ReturnType<typeof app>;
 
 // hono vite dev server middleware needs a default export
 const ha = app();

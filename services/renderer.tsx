@@ -3,7 +3,6 @@ import ReactDOMServer from "react-dom/server";
 import { createMemoryHistory } from "@tanstack/react-router";
 import { StartServer } from "@tanstack/react-router-server/server";
 import { ServiceContext } from "../surface.app.ctx";
-import { createRouter } from "../surface.router";
 import { loadState } from "../state/registry";
 
 export async function render(c: ServiceContext) {
@@ -15,7 +14,7 @@ export async function render(c: ServiceContext) {
   // load state modules that define a load method
   // and inject them into the router
   const data = await loadState(c);
-  const router = createRouter({ ...data });
+  const router = c.router(data);
   const memoryHistory = createMemoryHistory({ initialEntries: [c.req.path] });
   router.update({ history: memoryHistory });
   await router.load();

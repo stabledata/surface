@@ -15,7 +15,7 @@ type PartialHonoContext = Omit<
   | "var"
 >;
 
-export type ServiceContext = PartialHonoContext & Partial<Dependencies>;
+export type ServiceContext = PartialHonoContext & Dependencies;
 
 export const makeInjectableContext = (
   container: Dependencies,
@@ -31,7 +31,9 @@ export const makeInjectableContext = (
       );
       return await handler({
         ...ctx,
-        ...{ cookies: cookies(ctx) },
+        // FIXME: not perfect, cookies seem to complain more than others.
+        // rather not do TS acrobatics, but it gets us to where we want to be
+        ...{ cookies: cookies(ctx as unknown as ServiceContext) },
         ...dependencies,
       });
     };
