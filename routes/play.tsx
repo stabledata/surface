@@ -3,8 +3,7 @@ import React from "react";
 
 export const Route = createFileRoute("/play")({
   component: Posts,
-  loader: async ({ context }) => {
-    console.log("context curious", context);
+  loader: async () => {
     await new Promise((r) =>
       setTimeout(r, 300 + Math.round(Math.random() * 300))
     );

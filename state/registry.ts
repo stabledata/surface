@@ -30,8 +30,8 @@ export const registerStateLoader = (
 export const loadState = async (c: ServiceContext) => {
   // load all the registered state modules
   const loadedStateData: Record<string, PropertyOfContext> = {};
-  // iterate over the loaders and assign the returned data to the key at index
 
+  // iterate over the loaders and assign the returned data to the key at index
   for (const key in registeredStateModules.loaders) {
     const loader = registeredStateModules.loaders[key];
     const data = await loader(c);
