@@ -2,6 +2,7 @@ import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { DehydrateRouter } from "@tanstack/react-router-server/client";
 import type { RouterContext } from "../surface.router";
 import { Header } from "../views/header";
+import { RootSSRLoaderContextProvider } from "../views/providers/ssr-loader-context-provider";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
@@ -10,12 +11,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     // needs (reducing server round trips for auth, user data, etc.
 
     // but sometimes you may _need_ to render markup on the server for
-    // SEO. wherever it's needed, you can import this Route and use
-    // RootRoute.useLoaderData() to fet the context returned here from
-    // the server and use that value instead of global client state see:
-    // views/hooks/use-root-ssr-ctx.ts for an example
+    // SEO. For that, we pass this context through to a provider so
+    // that hooks which need to pick it up can do so.
 
-    // NOTE - this return will no longer hold loader state another
+    // BIG CAVEAT: the provider will ONLY hold state
     // approach would be to load your global state here, but we are
     // doing this via the surface.router and state.registry
 
@@ -26,13 +25,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
-  // const d = Route.useLoaderData();
-
+  const loaderData = Route.useLoaderData();
   return (
-    <div className="background-base background-gradient h-[100vh] w-full">
-      <Header />
-      <Outlet />
-      <DehydrateRouter />
-    </div>
+    <RootSSRLoaderContextProvider value={loaderData}>
+      <div className="background-base background-gradient h-[100vh] w-full">
+        <Header />
+        <Outlet />
+        <DehydrateRouter />
+      </div>
+    </RootSSRLoaderContextProvider>
   );
 }

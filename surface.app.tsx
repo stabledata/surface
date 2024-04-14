@@ -5,9 +5,9 @@ import { render } from "./services/renderer";
 import { cookies } from "./cookies/cookies";
 import { logger } from "./logger/logger";
 import { authHandler, logoutHandler } from "./services/auth";
+import { makeInjectableContext } from "./surface.app.ctx";
 
 import dotenv from "dotenv";
-import { makeInjectableContext } from "./surface.app.ctx";
 dotenv.config();
 
 export type Dependencies = {

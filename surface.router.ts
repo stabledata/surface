@@ -27,7 +27,7 @@ export function createRouter(dehydratedState?: RouterContext) {
       // inflate state from the state.registry.
       // now... loaders and beforeLoaders also receive context
       // however this will always get run on the client whereas
-      // loaders may run on the server OR the client depending
+      // loaders may run on the server OR the client
       inflateState(context);
     },
   });

@@ -12,7 +12,8 @@ export function Header() {
   const isLoading = useBusyRouter();
   const { location } = useRouterState();
   const { user: clientStoreUser } = useUserStore();
-  const { user: SSRUser } = useRootSsrCtx();
+  const ssrCtx = useRootSsrCtx();
+  const SSRUser = ssrCtx?.user;
   const user = clientStoreUser || SSRUser;
   return (
     <div className="header">
