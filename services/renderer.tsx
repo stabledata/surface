@@ -2,10 +2,9 @@ import { readFile } from "node:fs/promises";
 import ReactDOMServer from "react-dom/server";
 import { createMemoryHistory } from "@tanstack/react-router";
 import { StartServer } from "@tanstack/react-router-server/server";
-
 import { ServiceContext } from "../surface.app";
 import { createRouter } from "../surface.router";
-import { getUser } from "./auth";
+import { loadState } from "../state/registry";
 
 export async function render(c: ServiceContext) {
   // get index.html
@@ -13,27 +12,20 @@ export async function render(c: ServiceContext) {
   const index = isProd ? "build/index.html" : "./index.dev.html";
   const indexContents = await readFile(index, "utf-8");
 
-  // build SSR context here.
-  // this get passed through the router
-  // and used to manually hydrate state
-  const user = await getUser(c);
-  const router = createRouter({ user });
-  const memoryHistory = createMemoryHistory({
-    initialEntries: [c.req.path],
-  });
-  router.update({
-    history: memoryHistory,
-    context: {
-      user: await getUser(c),
-    },
-  });
+  // load state modules that define a load method
+  // and inject them into the router
+  const data = await loadState(c);
+  const router = createRouter({ ...data });
+  const memoryHistory = createMemoryHistory({ initialEntries: [c.req.path] });
+  router.update({ history: memoryHistory });
   await router.load();
 
-  // if we haven't found a match don't try to render anything and return
-  // 404
+  // if we haven't found a match...
+  // don't try to render anything and return 404
   if (router.hasNotFoundMatch()) {
     return c.text("Not found", 404);
   }
+
   const dehydratedSSRContent = ReactDOMServer.renderToString(
     <StartServer router={router} />
   );

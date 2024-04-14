@@ -1,29 +1,37 @@
 import { createRouter as tanStackCreateRouter } from "@tanstack/react-router";
 import { routeTree } from "./.routes.tree";
+import { ServiceContext } from "./surface.app";
 import { User } from "./services/auth";
-import { useUserStore } from "./state/user.state";
+import { inflateState } from "./state/registry";
 
 export type RouterContext = {
+  serviceContext?: ServiceContext;
   user?: User;
 };
 
-export function createRouter(injections?: Partial<RouterContext>) {
-  return tanStackCreateRouter({
+export function createRouter(dehydratedState?: RouterContext) {
+  const router = tanStackCreateRouter({
     routeTree,
     context: {
-      ...injections,
+      ...dehydratedState,
     },
-    dehydrate: () => {
+    dehydrate: (): RouterContext => {
+      // async state need to be dehydrated from method above
+      // easier to just handle it all there
       return {
-        ...injections,
+        ...dehydratedState,
       };
     },
     hydrate: (context) => {
-      // everything passed down from the server context via dehydrate (injection)
-      // can now be used to hydrate client state
-      useUserStore.setState({ user: context.user });
+      // inflate state from the state.registry.
+      // now... loaders and beforeLoaders also receive context
+      // however this will always get run on the client whereas
+      // loaders may run on the server OR the client depending
+      inflateState(context);
     },
   });
+
+  return router;
 }
 
 declare module "@tanstack/react-router" {
@@ -31,4 +39,3 @@ declare module "@tanstack/react-router" {
     router: ReturnType<typeof createRouter>;
   }
 }
-export { useUserStore };
