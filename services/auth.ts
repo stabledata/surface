@@ -1,4 +1,4 @@
-import { ServiceContext } from "../surface.app";
+import { ServiceContext } from "../surface.app.ctx";
 
 export type User = {
   id: string;

@@ -1,6 +1,6 @@
 import hono from "hono";
 import { getCookie, setCookie } from "hono/cookie";
-import { ServiceContext } from "../surface.app";
+import { ServiceContext } from "../surface.app.ctx";
 import { CookieOptions } from "hono/utils/cookie";
 
 export function cookies(c: ServiceContext) {

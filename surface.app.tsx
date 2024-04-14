@@ -1,4 +1,4 @@
-import hono, { Hono } from "hono";
+import { Hono } from "hono";
 import { handleStaticAssets } from "./services/assets";
 import { ping } from "./services/ping";
 import { render } from "./services/renderer";
@@ -7,6 +7,7 @@ import { logger } from "./logger/logger";
 import { authHandler, logoutHandler } from "./services/auth";
 
 import dotenv from "dotenv";
+import { makeInjectableContext } from "./surface.app.ctx";
 dotenv.config();
 
 export type Dependencies = {
@@ -18,37 +19,8 @@ const container: Dependencies = {
   logger,
 };
 
-type PartialHonoContext = Omit<
-  hono.Context,
-  | "#private"
-  | "_var"
-  | "layout"
-  | "renderer"
-  | "notFoundHandler"
-  | "event"
-  | "executionCtx"
-  | "res"
-  | "var"
->;
-
-export type ServiceContext = PartialHonoContext & Partial<Dependencies>;
-
 export const app = (injections: Partial<Dependencies> = {}) => {
-  const dependencies = { ...container, ...injections };
-  const inject = (
-    handler: (ctx: ServiceContext) => Promise<Response> | Response
-  ) => {
-    return async (ctx: hono.Context) => {
-      dependencies.logger.log(
-        `surface app request: ${ctx.req.method} ${ctx.req.url}`
-      );
-      return await handler({
-        ...ctx,
-        ...{ cookies: cookies(ctx) },
-        ...dependencies,
-      });
-    };
-  };
+  const { dependencies, inject } = makeInjectableContext(container, injections);
 
   return (
     new Hono()

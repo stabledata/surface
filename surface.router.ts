@@ -1,6 +1,6 @@
 import { createRouter as tanStackCreateRouter } from "@tanstack/react-router";
 import { routeTree } from "./.routes.tree";
-import { ServiceContext } from "./surface.app";
+import { ServiceContext } from "./surface.app.ctx";
 import { User } from "./services/auth";
 import { inflateState } from "./state/registry";
 

@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import ReactDOMServer from "react-dom/server";
 import { createMemoryHistory } from "@tanstack/react-router";
 import { StartServer } from "@tanstack/react-router-server/server";
-import { ServiceContext } from "../surface.app";
+import { ServiceContext } from "../surface.app.ctx";
 import { createRouter } from "../surface.router";
 import { loadState } from "../state/registry";
 
@@ -20,10 +20,9 @@ export async function render(c: ServiceContext) {
   router.update({ history: memoryHistory });
   await router.load();
 
-  // if we haven't found a match...
-  // don't try to render anything and return 404
+  // just return the index with a 404 header
   if (router.hasNotFoundMatch()) {
-    return c.text("Not found", 404);
+    return c.html(indexContents, 404);
   }
 
   const dehydratedSSRContent = ReactDOMServer.renderToString(
