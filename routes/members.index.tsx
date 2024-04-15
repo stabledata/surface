@@ -6,6 +6,7 @@ export const Route = createFileRoute("/members/")({
   component: Members,
   loader: async ({ context }) => {
     const memberRpc = await context.rpc?.api.members.$get();
+    console.log("rpc response", memberRpc?.status);
     const members = memberRpc?.ok ? await memberRpc.json() : { members: [] };
     return members;
   },

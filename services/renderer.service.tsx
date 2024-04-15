@@ -44,11 +44,11 @@ export async function render(c: ServiceContext) {
 
   if (hasError) {
     // TODO: better server error handling.
-    // This is likely 403 most of the time, but loader
-    // errors could occur on server as well.
+    // The best we could likely do here is to match on the "name"
+    // and map a code to make it more friendly.
 
     console.log(
-      "ssr error (possibly intentional if for auth)",
+      "ssr rendering error thrown (possibly intentional if for auth)",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (hasError as any).error
     );

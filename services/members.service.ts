@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { Dependencies } from "../surface.app";
 import { makeInjectableContext, ServiceContext } from "../surface.app.ctx";
-import { fakeUser, User } from "./auth.service";
+import { fakeUser, hasSession, User } from "./auth.service";
 
 const fakeMembers: User[] = [
   fakeUser,
@@ -17,12 +17,19 @@ const fakeMembers: User[] = [
 export const handleGetMembers = async (
   c: ServiceContext
 ): Promise<Response> => {
+  if (!hasSession(c)) {
+    return c.text("Unauthorized", 401);
+  }
   c.logger?.log("Getting team members...");
   await new Promise((r) => setTimeout(r, 1_000));
+  c.logger?.log("Returning team members...");
   return c.json({ members: fakeMembers });
 };
 
 export const handleGetMember = async (c: ServiceContext): Promise<Response> => {
+  if (!hasSession(c)) {
+    return c.text("Unauthorized", 401);
+  }
   const id = c.req.param("id");
   c.logger?.log(`Getting member with id: ${id}`);
   await new Promise((r) => setTimeout(r, 1_000));

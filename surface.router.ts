@@ -11,6 +11,7 @@ import { AppType } from "./surface.app";
 // but using it on the server results in a network round trip vs
 // using server context.
 const rpcHost = typeof process !== "undefined" ? process.env.SELF_RPC_HOST : "";
+console.log("host", rpcHost);
 const rpcClient = hc<AppType>(`${rpcHost}`, {
   headers: {
     "Content-Type": "application/json",

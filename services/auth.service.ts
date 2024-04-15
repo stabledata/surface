@@ -34,6 +34,19 @@ export async function getUser(c: ServiceContext): Promise<User | undefined> {
   return fakeUser;
 }
 
+export const hasSession = (c: ServiceContext): boolean => {
+  const userId = c.cookies?.get("user_id");
+  const hasUserId = userId !== undefined && userId > "";
+  return hasUserId;
+};
+
+// TODO:
+// export const hasValidSession = (c: ServiceContext): boolean => {
+//   const userId = c.cookies?.get("user_id");
+//   const hasUserId = userId !== undefined && userId > "";
+//   return hasUserId;
+// };
+
 export async function logoutHandler(c: ServiceContext): Promise<Response> {
   c.cookies?.set("user_id", "", { path: "/", httpOnly: true });
   const redirectTo = c.req.query("return") ?? "/";
