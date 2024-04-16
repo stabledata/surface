@@ -17,7 +17,7 @@ export const Route = createFileRoute("/members/$id")({
     if (member?.status === 401) {
       throw redirect({ to: "/login" });
     }
-    // todo: handle other errors
+    // TODO: handle other errors
     if (!member?.ok) {
       return undefined;
     }

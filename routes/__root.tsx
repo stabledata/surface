@@ -28,7 +28,7 @@ function RootComponent() {
   const loaderData = Route.useLoaderData();
   return (
     <RootSSRLoaderContextProvider value={loaderData}>
-      <div className="background-base background-gradient h-[100vh] w-full">
+      <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
         <Header />
         <Outlet />
         <DehydrateRouter />
