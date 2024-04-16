@@ -68,9 +68,9 @@ function Docs() {
         this way, for good reason. Loaders in our case are{" "}
         <a href="https://tanstack.com/router/v1/docs/framework/react/guide/data-loading">
           provided by Tanstack Router
-        </a>
-        and are run either on the server initially, and the client for
-        subsequent client side navigation. <br />
+        </a>{" "}
+        and are run on the server during an initial request the client after
+        subsequent route navigation. <br />
         <br />
         If we chose to, we could inject the server context into our router
         context, and run loaders in a forked manner, calling services directly
@@ -87,7 +87,7 @@ function Docs() {
         <br />
         Several patterns were explored here, but ultimately the one that made
         the most sense was to take advantage of the Tanstack router's ability to
-        dehydrate and rehydrate state while injecting session data directly
+        dehydrate and rehydrate state by injecting sever session data directly
         through the router.
       </p>
     </div>

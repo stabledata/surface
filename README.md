@@ -12,7 +12,7 @@ Lots of credit is due to this [really great post](https://ayon.li/full-stack-dev
 
 You might notice both package-lock.json and bun.lockb. This is intentional as we intend to keep this code compatible with both run times for as long as necessary. Dockerfile examples for both will be included soon.
 
-### Principals
+# Principals
 
 Consciously working to reduce complexity is paramount to any software project, but perhaps even more so when we begin to blur the lines between client and server. Javascript has afforded us this ability, but we must wield the power responsibly.
 
@@ -34,9 +34,9 @@ Routes are entirely flexible. You don't have to prefix a backend request with `/
 
 #### Loaders
 
-The loader paradigm follows the render as you fetch pattern. Newer frameworks like Remix, Astro, Modern and more have elected to pursue this way, for good reason. Loaders in our case are [provided by Tanstack Router](https://tanstack.com/router/v1/docs/framework/react/guide/data-loading) and are run either on the server initially, and the client for subsequent client side navigation.
+The loader paradigm follows the render as you fetch pattern. Newer frameworks like Remix, Astro, Modern and more have elected to pursue this way, for good reason. Loaders in our case are [provided by Tanstack Router](https://tanstack.com/router/v1/docs/framework/react/guide/data-loading) and are run on the server during an initial request the client after subsequent route navigation.
 
-If we chose to, we could inject the server context into our router context, and run loaders in a forked manner, calling services directly on the service and using RPC on the client. Ultimately the decision to keep this simple as possible made sense and we treat loaders as a single code path that works on both.
+We could inject the server context into our router context and run loaders in a forked manner, calling services directly on the service and using RPC on the client but ultimately the decision to keep this simple as possible made sense and we treat loaders as a single code path that works well on both.
 
 #### Application State and SSR
 
