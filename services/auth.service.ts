@@ -45,15 +45,14 @@ export async function getUser(c: ServiceContext): Promise<User | undefined> {
 }
 
 export const hasSession = async (c: ServiceContext): Promise<boolean> => {
-  // TODO: replace this with jwt validation
+  // we can simply check for cookie presence client side
+  // but for service calls we need to check the jwt as Bearer token
   const authHeader = c.req.header("Authorization") ?? "";
   const userId = c.cookies?.get("user_id") || authHeader > "Bearer ";
   const hasUserId = userId !== undefined && userId > "";
   if (hasUserId) {
     return true;
   }
-  // we can simply check for cookie presence client side
-  // but for service calls we need to check the jwt as Bearer token
   const token = authHeader.replace("Bearer ", "");
   try {
     const decoded = await c.jwt.verify(token, process.env.JWT_SECRET ?? "");
@@ -63,13 +62,6 @@ export const hasSession = async (c: ServiceContext): Promise<boolean> => {
     return false;
   }
 };
-
-// TODO:
-// export const hasValidSession = (c: ServiceContext): boolean => {
-//   const userId = c.cookies?.get("user_id");
-//   const hasUserId = userId !== undefined && userId > "";
-//   return hasUserId;
-// };
 
 export async function logoutHandler(c: ServiceContext): Promise<Response> {
   c.cookies?.set("user_id", "", { path: "/", httpOnly: true });
