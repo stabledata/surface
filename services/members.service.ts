@@ -17,21 +17,21 @@ const fakeMembers: User[] = [
 export const handleGetMembers = async (
   c: ServiceContext
 ): Promise<Response> => {
-  if (!hasSession(c)) {
+  if (!(await hasSession(c))) {
     return c.text("Unauthorized", 401);
   }
-  c.logger?.log("Getting team members...");
+  c.logger?.log("member service: Getting team members...");
   await new Promise((r) => setTimeout(r, 1_000));
-  c.logger?.log("Returning team members...");
+  c.logger?.log("member service: Returning team members");
   return c.json({ members: fakeMembers });
 };
 
 export const handleGetMember = async (c: ServiceContext): Promise<Response> => {
-  if (!hasSession(c)) {
+  if (!(await hasSession(c))) {
     return c.text("Unauthorized", 401);
   }
   const id = c.req.param("id");
-  c.logger?.log(`Getting member with id: ${id}`);
+  c.logger?.log(`member service: Getting member with id: ${id}`);
   await new Promise((r) => setTimeout(r, 1_000));
   const member = fakeMembers.find((m) => m.id === id);
   if (!member) {

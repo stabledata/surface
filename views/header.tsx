@@ -21,7 +21,7 @@ export function Header() {
         Home
       </Link>
       <Link to="/docs" activeProps={activeProps}>
-        Docs
+        Notes
       </Link>
       <Link to="/members" activeProps={activeProps}>
         Members

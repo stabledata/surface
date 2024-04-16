@@ -1,26 +1,30 @@
 import { Hono } from "hono";
+import { decode, sign, verify } from "hono/jwt";
+import { cookies } from "./cookies/cookies";
+import { logger } from "./logger/logger";
+
 import { handleStaticAssets } from "./services/assets.service";
 import { ping } from "./services/ping.service";
 import { render } from "./services/renderer.service";
-import { cookies } from "./cookies/cookies";
-import { logger } from "./logger/logger";
 import { authHandler, logoutHandler } from "./services/auth.service";
+import { members } from "./services/members.service";
+
 import { makeInjectableContext } from "./surface.app.ctx";
 
 import dotenv from "dotenv";
-import { members } from "./services/members.service";
-import { createRouter } from "./surface.router";
 dotenv.config();
+
+export const jwt = { decode, sign, verify };
 
 export type Dependencies = {
   logger: typeof logger;
   cookies?: ReturnType<typeof cookies>;
-  router: typeof createRouter;
+  jwt: typeof jwt;
 };
 
 export const container: Dependencies = {
   logger,
-  router: createRouter,
+  jwt,
 };
 
 export const app = (injections: Partial<Dependencies> = {}) => {
@@ -35,11 +39,11 @@ export const app = (injections: Partial<Dependencies> = {}) => {
       .get("/auth", inject(authHandler))
       .get("/auth/logout", inject(logoutHandler))
 
-      // add more service handlers here
+      // add more service handlers here so they get added to rpc
       .route("/api/members", members(container, injections))
 
       // catch all will attempt to render UI
-      // which can match tanstack ssr or just 404
+      // which can match tanstack ssr or 404
       .get("/*", inject(render))
   );
 };
