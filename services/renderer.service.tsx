@@ -8,26 +8,35 @@ import { hc } from "hono/client";
 import { AppType } from "../surface.app";
 import { createRouter } from "../surface.router";
 
+// FIXME: this is a temporary typing for tantack redirect throws
+type TsThrownRedirectError = {
+  isRedirect: boolean;
+  to: string;
+  statusCode: number;
+};
+
 export async function render(c: ServiceContext) {
   // get index.html
   const isProd = process.env["NODE_ENV"] === "production";
   const index = isProd ? "build/index.html" : "./index.dev.html";
   const indexContents = await readFile(index, "utf-8");
 
-  // the serer needs its own instance of rpc client because it's basically
-  // going to call itself over HTTP. further, it needs to pass credentials
-  // because there is no cookie in that request.
+  // the serer needs its own instance of rpc client because it's
+  // basically going to call itself over HTTP. further, it needs to pass
+  // credentials because there is no cookie in that request.
   const rpcClient = hc<AppType>(process.env.SELF_RPC_HOST ?? "", {
     headers: {
       "Content-Type": "application/json",
-      // TODO: have to pass a bearer token here.
-      // might as well just get out the jwt tooling now but to close loop for commit..
+      // have to pass a bearer token here, because the server is calling itself
+      // thus far, no framework seems to get around this either?
+      // an isomorphic loader is a possibility of course but
+      // the simplicity of a single workload feels better for now.
       Authorization: `Bearer ${c.cookies?.get("user_id")}`,
     },
   });
 
-  // load state modules that define a load method
-  // and inject them into the router
+  // load state modules that define a load method and inject them into
+  // the router
   const data = await loadState(c);
   const router = createRouter({ ...data, rpc: rpcClient });
   const memoryHistory = createMemoryHistory({ initialEntries: [c.req.path] });
@@ -57,14 +66,25 @@ export async function render(c: ServiceContext) {
   });
 
   if (hasError) {
-    // TODO: better server error handling.
-    // The best we could likely do here is to match on the "name"
-    // and map a code to make it more friendly.
+    // TODO: refine this a bit more. if we throw a redirect from
+    // tanstack, this is somewhat more predictable and we can redirect
+    // from the top layer in the event of direct request...
+    // but, doesn't seem like a clean way to grab this information currently
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const error = (hasError as any).error?.data?.data as TsThrownRedirectError;
+    if (error.isRedirect) {
+      c.logger.log(
+        "ssr redirected via tanstack redirect",
+        error.to,
+        error.statusCode
+      );
+      return c.redirect(error.to);
+    }
 
-    console.log(
-      "ssr rendering error thrown (possibly intentional if for auth)",
+    c.logger.error(
+      "unknown ssr rendering error thrown",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (hasError as any).error
+      error
     );
     return c.html(indexContents, 500);
   }

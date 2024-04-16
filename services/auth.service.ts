@@ -60,9 +60,8 @@ export const hasSession = async (c: ServiceContext): Promise<boolean> => {
     return decoded;
   } catch (e) {
     c.logger.error(`Error validating session token!`);
+    return false;
   }
-
-  return hasUserId;
 };
 
 // TODO:

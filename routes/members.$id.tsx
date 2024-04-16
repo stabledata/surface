@@ -3,6 +3,7 @@ import {
   ErrorComponent,
   ErrorComponentProps,
   Link,
+  redirect,
 } from "@tanstack/react-router";
 import { User } from "../services/auth.service";
 import { ArrowLeft } from "lucide-react";
@@ -13,6 +14,10 @@ export const Route = createFileRoute("/members/$id")({
       param: { id: params.id },
     });
     // check for other statuses in the loader, 401 redirects.
+    if (member?.status === 401) {
+      throw redirect({ to: "/login" });
+    }
+    // todo: handle other errors
     if (!member?.ok) {
       return undefined;
     }

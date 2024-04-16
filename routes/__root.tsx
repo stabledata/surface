@@ -14,8 +14,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     // SEO. For that, we pass this context through to a provider so
     // that hooks which need to pick it up can do so.
 
-    // BIG CAVEAT: the provider will ONLY hold state
-    // approach would be to load your global state here, but we are
+    // BIG CAVEAT: the provider will ONLY hold state on first request.
+    // one valid approach would be to load your global state here, but we are
     // doing this via the surface.router and state.registry
 
     // generally speaking - TS router loaders should be considered

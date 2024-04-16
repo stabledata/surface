@@ -10,6 +10,7 @@ export const Route = createFileRoute("/members/")({
     if (memberRpc?.status === 401) {
       throw redirect({ to: "/login" });
     }
+    // TODO: handle other errors
     return memberRpc?.ok ? await memberRpc.json() : { members: [] };
   },
 });
@@ -24,7 +25,8 @@ function Members() {
       </h2>
       <p className="my-5">
         This is a simple demonstration of loading from either the server or the
-        client via hono.rpc, which looks like this:
+        client via <a href="https://hono.dev/guides/rpc#rpc">hono.rpc</a>, which
+        looks like this:
       </p>
       <pre>context.rpc?.api.members.$get()</pre>
       <p className="my-5 text-xs">
