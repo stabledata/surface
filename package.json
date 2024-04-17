@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && cp -r views/assets/* build/assets/",
+    "build": "tsr generate && tsc && vite build && cp -r views/assets/* build/assets/",
     "build:node": "npm run build && rollup -c rollup.config.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "start:node": "cross-env NODE_ENV=production DEBUG=surface:* node dist/surface.server.node.js"
@@ -13,7 +13,7 @@
   "dependencies": {
     "@hono/node-server": "^1.9.1",
     "@tanstack/react-router": "^1.26.12",
-    "@tanstack/react-router-server": "^1.26.12",
+    "@tanstack/react-router-server": "^1.15.2",
     "cross-env": "^7.0.3",
     "debug": "^4.3.4",
     "dotenv": "^16.4.5",
@@ -30,6 +30,7 @@
     "@rollup/plugin-image": "^3.0.3",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@tanstack/router-cli": "^1.28.2",
     "@tanstack/router-vite-plugin": "^1.26.10",
     "@types/bun": "^1.0.12",
     "@types/debug": "^4.1.12",
