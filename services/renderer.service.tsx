@@ -49,7 +49,9 @@ export async function render(c: ServiceContext) {
   }
 
   const dehydratedSSRContent = ReactDOMServer.renderToString(
-    <StartServer router={router} />
+    // TODO: I guess file an issue for this, this wants an isServer boolean.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    <StartServer<any> router={router} />
   );
 
   const html = indexContents.replace(
