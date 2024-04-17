@@ -84,7 +84,7 @@ export async function render(c: ServiceContext) {
     }
 
     c.logger.error(
-      "unknown ssr rendering error thrown",
+      "unknown ssr error thrown",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       error
     );
