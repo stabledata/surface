@@ -14,6 +14,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.bun
+    environment:
+      - NODD_ENV=production
     env_file:
       - .env
     ports:

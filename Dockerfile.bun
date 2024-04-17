@@ -7,6 +7,7 @@ COPY ./bun.lockb /app/bun.lockb
 COPY . /app
 
 RUN bun install
+RUN bun run build
 
 FROM base as dev
 CMD ["bun", "run", "dev"]

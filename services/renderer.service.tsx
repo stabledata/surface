@@ -10,6 +10,7 @@ import { createRouter } from "../surface.router";
 
 export async function render(c: ServiceContext) {
   // get index.html
+  console.log("damn", process.env.NODE_ENV);
   const isProd = process.env["NODE_ENV"] === "production";
   const index = isProd ? "build/index.html" : "./index.dev.html";
   const indexContents = await readFile(index, "utf-8");
@@ -50,6 +51,7 @@ export async function render(c: ServiceContext) {
     "<!--ssr-injection-->",
     dehydratedSSRContent
   );
+  console.log("ABSOLUTELY BRUTAL WHEN THINGS JUST DONT WORK.", html);
 
   return c.html(html);
 }
