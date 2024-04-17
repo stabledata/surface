@@ -37,11 +37,6 @@ export async function render(c: ServiceContext) {
   router.update({ history: memoryHistory, context });
   await router.load();
 
-  // just return the index with a 404 header
-  if (router.hasNotFoundMatch()) {
-    return c.html(indexContents, 404);
-  }
-
   const dehydratedSSRContent = ReactDOMServer.renderToString(
     <StartServer router={router} />
   );
@@ -84,5 +79,6 @@ export async function render(c: ServiceContext) {
     return c.html(indexContents, 500);
   }
 
-  return c.html(html, 200);
+  const status = router.hasNotFoundMatch() ? 404 : 200;
+  return c.html(html, status);
 }

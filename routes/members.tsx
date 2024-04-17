@@ -1,11 +1,18 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  // notFound,
+  Outlet,
+  redirect,
+} from "@tanstack/react-router";
 import { Suspense } from "react";
 
 export const Route = createFileRoute("/members")({
   errorComponent: () => <>Error</>,
+  notFoundComponent: () => <>Not Found</>,
   beforeLoad: async ({ context }) => {
     if (!context.user) {
       throw redirect({ to: "/login" });
+      // throw notFound();
     }
   },
   component: MembersLayout,

@@ -6,6 +6,8 @@ import { RootSSRLoaderContextProvider } from "../views/providers/ssr-loader-cont
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
+  notFoundComponent: () => <>Root Not Found</>,
+  errorComponent: () => <>Root Error</>,
   loader: ({ context }) => {
     // usually, "hydration" through the router suffices for SPA type
     // needs (reducing server round trips for auth, user data, etc.
