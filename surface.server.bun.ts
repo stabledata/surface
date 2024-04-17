@@ -1,6 +1,6 @@
 import { app } from "./surface.app";
 
-const port = process.env.PORT || 4001;
+const port = process.env.PORT || 4000;
 const serve = app();
 
 console.log(`Service starting on port: ${port}`);
