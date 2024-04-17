@@ -1,9 +1,7 @@
 import {
   createFileRoute,
-  ErrorComponent,
   ErrorComponentProps,
   Link,
-  redirect,
 } from "@tanstack/react-router";
 import { User } from "../services/auth.service";
 import { ArrowLeft } from "lucide-react";
@@ -13,11 +11,7 @@ export const Route = createFileRoute("/members/$id")({
     const member = await context.rpc?.api.members[":id"].$get({
       param: { id: params.id },
     });
-    // check for other statuses in the loader, 401 redirects.
-    if (member?.status === 401) {
-      throw redirect({ to: "/login" });
-    }
-    // TODO: handle other errors
+    // throw new Error("test");
     if (!member?.ok) {
       return undefined;
     }
@@ -29,7 +23,7 @@ export const Route = createFileRoute("/members/$id")({
 });
 
 export function PostErrorComponent({ error }: ErrorComponentProps) {
-  return <ErrorComponent error={error} />;
+  return <div>an {JSON.stringify(error)} happened</div>;
 }
 
 function PostComponent() {

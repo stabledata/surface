@@ -14,7 +14,7 @@ export async function render(c: ServiceContext) {
   const index = isProd ? "build/index.html" : "./index.dev.html";
   const indexContents = await readFile(index, "utf-8");
 
-  // the serer needs its own instance of rpc client because it's
+  // the server needs its own instance of rpc client because it's
   // basically going to call itself over HTTP. further, it needs to pass
   // credentials because there is no cookie in that request.
   const rpcClient = hc<AppType>(process.env.SELF_RPC_HOST ?? "", {
