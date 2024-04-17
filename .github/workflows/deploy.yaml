@@ -1,4 +1,4 @@
-name: V2 Interface (next app) CICD
+name: Surface Demo CICD
 on:
   push:
     branches:
