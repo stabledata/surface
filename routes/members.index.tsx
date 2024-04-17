@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Users } from "lucide-react";
 import { User } from "../services/auth.service";
+import { useLoginRedirect } from "../views/hooks/use-login-redirect";
 
 export const Route = createFileRoute("/members/")({
   component: Members,
@@ -11,7 +12,13 @@ export const Route = createFileRoute("/members/")({
 });
 
 function Members() {
+  const user = useLoginRedirect();
   const { members } = Route.useLoaderData();
+
+  if (!user) {
+    // prevents markup from rendering server side
+    return null;
+  }
 
   return (
     <div>
