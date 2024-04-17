@@ -84,11 +84,7 @@ export async function render(c: ServiceContext) {
       return c.redirect(error.to);
     }
 
-    c.logger.error(
-      "unknown ssr error thrown",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error
-    );
+    c.logger.error(`unknown ssr error thrown ${error}`);
     return c.html(indexContents, 500);
   }
 
