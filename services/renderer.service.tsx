@@ -70,11 +70,12 @@ export async function render(c: ServiceContext) {
   if (hasError) {
     // TODO: refine this a bit more. if we throw a redirect from
     // tanstack, this is somewhat more predictable and we can redirect
-    // from the top layer in the event of direct request...
+    // from the top layer in the event of direct request which is decent...
     // but, doesn't seem like a clean way to grab this information currently
+    // maybe create an issue later on w TS router.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const error = (hasError as any).error?.data?.data as TsThrownRedirectError;
-    if (error.isRedirect) {
+    if (error && error.isRedirect) {
       c.logger.log(
         "ssr redirected via tanstack redirect",
         error.to,
