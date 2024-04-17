@@ -9,7 +9,6 @@ COPY . /app
 RUN bun install
 
 FROM base as dev
-COPY .env /app/.env
 CMD ["bun", "run", "dev"]
 
 FROM base as prod

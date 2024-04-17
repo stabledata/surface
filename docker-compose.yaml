@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  surface-node:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    env_file:
+      - .env
+    ports:
+      - "4001:4000"
+
+  surface-bun:
+    build:
+      context: .
+      dockerfile: Dockerfile.bun
+    env_file:
+      - .env
+    ports:
+      - "4002:4000"
