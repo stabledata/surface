@@ -24,8 +24,6 @@ export function createRouter(
   injections?: RouterContext,
   serviceContext?: ServiceContext
 ): AnyRouter {
-  console.log("injecting????", injections);
-
   const router = tanStackCreateRouter({
     routeTree,
     context: {
