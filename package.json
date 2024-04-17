@@ -13,7 +13,7 @@
   "dependencies": {
     "@hono/node-server": "^1.9.1",
     "@tanstack/react-router": "^1.26.12",
-    "@tanstack/react-router-server": "^1.15.2",
+    "@tanstack/react-router-server": "^1.28.4",
     "cross-env": "^7.0.3",
     "debug": "^4.3.4",
     "dotenv": "^16.4.5",
