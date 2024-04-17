@@ -1,16 +1,11 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { Suspense } from "react";
 
-class UnauthorizedError extends Error {
-  public status = 403;
-  constructor() {
-    super("Unauthorized");
-  }
-}
 export const Route = createFileRoute("/members")({
+  errorComponent: () => <>Error</>,
   beforeLoad: async ({ context }) => {
-    if (context.serviceContext && !context.user) {
-      throw new UnauthorizedError();
-      // throw redirect({ to: "/login" });
+    if (!context.user) {
+      throw redirect({ to: "/login" });
     }
   },
   component: MembersLayout,
@@ -19,7 +14,10 @@ export const Route = createFileRoute("/members")({
 function MembersLayout() {
   return (
     <div className="flex flex-col items-start gap-6 pt-8 text-left max-w-md m-auto">
-      <Outlet />
+      <Suspense fallback={<p>ok</p>}>
+        <button onClick={() => alert("nope")}>Go to member 1</button>
+        <Outlet />
+      </Suspense>
     </div>
   );
 }

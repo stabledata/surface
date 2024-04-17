@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.9.1",
-    "@tanstack/react-router": "^1.26.12",
-    "@tanstack/react-router-server": "^1.28.4",
+    "@tanstack/react-router": "^1.28.5",
+    "@tanstack/react-router-server": "^1.28.5",
     "cross-env": "^7.0.3",
     "debug": "^4.3.4",
     "dotenv": "^16.4.5",
@@ -30,7 +30,6 @@
     "@rollup/plugin-image": "^3.0.3",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@rollup/rollup-linux-x64-musl": "^4.14.3",
     "@tanstack/router-cli": "^1.28.2",
     "@tanstack/router-vite-plugin": "^1.26.10",
     "@types/bun": "^1.0.12",

@@ -1,4 +1,7 @@
-import { createRouter as tanStackCreateRouter } from "@tanstack/react-router";
+import {
+  AnyRouter,
+  createRouter as tanStackCreateRouter,
+} from "@tanstack/react-router";
 import { routeTree } from "./.routes.tree";
 import { ServiceContext } from "./surface.app.ctx";
 import { User } from "./services/auth.service";
@@ -20,7 +23,7 @@ declare module "@tanstack/react-router" {
 export function createRouter(
   injections?: RouterContext,
   serviceContext?: ServiceContext
-) {
+): AnyRouter {
   const router = tanStackCreateRouter({
     routeTree,
     context: {

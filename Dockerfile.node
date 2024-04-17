@@ -3,12 +3,14 @@ FROM node:lts-alpine3.19
 WORKDIR /app
 COPY ./tsconfig.json /app/tsconfig.json
 COPY ./package.json /app/package.json
-# COPY ./package-lock.json /app/package-lock.json
+COPY ./package-lock.json /app/package-lock.json
 COPY . /app
 
-# RUN npm ci
-# Rollup is awkward in cross-env https://github.com/npm/cli/issues/4828
-RUN npm install
+RUN npm ci
+# ugly, but rollup wants what rollup wants
+RUN npm i @rollup/rollup-linux-x64-musl --force
+RUN npm i @rollup/rollup-linux-arm64-musl --force
+
 RUN npm run build:node
 
 CMD ["npm", "run", "start:node"]

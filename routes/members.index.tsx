@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Users } from "lucide-react";
 import { User } from "../services/auth.service";
 
@@ -6,11 +6,6 @@ export const Route = createFileRoute("/members/")({
   component: Members,
   loader: async ({ context }): Promise<{ members: User[] }> => {
     const memberRpc = await context.rpc?.api.members.$get();
-    // if we get a 401, redirect
-    if (memberRpc?.status === 401) {
-      throw redirect({ to: "/login" });
-    }
-    // TODO: handle other errors
     return memberRpc?.ok ? await memberRpc.json() : { members: [] };
   },
 });

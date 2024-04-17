@@ -8,13 +8,6 @@ import { hc } from "hono/client";
 import { AppType } from "../surface.app";
 import { createRouter } from "../surface.router";
 
-// FIXME: this is a temporary typing for tantack redirect throws
-type TsThrownRedirectError = {
-  isRedirect: boolean;
-  to: string;
-  statusCode: number;
-};
-
 export async function render(c: ServiceContext) {
   // get index.html
   const isProd = process.env["NODE_ENV"] === "production";
@@ -38,9 +31,10 @@ export async function render(c: ServiceContext) {
   // load state modules that define a load method and inject them into
   // the router
   const data = await loadState(c);
-  const router = createRouter({ ...data, rpc: rpcClient });
+  const context = { ...data, rpc: rpcClient, serviceContext: c };
+  const router = createRouter(context);
   const memoryHistory = createMemoryHistory({ initialEntries: [c.req.path] });
-  router.update({ history: memoryHistory, context: { rpc: rpcClient } });
+  router.update({ history: memoryHistory, context });
   await router.load();
 
   // just return the index with a 404 header
@@ -49,9 +43,7 @@ export async function render(c: ServiceContext) {
   }
 
   const dehydratedSSRContent = ReactDOMServer.renderToString(
-    // TODO: I guess file an issue for this, this wants an isServer boolean.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    <StartServer<any> router={router} />
+    <StartServer router={router} />
   );
 
   const html = indexContents.replace(
@@ -67,14 +59,18 @@ export async function render(c: ServiceContext) {
     return r.error;
   });
 
+  console.log("hasError", JSON.stringify(hasError));
+
   if (hasError) {
     // TODO: refine this a bit more. if we throw a redirect from
-    // tanstack, this is somewhat more predictable and we can redirect
-    // from the top layer in the event of direct request which is decent...
-    // but, doesn't seem like a clean way to grab this information currently
-    // maybe create an issue later on w TS router.
+    // tanstack we can redirect at the server which seems desireable...
+    // but DehydratedRouteMatch only picks a few RouteMatch props
+    // and error is not one of them, I don't really want to deal with suspense
+    // on the server, there are enough folks complaining about this in Next now,
+    // for good reason.
+    // will create an issue later on w TS router on this one
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const error = (hasError as any).error?.data?.data as TsThrownRedirectError;
+    const error = (hasError as any).error?.data?.data;
     if (error && error.isRedirect) {
       c.logger.log(
         "ssr redirected via tanstack redirect",
@@ -84,7 +80,7 @@ export async function render(c: ServiceContext) {
       return c.redirect(error.to);
     }
 
-    c.logger.error(`unknown ssr error thrown ${error}`);
+    c.logger.error(`unknown ssr error thrown ${JSON.stringify(error)}`);
     return c.html(indexContents, 500);
   }
 
