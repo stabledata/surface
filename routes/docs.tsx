@@ -79,25 +79,30 @@ function Docs() {
         super tempting to make this code isomorphic. In a fortunate turn of
         events, our renderer service in production didn't like this idea at all
         and SSR stopped working. This meant our code <i>needed</i> to be same on
-        both the client and server, and Tanstack with ReactDom SSR let's that
-        happen.
+        both the client and server, and Tanstack along with ReactDom SSR keeps
+        the{" "}
+        <a href="https://github.com/stabledata/surface/blob/main/services/renderer.service.tsx#L11">
+          renderer service
+        </a>{" "}
+        relatively simple.
         <br />
         <br />
-        It would be nice to have some kind of independent server binding method
-        that would allow us to return different status codes or even redirect at
-        the server level, but this is a discussion for another day.
+        That said, it would be nice to have some kind of independent server
+        binding method that would allow us to return different status codes or
+        even redirect at the server level, but this is a discussion for another
+        day.
       </div>
 
-      <h4 className="mt-5 text-md font-semibold">Application State and SSR</h4>
+      <h4 className="mt-5 text-md font-semibold">App State and SSR</h4>
       <div className="my-5 text-sm leading-6">
-        One of the biggest benefits of the surface pattern, is that we can store
-        auth in httpOnly cookies for quick session lookups and <i>somewhat</i>{" "}
-        seamlessly pass state between the client and server. <br />
+        Surface lets us define app state such as a user session and pass it
+        between client and server seamlessly.
         <br />
-        Several patterns were explored here, but ultimately the one that made
-        the most sense was to take advantage of the Tanstack router's ability to
-        dehydrate and rehydrate state by injecting sever session data directly
-        through the router.
+        <br />
+        To do this without manually adding context into our renderer service we
+        create one new abstraction -- a "state module". State modules have a
+        registry the renderer service will read, then pass the data through
+        Tanstack Router's dehydrate and hydrate methods automatically.
       </div>
     </div>
   );

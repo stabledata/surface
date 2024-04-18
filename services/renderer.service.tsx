@@ -9,27 +9,19 @@ import { AppType } from "../surface.app";
 import { createRouter } from "../surface.router";
 
 export async function render(c: ServiceContext) {
-  // get index.html
-  const isProd = process.env["NODE_ENV"] === "production";
-  const index = isProd ? "build/index.html" : "./index.dev.html";
-  const indexContents = await readFile(index, "utf-8");
-
   // the server needs its own instance of rpc client because it's
-  // basically going to call itself over HTTP. further, it needs to pass
+  // calling itself over HTTP. this also means it needs to pass
   // credentials because there is no cookie in that request.
+  // an isomorphic loader concept could avoid this, but the added
+  // complexity vastly outweighs any latency benefit.
   const rpcClient = hc<AppType>(process.env.SELF_RPC_HOST ?? "", {
     headers: {
       "Content-Type": "application/json",
-      // have to pass a bearer token here, because the server is calling itself
-      // thus far, no framework seems to get around this either?
-      // an isomorphic loader is a possibility of course but
-      // the simplicity of a single workload feels better for now.
       Authorization: `Bearer ${c.cookies?.get("user_id")}`,
     },
   });
 
-  // load state modules that define a load method and inject them into
-  // the router
+  // load state modules which define a load method
   const data = await loadState(c);
   const context = { ...data, rpc: rpcClient };
   const router = createRouter(context);
@@ -37,19 +29,25 @@ export async function render(c: ServiceContext) {
   router.update({ history: memoryHistory });
   await router.load();
 
-  // just return the index with a 404 header
-  if (router.hasNotFoundMatch()) {
-    return c.html(indexContents, 404);
-  }
+  // grab the index html
+  const indexFilePath =
+    process.env["NODE_ENV"] === "production"
+      ? "build/index.html"
+      : "./index.dev.html";
+  const indexContents = await readFile(indexFilePath, "utf-8");
 
   const dehydratedSSRContent = ReactDOMServer.renderToString(
     <StartServer router={router} />
   );
 
+  // inject the app into the root for hydration on client
   const html = indexContents.replace(
     "<!--ssr-injection-->",
     dehydratedSSRContent
   );
 
-  return c.html(html);
+  // someday, it could be nice to handle additional error states here,
+  // at least returning 500 and logging for o11y if if a loader throws an error.
+  const status = router.hasNotFoundMatch() ? 404 : 200;
+  return c.html(html, status);
 }
