@@ -14,7 +14,7 @@ jobs:
       - name: "Bun test"
         run: |
           bun install
-          tsr generate
+          bunx tsr generate
           bun test
 
   docker:
