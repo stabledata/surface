@@ -14,9 +14,11 @@ jobs:
       - name: "Bun test"
         run: |
           bun install
+          tsr generate
           bun test
 
   docker:
+    needs: test
     name: "Docker Build & Publish to AR"
     runs-on: ubuntu-latest
     steps:

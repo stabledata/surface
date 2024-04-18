@@ -21,7 +21,8 @@ export const handleGetMembers = async (
     return c.text("Unauthorized", 401);
   }
   c.logger?.log("member service: Getting team members...");
-  await new Promise((r) => setTimeout(r, 1_000));
+  // testing this method as an example now, so don't delay too much
+  await new Promise((r) => setTimeout(r, 200));
   c.logger?.log("member service: Returning team members");
   return c.json({ members: fakeMembers });
 };

@@ -24,7 +24,7 @@ describe("members service tests", () => {
     expect(body).toInclude("Alice");
   });
 
-  it.skip("returns members from api", async () => {
+  it("returns members from api", async () => {
     // the mock service method delays for a second for UI, skipping this.
     const response = await app({
       // logger: mockLogger,
