@@ -53,9 +53,9 @@ function Docs() {
         with <pre className="inline-block">/api</pre>, unless of course you want
         to. If Hono matches a route, say to <pre className="inline">/auth</pre>{" "}
         it will handle it on the server. If it doesn't match, it will delegate
-        to the client router. The client router is Tanstack's relatively new but
-        very full featured and production ready router, the example here uses a
-        new but familiar{" "}
+        to the "view" router. That router is Tanstack's relatively new but full
+        featured and production ready router. This example uses a new but
+        familiar{" "}
         <a href="https://tanstack.com/router/v1/docs/framework/react/guide/file-based-routing">
           file system based pattern.
         </a>
@@ -76,21 +76,19 @@ function Docs() {
       <h4 className="mt-5 text-md font-semibold">Isomorphism</h4>
       <div className="my-5 text-sm leading-6">
         Because we can inject context into our loaders from the server, it's
-        super tempting to make this code isomorphic. In a fortunate turn of
-        events, our renderer service in production didn't like this idea at all
-        and SSR stopped working. This meant our code <i>needed</i> to be same on
-        both the client and server, and Tanstack along with ReactDom SSR keeps
-        the{" "}
+        very tempting to make this code isomorphic and get magical. Rather
+        fortuitously, a router update broke our magic in production. So, we
+        pulled back and ensured the loader code is the same on both the client
+        and server. This keeps the{" "}
         <a href="https://github.com/stabledata/surface/blob/main/services/renderer.service.tsx#L11">
           renderer service
         </a>{" "}
-        relatively simple.
+        simple.
         <br />
         <br />
-        That said, it would be nice to have some kind of independent server
-        binding method that would allow us to return different status codes or
-        even redirect at the server level, but this is a discussion for another
-        day.
+        That said, it would be nice to have a loader server hook method binding
+        that could allow us to return different status codes or even redirect at
+        the server, but this is a discussion for another day.
       </div>
 
       <h4 className="mt-5 text-md font-semibold">App State and SSR</h4>

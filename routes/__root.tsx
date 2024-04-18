@@ -9,19 +9,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   notFoundComponent: () => <>Root Not Found</>,
   errorComponent: () => <>Root Error</>,
   loader: ({ context }) => {
-    // usually, "hydration" through the router suffices for SPA type
-    // needs (reducing server round trips for auth, user data, etc.
+    // usually, "hydration" through the router using state modules
+    // suffices for SPA type needs (reducing server round trips for
+    // auth, user data, etc.)
 
-    // but sometimes you may _need_ to render markup on the server for
-    // SEO. For that, we pass this context through to a provider so
-    // that hooks which need to pick it up can do so.
+    // but... sometimes you may _need_ to render markup on the server
+    // for SEO. For that, we pass this context through to a provider so
+    // hooks can get that sweet SEO markup on the server
 
-    // BIG CAVEAT: the provider will ONLY hold state on first request.
-    // one valid approach would be to load your global state here, but we are
-    // doing this via the surface.router and state.registry
-
-    // generally speaking - TS router loaders should be considered
-    // "client side only"
+    // Note however, the loaderData will ONLY hold this state on the
+    // first request. when you navigate on the client, loaderData is
+    // empty. surface solves for this state modules and the router.
     return context;
   },
 });

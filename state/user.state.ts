@@ -18,11 +18,11 @@ export const useUserStore = create<UserStore>()(
 );
 
 // register state module
-// - Don't forget to add key: MyStateType to RouterContext
-// maybe someday we can make this more magical but the
-// challenge is mostly that it needs to work server and the client
+// IMPORTANT! don't forget to add key: MyStateType to RouterContext
+// ... until we can figure out a way to do this dynamically.
 registerStateLoader(
-  // key must be added in the RouterContext
+  // key must be added in the RouterContext,
+  // so at least you'll be warned here if forget.
   "user",
   {
     // "load" returns the state to be sent though the server

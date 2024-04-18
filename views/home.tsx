@@ -5,7 +5,13 @@ function App() {
   return (
     <div className="flex flex-col gap-5 justify-center items-center max-w-md m-auto mt-10">
       <div className="flex gap-5 items-center">
-        <img src="/assets/surface.svg" className="w-20" alt="Surface logo" />
+        <img
+          src="/assets/surface.svg"
+          width={80}
+          height={80}
+          className="w-20"
+          alt="Surface logo"
+        />
       </div>
 
       <h1 className="text-4xl">Surface</h1>

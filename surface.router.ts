@@ -3,13 +3,11 @@ import {
   createRouter as tanStackCreateRouter,
 } from "@tanstack/react-router";
 import { routeTree } from "./.routes.tree";
-import { ServiceContext } from "./surface.app.ctx";
 import { User } from "./services/auth.service";
 import { inflateState } from "./state/registry";
 import { rpcClient } from "./surface.client";
 
 export type RouterContext = {
-  serviceContext?: ServiceContext;
   user?: User;
   rpc?: typeof rpcClient;
 };
@@ -20,15 +18,11 @@ declare module "@tanstack/react-router" {
   }
 }
 
-export function createRouter(
-  injections?: RouterContext,
-  serviceContext?: ServiceContext
-): AnyRouter {
+export function createRouter(injections?: RouterContext): AnyRouter {
   const router = tanStackCreateRouter({
     routeTree,
     context: {
       ...injections,
-      serviceContext,
     },
     dehydrate: (): RouterContext => {
       // async state need to be dehydrated from method above
