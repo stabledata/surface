@@ -3,7 +3,7 @@ import {
   ErrorComponentProps,
   Link,
 } from "@tanstack/react-router";
-import { User } from "../services/auth.service";
+import { User } from "../../services/auth.service";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/members/$id")({

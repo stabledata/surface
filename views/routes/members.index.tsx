@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Users } from "lucide-react";
-import { User } from "../services/auth.service";
-import { useLoginRedirect } from "../views/hooks/use-login-redirect";
+import { User } from "../../services/auth.service";
+import { useLoginRedirect } from "../hooks/use-login-redirect";
 
 export const Route = createFileRoute("/members/")({
   component: Members,

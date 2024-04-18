@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useUser } from "../views/hooks/use-user";
+import { useUser } from "../hooks/use-user";
 import React from "react";
 
 export const Route = createFileRoute("/login")({

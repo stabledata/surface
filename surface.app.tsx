@@ -18,10 +18,11 @@ dotenv.config();
 export const jwt = { decode, sign, verify };
 
 export type Dependencies = {
+  // utils
   logger: typeof logger;
   cookies?: ReturnType<typeof cookies>;
   jwt: typeof jwt;
-  // service injections
+  // services injections
   memberServiceClient: typeof memberServiceClient;
 };
 

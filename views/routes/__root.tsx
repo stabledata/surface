@@ -1,8 +1,8 @@
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { DehydrateRouter } from "@tanstack/react-router-server/client";
-import type { RouterContext } from "../surface.router";
-import { Header } from "../views/header";
-import { RootSSRLoaderContextProvider } from "../views/providers/ssr-loader-context-provider";
+import type { RouterContext } from "../../surface.router";
+import { Header } from "../header";
+import { RootSSRLoaderContextProvider } from "../providers/ssr-loader-context-provider";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
