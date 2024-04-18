@@ -8,6 +8,7 @@ import { ping } from "./services/ping.service";
 import { render } from "./services/renderer.service";
 import { authHandler, logoutHandler } from "./services/auth.service";
 import { members } from "./services/members.service";
+import { memberServiceClient } from "./services/members.service";
 
 import { makeInjectableContext } from "./surface.app.ctx";
 
@@ -20,11 +21,14 @@ export type Dependencies = {
   logger: typeof logger;
   cookies?: ReturnType<typeof cookies>;
   jwt: typeof jwt;
+  // service injections
+  memberServiceClient: typeof memberServiceClient;
 };
 
 export const container: Dependencies = {
   logger,
   jwt,
+  memberServiceClient,
 };
 
 export const app = (injections: Partial<Dependencies> = {}) => {

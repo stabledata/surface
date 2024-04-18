@@ -14,17 +14,30 @@ const fakeMembers: User[] = [
   },
 ];
 
+// we can pretend this our our client which we want in our gateway API contexts.
+export const memberServiceClient = {
+  getMembers: async (): Promise<User[]> => {
+    // testing this method as an example now, so don't delay too much
+    await new Promise((r) => setTimeout(r, 200));
+    return fakeMembers;
+  },
+  getMember: async (id: string) => {
+    await new Promise((r) => setTimeout(r, 1_000));
+    const member = fakeMembers.find((m) => m.id === id);
+    return member;
+  },
+};
+
+// these are the "API" handlers, which are part of surface.
 export const handleGetMembers = async (
   c: ServiceContext
 ): Promise<Response> => {
   if (!(await hasSession(c))) {
     return c.text("Unauthorized", 401);
   }
-  c.logger?.log("member service: Getting team members...");
-  // testing this method as an example now, so don't delay too much
-  await new Promise((r) => setTimeout(r, 200));
-  c.logger?.log("member service: Returning team members");
-  return c.json({ members: fakeMembers });
+  const members = await memberServiceClient.getMembers();
+  c.logger?.log("member service: Getting team members");
+  return c.json({ members }, 200);
 };
 
 export const handleGetMember = async (c: ServiceContext): Promise<Response> => {
@@ -33,8 +46,7 @@ export const handleGetMember = async (c: ServiceContext): Promise<Response> => {
   }
   const id = c.req.param("id");
   c.logger?.log(`member service: Getting member with id: ${id}`);
-  await new Promise((r) => setTimeout(r, 1_000));
-  const member = fakeMembers.find((m) => m.id === id);
+  const member = await memberServiceClient.getMember(id);
   if (!member) {
     return c.notFound();
   }

@@ -9,8 +9,5 @@ COPY . /app
 RUN bun install
 RUN bun run build
 
-FROM base as dev
-CMD ["bun", "run", "dev"]
 
-FROM base as prod
 CMD ["bun", "surface.server.bun.ts"]
