@@ -5,6 +5,17 @@ on:
       - main
 
 jobs:
+  test:
+    name: "Test"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - name: "Bun test"
+        run: |
+          bun install
+          bun test
+
   docker:
     name: "Docker Build & Publish to AR"
     runs-on: ubuntu-latest
