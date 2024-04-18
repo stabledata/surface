@@ -64,19 +64,28 @@ function Docs() {
       <h4 className="mt-5 text-md font-semibold">Loaders</h4>
       <div className="my-5 text-sm leading-6">
         The loader paradigm follows the render as you fetch pattern. Newer
-        frameworks like Remix, Astro, Modern and more have elected to pursue
-        this way, for good reason. Loaders in our case are{" "}
+        frameworks like Remix, Astro, Modern and more have elected to move this
+        way for good reason. Loaders in our case are{" "}
         <a href="https://tanstack.com/router/v1/docs/framework/react/guide/data-loading">
           provided by Tanstack Router
         </a>{" "}
-        and are run on the server during an initial request the client after
-        subsequent route navigation. <br />
+        and are run on the server during an initial request, or the client
+        during subsequent route navigation.
+      </div>
+
+      <h4 className="mt-5 text-md font-semibold">Isomorphism</h4>
+      <div className="my-5 text-sm leading-6">
+        Because we can inject context into our loaders from the server, it's
+        super tempting to make this code isomorphic. In a fortunate turn of
+        events, our renderer service in production didn't like this idea at all
+        and SSR stopped working. This meant our code <i>needed</i> to be same on
+        both the client and server, and Tanstack with ReactDom SSR let's that
+        happen.
         <br />
-        If we chose to, we could inject the server context into our router
-        context, and run loaders in a forked manner, calling services directly
-        on the service and using RPC on the client. Ultimately the decision to
-        keep this simple as possible made sense and we treat loaders as a single
-        code path that works on both.
+        <br />
+        It would be nice to have some kind of independent server binding method
+        that would allow us to return different status codes or even redirect at
+        the server level, but this is a discussion for another day.
       </div>
 
       <h4 className="mt-5 text-md font-semibold">Application State and SSR</h4>
