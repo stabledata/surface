@@ -8,6 +8,8 @@ jobs:
   test:
     name: "Test"
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: "test.fake.secret"
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
