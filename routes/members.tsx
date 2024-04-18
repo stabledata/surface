@@ -3,14 +3,6 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 export const Route = createFileRoute("/members")({
   errorComponent: () => <>Error</>,
   notFoundComponent: () => <>Not Found</>,
-  beforeLoad: async ({ context }) => {
-    if (context.serviceContext && !context.user) {
-      context.serviceContext.logger.log(
-        "Unauthorized access to members, returning 401"
-      );
-      context.serviceContext.status(401);
-    }
-  },
   component: MembersLayout,
 });
 

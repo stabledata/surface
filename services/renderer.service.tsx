@@ -10,7 +10,6 @@ import { createRouter } from "../surface.router";
 
 export async function render(c: ServiceContext) {
   // get index.html
-  console.log("damn", process.env.NODE_ENV);
   const isProd = process.env["NODE_ENV"] === "production";
   const index = isProd ? "build/index.html" : "./index.dev.html";
   const indexContents = await readFile(index, "utf-8");
@@ -32,10 +31,10 @@ export async function render(c: ServiceContext) {
   // load state modules that define a load method and inject them into
   // the router
   const data = await loadState(c);
-  const context = { ...data, rpc: rpcClient, serviceContext: c };
+  const context = { ...data, rpc: rpcClient };
   const router = createRouter(context);
   const memoryHistory = createMemoryHistory({ initialEntries: [c.req.path] });
-  router.update({ history: memoryHistory, context });
+  router.update({ history: memoryHistory });
   await router.load();
 
   // just return the index with a 404 header
@@ -51,7 +50,6 @@ export async function render(c: ServiceContext) {
     "<!--ssr-injection-->",
     dehydratedSSRContent
   );
-  console.log("ABSOLUTELY BRUTAL WHEN THINGS JUST DONT WORK.", html);
 
   return c.html(html);
 }
