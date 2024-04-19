@@ -26,7 +26,7 @@ jobs:
     name: "Docker Build & Publish to AR"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: google-github-actions/setup-gcloud@v2
       - uses: google-github-actions/auth@v2
         with:
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: google-github-actions/setup-gcloud@v2
       - uses: google-github-actions/auth@v2
         with:
