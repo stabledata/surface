@@ -15,7 +15,7 @@ jobs:
       - uses: oven-sh/setup-bun@v1
       - name: "Bun test"
         run: |
-          echo "FOO=bar" > .env
+          echo "SELF_RPC_HOST=http://localhost:4000/" > .env
           bun install
           bunx tsr generate
           docker compose up test -d
