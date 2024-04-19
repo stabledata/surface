@@ -29,11 +29,12 @@ export async function authHandler(c: ServiceContext): Promise<Response> {
     iat: now,
     exp: now + 60 * 60 * 24,
   };
-  // FIXME: throw if there is no secret
+
+  // this will throw if JWT_SECRET is empty
   const token = await c.jwt.sign(payload, process.env.JWT_SECRET ?? "");
   c.cookies?.set("session", token, { path: "/", httpOnly: true });
 
-  // redirect to existing location (if passed)
+  // redirect to location (if passed)
   const redirectTo = c.req.query("return") ?? "/";
   return c.redirect(redirectTo);
 }
@@ -47,6 +48,7 @@ export async function getUser(c: ServiceContext): Promise<User | undefined> {
 export const hasSession = async (c: ServiceContext): Promise<boolean> => {
   // we can simply check for cookie presence client side
   // but for service calls we need to check the jwt as Bearer token
+  // plenty more to do here obviously but a good starting point for "real" auth.
   const authHeader = c.req.header("Authorization") ?? "";
   const userId = c.cookies?.get("user_id") || authHeader > "Bearer ";
   const hasUserId = userId !== undefined && userId > "";

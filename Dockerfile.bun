@@ -9,5 +9,4 @@ COPY . /app
 RUN bun install
 RUN bun run build
 
-
 CMD ["bun", "surface.server.bun.ts"]

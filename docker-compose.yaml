@@ -25,8 +25,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.bun
-      target: dev
+
     environment:
+      - NODE_ENV=production
       - DEBUG=surface:*
       - JWT_SECRET=foo.bar.baz
       - SELF_RPC_HOST=http://test:4000

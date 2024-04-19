@@ -17,6 +17,7 @@ jobs:
         run: |
           bun install
           bunx tsr generate
+          docker compose up -d test
           bun test
 
   docker:
