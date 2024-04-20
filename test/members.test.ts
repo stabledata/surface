@@ -32,10 +32,9 @@ describe("members service tests", () => {
     expect(body.members.length).toBeGreaterThan(0);
   });
 
-  // these are the types of tests we _want_ to run
-  // ... but more setup is needed for fake auth etc.
-  // alas, we cannot do this yet... maybe in the future.
-  // we can still test api endpoints and markup though
+  // NOTE: For end to end HTML assertions SSR tests,
+  // you have to have run
+  // "docker compose test up"
   it("renders members in HTML", async () => {
     const response = await app({
       logger: mockLogger,
@@ -45,5 +44,21 @@ describe("members service tests", () => {
     const body = await response.text();
     expect(body).toInclude("Bob");
     expect(body).toInclude("Alice");
+  });
+
+  it("renders members in HTML", async () => {
+    const sadMembersService = {
+      getMembers: mock(() => {
+        throw new Error("sad");
+      }),
+    } as unknown as typeof memberServiceClient;
+
+    const response = await app({
+      logger: mockLogger,
+      cookies: mockCookies,
+      memberServiceClient: sadMembersService,
+    }).request("/members");
+    const body = await response.text();
+    expect(body).toInclude("Error");
   });
 });

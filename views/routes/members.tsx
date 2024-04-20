@@ -1,7 +1,11 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/members")({
-  errorComponent: () => <>Error</>,
+  errorComponent: () => (
+    <div className="p-10 m-auto max-w-sm text-center">
+      Error! We are working on it. Please try again later.
+    </div>
+  ),
   notFoundComponent: () => <>Not Found</>,
   component: MembersLayout,
 });
