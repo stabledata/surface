@@ -47,10 +47,6 @@ describe("members service tests", () => {
         mockRpcClient as unknown as ServiceContext["rpcClientMock"],
     }).request("/members");
     const body = await response.text();
-    // what we want to assert...
-    // expect(body).toInclude("Charlie");
-
-    // what we can assert (baked test service in docker)
     expect(body).toInclude("Charlie");
   });
 
