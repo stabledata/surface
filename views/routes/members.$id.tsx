@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { User } from "../../services/auth.service";
 import { ArrowLeft } from "lucide-react";
+import { useLoginRedirect } from "../hooks/use-login-redirect";
 
 export const Route = createFileRoute("/members/$id")({
   loader: async ({ context, params }): Promise<User | undefined> => {
@@ -27,6 +28,9 @@ export function PostErrorComponent({ error }: ErrorComponentProps) {
 }
 
 function PostComponent() {
+  // if you want to avoid rendering things server side,
+  // set a value and return null if it's undefined
+  useLoginRedirect();
   const member = Route.useLoaderData();
 
   return (
