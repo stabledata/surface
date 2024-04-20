@@ -13,6 +13,7 @@ import { memberServiceClient } from "./services/members.service";
 import { makeInjectableContext } from "./surface.app.ctx";
 
 import dotenv from "dotenv";
+import { hc } from "hono/client";
 dotenv.config();
 
 export const jwt = { decode, sign, verify };
@@ -22,6 +23,10 @@ export type Dependencies = {
   logger: typeof logger;
   cookies?: ReturnType<typeof cookies>;
   jwt: typeof jwt;
+
+  // specifically for testing, allows overwriting the rpc client
+  rpcClientMock?: typeof hc;
+
   // services injections
   memberServiceClient: typeof memberServiceClient;
 };

@@ -33,7 +33,7 @@ export const makeInjectableContext = (
         ...ctx,
         // FIXME: not perfect, cookies seem to complain more than others.
         // rather not do TS acrobatics, but it gets us to where we want to be
-        ...{ cookies: cookies(ctx as unknown as ServiceContext) },
+        cookies: cookies(ctx as unknown as ServiceContext),
         ...dependencies,
       });
     };

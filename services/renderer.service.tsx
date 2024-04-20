@@ -10,10 +10,10 @@ import { createRouter } from "../surface.router";
 
 export async function render(c: ServiceContext) {
   // the server needs its own instance of rpc client because it's
-  // calling itself over HTTP. this also means it needs to pass
+  // calling itself over the network. this also means it needs to pass
   // credentials because there is no cookie in that request.
   // an isomorphic loader concept could avoid this, but the added
-  // complexity vastly outweighs any latency benefit.
+  // complexity vastly outweighs any latency benefit (for now).
   const rpcClient = hc<AppType>(process.env.SELF_RPC_HOST ?? "", {
     headers: {
       "Content-Type": "application/json",
@@ -23,7 +23,11 @@ export async function render(c: ServiceContext) {
 
   // load state modules which define a load method
   const data = await loadState(c);
-  const context = { ...data, rpc: rpcClient };
+  const context = {
+    ...data,
+    // note for SSR testing, we allow injection of a mock client.
+    rpc: (c.rpcClientMock as unknown as typeof rpcClient) ?? rpcClient,
+  };
   const router = createRouter(context);
   const memoryHistory = createMemoryHistory({ initialEntries: [c.req.path] });
   router.update({ history: memoryHistory });
