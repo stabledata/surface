@@ -17,7 +17,7 @@ describe("members service tests", () => {
 
   const mockMembersClient = {
     getMembers: mock(() => {
-      return { members: [{ name: "Alice" }, { name: "Bob" }] };
+      return [{ name: "Alice" }, { name: "Bob" }];
     }),
   } as unknown as typeof memberServiceClient;
 

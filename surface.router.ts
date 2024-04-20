@@ -32,10 +32,6 @@ export function createRouter(injections?: RouterContext): AnyRouter {
       };
     },
     hydrate: (context) => {
-      console.log("hydrate", context);
-      // context.serviceContext?.logger.log(
-      //   `hydrate context: ${JSON.stringify(context)}`
-      // );
       // inflate state from the state.registry.
       // note that loaders and beforeLoaders also receive context,
       // but you'll have to add it to context/state manually or else
