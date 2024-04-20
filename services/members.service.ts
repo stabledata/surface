@@ -15,6 +15,7 @@ const fakeMembers: User[] = [
 ];
 
 // we can pretend this our our client which we want in our gateway API contexts.
+// ideally, it's generated from some other kid of upstream service.
 export const memberServiceClient = {
   getMembers: async (): Promise<User[]> => {
     // testing this method as an example now, so don't delay too much
@@ -35,7 +36,7 @@ export const handleGetMembers = async (
   if (!(await hasSession(c))) {
     return c.text("Unauthorized", 401);
   }
-  const members = await memberServiceClient.getMembers();
+  const members = await c.memberServiceClient.getMembers();
   c.logger?.log("member service: Getting team members");
   return c.json({ members }, 200);
 };
@@ -46,7 +47,7 @@ export const handleGetMember = async (c: ServiceContext): Promise<Response> => {
   }
   const id = c.req.param("id");
   c.logger?.log(`member service: Getting member with id: ${id}`);
-  const member = await memberServiceClient.getMember(id);
+  const member = await c.memberServiceClient.getMember(id);
   if (!member) {
     return c.notFound();
   }
