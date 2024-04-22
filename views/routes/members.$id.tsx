@@ -35,11 +35,11 @@ function PostComponent() {
 
   return (
     <div className="space-y-2">
+      <h4 className="text-xl font-bold underline">{member?.name}</h4>
+      <div className="text-sm">{member?.email}</div>
       <Link to="/members" className="flex items-start gap-3 font-light">
         <ArrowLeft /> Back to members page
       </Link>
-      <h4 className="text-xl font-bold underline">{member?.name}</h4>
-      <div className="text-sm">{member?.email}</div>
     </div>
   );
 }

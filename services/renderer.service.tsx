@@ -51,7 +51,7 @@ export async function render(c: ServiceContext) {
   );
 
   // someday, it could be nice to handle additional error states here,
-  // at least returning 500 and logging for o11y if if a loader throws an error.
+  // at least returning 500 and logging for o11y if a loader throws an error.
   const status = router.hasNotFoundMatch() ? 404 : 200;
   return c.html(html, status);
 }

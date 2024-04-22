@@ -7,7 +7,7 @@ export const Route = createFileRoute("/docs")({
 
 function Docs() {
   return (
-    <div className="max-w-md m-auto pt-5">
+    <div className="flex flex-col items-start pt-8 text-left max-w-md m-auto">
       <h2 className="text-2xl flex items-center gap-4">
         <NotebookPen size={22} />
         Field Notes
