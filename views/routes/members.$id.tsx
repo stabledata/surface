@@ -3,7 +3,7 @@ import {
   ErrorComponentProps,
   Link,
 } from "@tanstack/react-router";
-import { User } from "../../services/auth.service";
+import { User } from "../../handlers/auth.handlers";
 import { ArrowLeft } from "lucide-react";
 import { useLoginRedirect } from "../hooks/use-login-redirect";
 

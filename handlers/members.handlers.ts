@@ -1,7 +1,20 @@
 import { Hono } from "hono";
-import { Dependencies } from "../surface.app";
-import { makeInjectableContext, ServiceContext } from "../surface.app.ctx";
-import { fakeUser, hasSession, User } from "./auth.service";
+import {
+  SurfaceContext,
+  Dependencies,
+  createHandlers,
+  applyContext,
+} from "../surface.app.ctx";
+import { hasSession, User } from "./auth.handlers";
+
+const fakeUser = {
+  id: "123",
+  name: "Alice",
+  email: "alice@domain.com",
+  roles: ["admin"],
+  profilePicture:
+    "https://lh3.googleusercontent.com/a/ACg8ocIBaI40KOmbbQOPIE2tzc0KDHbxc41ZrqLg6dCuQ2SUGMi0jQ5w=s576-c-no",
+};
 
 const fakeMembers: User[] = [
   fakeUser,
@@ -31,35 +44,33 @@ export const memberServiceClient = {
 
 // these are the "API" handlers, which are part of surface.
 export const handleGetMembers = async (
-  c: ServiceContext
+  c: SurfaceContext
 ): Promise<Response> => {
   if (!(await hasSession(c))) {
     return c.text("Unauthorized", 401);
   }
-  const members = await c.memberServiceClient.getMembers();
-  c.logger?.log("member service: Getting team members");
+  const members = await c.var.memberServiceClient.getMembers();
+  c.var.logger?.log("member service: Getting team members");
   return c.json({ members }, 200);
 };
 
-export const handleGetMember = async (c: ServiceContext): Promise<Response> => {
+export const handleGetMember = async (c: SurfaceContext): Promise<Response> => {
   if (!(await hasSession(c))) {
     return c.text("Unauthorized", 401);
   }
   const id = c.req.param("id");
-  c.logger?.log(`member service: Getting member with id: ${id}`);
-  const member = await c.memberServiceClient.getMember(id);
+  c.var.logger?.log(`member service: Getting member with id: ${id}`);
+  const member = await c.var.memberServiceClient.getMember(id);
   if (!member) {
     return c.notFound();
   }
   return c.json(member);
 };
 
-export const members = (
-  container: Dependencies,
+export const membersRouteHandlers = (
   injections: Partial<Dependencies> = {}
 ) => {
-  const { inject } = makeInjectableContext(container, injections);
   return new Hono()
-    .get("/", inject(handleGetMembers))
-    .get("/:id", inject(handleGetMember));
+    .get("/", ...createHandlers(applyContext(injections), handleGetMembers))
+    .get("/:id", ...createHandlers(applyContext(injections), handleGetMember));
 };

@@ -2,13 +2,19 @@ import { readFile } from "node:fs/promises";
 import ReactDOMServer from "react-dom/server";
 import { createMemoryHistory } from "@tanstack/react-router";
 import { StartServer } from "@tanstack/react-router-server/server";
-import { ServiceContext } from "../surface.app.ctx";
+import {
+  applyContext,
+  createHandlers,
+  Dependencies,
+  SurfaceContext,
+} from "../surface.app.ctx";
 import { loadState } from "../state/registry";
 import { hc } from "hono/client";
 import { AppType } from "../surface.app";
 import { createRouter } from "../surface.router";
+import { Hono } from "hono";
 
-export async function render(c: ServiceContext) {
+async function render(c: SurfaceContext) {
   // the server needs its own instance of rpc client because it's
   // calling itself over the network. this also means it needs to pass
   // credentials because there is no cookie in that request.
@@ -17,7 +23,7 @@ export async function render(c: ServiceContext) {
   const rpcClient = hc<AppType>(process.env.SELF_RPC_HOST ?? "", {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${c.cookies?.get("user_id")}`,
+      Authorization: `Bearer ${c.var.cookies?.get("user_id")}`,
     },
   });
 
@@ -26,7 +32,7 @@ export async function render(c: ServiceContext) {
   const context = {
     ...data,
     // note for SSR testing, we allow injection of a mock client.
-    rpc: (c.rpcClientMock as unknown as typeof rpcClient) ?? rpcClient,
+    rpc: (c.var.rpcClientMock as unknown as typeof rpcClient) ?? rpcClient,
   };
   const router = createRouter(context);
   const memoryHistory = createMemoryHistory({ initialEntries: [c.req.path] });
@@ -55,3 +61,10 @@ export async function render(c: ServiceContext) {
   const status = router.hasNotFoundMatch() ? 404 : 200;
   return c.html(html, status);
 }
+
+export const viewRouteHandler = (injections: Partial<Dependencies> = {}) => {
+  return new Hono().get(
+    "",
+    ...createHandlers(applyContext(injections), render)
+  );
+};

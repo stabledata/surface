@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { getUser, User } from "../services/auth.service";
-import { ServiceContext } from "../surface.app.ctx";
+import { getUser, User } from "../handlers/auth.handlers";
+import { SurfaceContext } from "../surface.app.ctx";
 import { RouterContext } from "../surface.router";
 import { registerStateLoader } from "./registry";
 
@@ -26,7 +26,7 @@ registerStateLoader(
   "user",
   {
     // "load" returns the state to be sent though the server
-    load: async (c: ServiceContext) => {
+    load: async (c: SurfaceContext) => {
       const user = await getUser(c);
       // TODO: look into why this doesn't work
       // this unfortunately has no affect on server rendering

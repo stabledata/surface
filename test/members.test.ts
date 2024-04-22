@@ -2,7 +2,7 @@ import { expect, describe, mock, it } from "bun:test";
 import { app } from "../surface.app";
 import { logger } from "../logger/logger";
 import { cookies } from "../cookies/cookies";
-import { ServiceContext } from "../surface.app.ctx";
+import { Dependencies } from "../surface.app.ctx";
 
 describe("members service tests", () => {
   const mockLogger = {
@@ -43,8 +43,7 @@ describe("members service tests", () => {
     const response = await app({
       logger: mockLogger,
       cookies: mockCookies,
-      rpcClientMock:
-        mockRpcClient as unknown as ServiceContext["rpcClientMock"],
+      rpcClientMock: mockRpcClient as unknown as Dependencies["rpcClientMock"],
     }).request("/members");
     const body = await response.text();
     expect(body).toInclude("Charlie");
@@ -56,8 +55,7 @@ describe("members service tests", () => {
     const response = await app({
       logger: mockLogger,
       cookies: mockCookies,
-      rpcClientMock:
-        mockRpcClient as unknown as ServiceContext["rpcClientMock"],
+      rpcClientMock: mockRpcClient as unknown as Dependencies["rpcClientMock"],
     }).request("/members");
     const body = await response.text();
     expect(body).toInclude("Error");

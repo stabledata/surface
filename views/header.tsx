@@ -27,7 +27,7 @@ export function Header() {
         Members
       </Link>
       {!user ? (
-        <a href={`/auth?return=${location.pathname}`}>Login</a>
+        <a href={`/auth/login?return=${location.pathname}`}>Login</a>
       ) : (
         <div className="flex items-center gap-5">
           Hi {user.name}!{" "}

@@ -41,7 +41,7 @@ describe("surface app tests", () => {
   });
 
   test("redirects and sets cookie in auth", async () => {
-    const response = await app({ logger: mockLogger }).request("/auth");
+    const response = await app({ logger: mockLogger }).request("/auth/login");
     expect(response.headers.getSetCookie()[0]).toBeDefined();
     expect(response.status).toEqual(302);
   });

@@ -1,46 +1,46 @@
-import type hono from "hono";
-import { Dependencies } from "./surface.app";
+import { hc } from "hono/client";
+import { createFactory } from "hono/factory";
+import { decode, sign, verify } from "hono/jwt";
 import { cookies } from "./cookies/cookies";
+import { logger } from "./logger/logger";
+import { memberServiceClient } from "./handlers/members.handlers";
+import { Context } from "hono";
 
-type PartialHonoContext = Omit<
-  hono.Context,
-  | "#private"
-  | "_var"
-  | "layout"
-  | "renderer"
-  | "notFoundHandler"
-  | "event"
-  | "executionCtx"
-  | "res"
-  | "var"
->;
+const jwt = { decode, sign, verify };
 
-export type ServiceContext = PartialHonoContext & Dependencies;
+export type Dependencies = {
+  // utils
+  logger: typeof logger;
+  cookies: ReturnType<typeof cookies>;
+  jwt: typeof jwt;
 
-export const makeInjectableContext = (
-  container: Dependencies,
-  injections: Partial<Dependencies>
-) => {
-  const dependencies = { ...container, ...injections };
-  const inject = (
-    handler: (ctx: ServiceContext) => Promise<Response> | Response
-  ) => {
-    return async (ctx: hono.Context) => {
-      dependencies.logger.log(
-        `surface app request: ${ctx.req.method} ${ctx.req.url}`
-      );
-      return await handler({
-        ...ctx,
-        // FIXME: not perfect, cookies seem to complain more than others.
-        // rather not do TS acrobatics, but it gets us to where we want to be
-        cookies: cookies(ctx as unknown as ServiceContext),
-        ...dependencies,
-      });
-    };
-  };
+  // specifically for testing, allows overwriting the rpc client
+  rpcClientMock?: typeof hc;
 
-  return {
-    dependencies,
-    inject,
-  };
+  // "services" injection
+  memberServiceClient: typeof memberServiceClient;
 };
+
+type Env = {
+  Variables: Dependencies;
+};
+
+export type SurfaceContext = Context<Env>;
+
+export const { createMiddleware, createHandlers } = createFactory<Env>();
+
+// type safe dependency injection via middleware.
+// more verbose than the previous pattern but no type acrobatics!
+// handlers docs here: https://hono.dev/guides/best-practices#factory-createhandlers-in-hono-factory
+export const applyContext = (injections: Partial<Dependencies>) =>
+  createMiddleware(async (c, next) => {
+    c.set("logger", injections.logger ?? logger);
+    c.set("cookies", injections.cookies ?? cookies(c));
+    c.set("jwt", jwt);
+    c.set(
+      "memberServiceClient",
+      injections.memberServiceClient ?? memberServiceClient
+    );
+    c.set("rpcClientMock", injections.rpcClientMock);
+    await next();
+  });

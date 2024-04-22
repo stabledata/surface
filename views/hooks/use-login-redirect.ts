@@ -1,7 +1,7 @@
 import React from "react";
 import { useUser } from "./use-user";
 import { useNavigate } from "@tanstack/react-router";
-import { User } from "../../services/auth.service";
+import { User } from "../../handlers/auth.handlers";
 
 export function useLoginRedirect(): User | undefined {
   const nav = useNavigate();

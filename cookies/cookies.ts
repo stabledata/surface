@@ -1,15 +1,16 @@
-import hono from "hono";
+import { Context } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
-import { ServiceContext } from "../surface.app.ctx";
 import { CookieOptions } from "hono/utils/cookie";
+import { Dependencies } from "../surface.app.ctx";
 
-export function cookies(c: ServiceContext) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function cookies(c: Context<{ Variables: Dependencies }, any, object>) {
   const get = (name: string) => {
-    return getCookie(c as unknown as hono.Context, name);
+    return getCookie(c, name);
   };
 
   const set = (name: string, value: string, opt?: CookieOptions) => {
-    return setCookie(c as unknown as hono.Context, name, value, opt);
+    return setCookie(c, name, value, opt);
   };
 
   return { get, set };

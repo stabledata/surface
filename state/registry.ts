@@ -1,10 +1,10 @@
-import { ServiceContext } from "../surface.app.ctx";
+import { SurfaceContext } from "../surface.app.ctx";
 import { RouterContext } from "../surface.router";
 
 type PropertyOfContext = RouterContext[keyof RouterContext];
 
 type StateModule = {
-  load: (context: ServiceContext) => Promise<PropertyOfContext | undefined>;
+  load: (context: SurfaceContext) => Promise<PropertyOfContext | undefined>;
   inflate: (context: RouterContext) => void;
 };
 
@@ -28,7 +28,7 @@ export const registerStateLoader = (
   registeredStateModules.inflators[key] = module.inflate;
 };
 
-export const loadState = async (c: ServiceContext) => {
+export const loadState = async (c: SurfaceContext) => {
   const loadedStateData: Record<string, PropertyOfContext> = {};
   for (const key in registeredStateModules.loaders) {
     const loader = registeredStateModules.loaders[key];

@@ -1,60 +1,32 @@
 import { Hono } from "hono";
-import { decode, sign, verify } from "hono/jwt";
-import { cookies } from "./cookies/cookies";
-import { logger } from "./logger/logger";
+import type { Dependencies } from "./surface.app.ctx";
 
-import { handleStaticAssets } from "./services/assets.service";
-import { ping } from "./services/ping.service";
-import { render } from "./services/renderer.service";
-import { authHandler, logoutHandler } from "./services/auth.service";
-import { members } from "./services/members.service";
-import { memberServiceClient } from "./services/members.service";
-
-import { makeInjectableContext } from "./surface.app.ctx";
+import { handleStaticAssets } from "./handlers/assets.service";
+import { pingRouteHandler } from "./handlers/ping.handler";
+import { authRoutesHandlers } from "./handlers/auth.handlers";
+// import { members } from "./handlers/members.service";
+// renders tanstack router SSR
+import { viewRouteHandler } from "./handlers/view.handler";
 
 import dotenv from "dotenv";
-import { hc } from "hono/client";
+import { membersRouteHandlers } from "./handlers/members.handlers";
+
 dotenv.config();
 
-export const jwt = { decode, sign, verify };
-
-export type Dependencies = {
-  // utils
-  logger: typeof logger;
-  cookies?: ReturnType<typeof cookies>;
-  jwt: typeof jwt;
-
-  // specifically for testing, allows overwriting the rpc client
-  rpcClientMock?: typeof hc;
-
-  // services injections
-  memberServiceClient: typeof memberServiceClient;
-};
-
-export const container: Dependencies = {
-  logger,
-  jwt,
-  memberServiceClient,
-};
-
 export const app = (injections: Partial<Dependencies> = {}) => {
-  const { dependencies, inject } = makeInjectableContext(container, injections);
-
   return (
     new Hono()
-      .use("/assets/*", handleStaticAssets(dependencies))
-      .get("/ping", inject(ping))
+      .use("/assets/*", handleStaticAssets(injections))
+      .route("ping/", pingRouteHandler(injections))
 
       // auth
-      .get("/auth", inject(authHandler))
-      .get("/auth/logout", inject(logoutHandler))
+      .route("/auth", authRoutesHandlers(injections))
 
-      // add more service handlers here so they get added to rpc
-      .route("/api/members", members(container, injections))
+      // members
+      .route("/api/members", membersRouteHandlers(injections))
 
-      // catch all will attempt to render UI
-      // which can match tanstack ssr or 404
-      .get("/*", inject(render))
+      // views
+      .route("/*", viewRouteHandler(injections))
   );
 };
 
