@@ -4,7 +4,7 @@ import { logger } from "../logger/logger";
 import { cookies } from "../cookies/cookies";
 import { Dependencies } from "../surface.app.ctx";
 
-describe("members service tests", () => {
+describe("members handler tests", () => {
   const mockLogger = {
     log: mock(() => null),
     error: mock(() => null),

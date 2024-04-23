@@ -14,22 +14,29 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.bun
+      target: prod
     environment:
-      - NODD_ENV=production
+      - NODE_ENV=production
     env_file:
       - .env
     ports:
       - "4002:4000"
 
-  test:
+  dev:
     build:
       context: .
       dockerfile: Dockerfile.bun
+      target: dev
 
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - DEBUG=surface:*
       - JWT_SECRET=foo.bar.baz
-      - SELF_RPC_HOST=http://test:4000
+      - SELF_RPC_HOST=http://dev:4000
+
     ports:
       - "4000:4000"
+
+    volumes:
+      - .:/app
+      - /app/node_modules

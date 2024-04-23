@@ -7,5 +7,5 @@ export const pingRouteHandler = (inject: Partial<Dependencies>) => {
     return c.json({ message: "pong" });
   });
 
-  return new Hono().get("*", ...get);
+  return new Hono().get("", ...get);
 };

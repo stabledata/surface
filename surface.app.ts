@@ -17,7 +17,9 @@ export const app = (injections: Partial<Dependencies> = {}) => {
   return (
     new Hono()
       .use("/assets/*", handleStaticAssets(injections))
-      .route("ping/", pingRouteHandler(injections))
+
+      // ping example (healthcheck)
+      .route("/ping", pingRouteHandler(injections))
 
       // auth
       .route("/auth", authRoutesHandlers(injections))

@@ -7,6 +7,11 @@ COPY ./bun.lockb /app/bun.lockb
 COPY . /app
 
 RUN bun install
-RUN bun run build
+RUN bun install @rollup/rollup-linux-arm64-gnu --force
 
+FROM base as dev
+CMD ["bun", "run", "dev"]
+
+FROM base as prod
+RUN bunx tsr generate
 CMD ["bun", "surface.server.bun.ts"]
