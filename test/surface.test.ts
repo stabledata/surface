@@ -30,7 +30,7 @@ describe("surface app tests", () => {
     );
 
     expect(response.status).toEqual(404);
-    expect(mockLogger.log).toHaveBeenCalled();
+    expect(mocklogger.info).toHaveBeenCalled();
   });
 
   test("renders html", async () => {

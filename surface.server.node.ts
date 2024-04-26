@@ -6,5 +6,5 @@ const port = Number(process.env.PORT || 4000);
 const host = process.env.HOST || "localhost";
 
 serve({ ...app, port }, () => {
-  logger.log(`Surface production server stared on http://${host}:${port}`);
+  logger.info(`Surface production server stared on http://${host}:${port}`);
 });

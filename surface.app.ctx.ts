@@ -34,6 +34,10 @@ export const { createMiddleware, createHandlers } = createFactory<Env>();
 // handlers docs here: https://hono.dev/guides/best-practices#factory-createhandlers-in-hono-factory
 export const applyContext = (injections: Partial<Dependencies>) =>
   createMiddleware(async (c, next) => {
+    logger.info("applying context");
+    logger.debug("helloooooooo owtf", injections);
+    logger.error("example errror");
+
     c.set("logger", injections.logger ?? logger);
     c.set("cookies", injections.cookies ?? cookies(c));
     c.set("jwt", jwt);

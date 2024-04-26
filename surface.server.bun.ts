@@ -4,7 +4,7 @@ import { app } from "./surface.app";
 const port = process.env.PORT || 4000;
 const serve = app();
 
-logger.log(`Service starting on port: ${port}`);
+logger.info(`Service starting on port: ${port}`);
 
 export default {
   port,

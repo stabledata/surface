@@ -15,5 +15,5 @@ it("pings", async () => {
   const body = await response.json();
   expect(response.status).toEqual(200);
   expect(body.message).toEqual("pong");
-  expect(mockLogger.log).toHaveBeenCalled();
+  expect(mocklogger.info).toHaveBeenCalled();
 });
