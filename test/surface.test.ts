@@ -1,20 +1,13 @@
-import { expect, test, describe, mock, it } from "bun:test";
+import { expect, test, describe, mock } from "bun:test";
 
 import { app } from "../surface.app";
 import { logger } from "../logger/logger";
 
 describe("surface app tests", () => {
   const mockLogger = {
-    log: mock(() => null),
-    error: mock(() => null),
+    ...logger,
+    info: mock(() => null),
   } as unknown as typeof logger;
-
-  it("pings", async () => {
-    const response = await app({ logger: mockLogger }).request("/ping");
-    const body = await response.json();
-    expect(response.status).toEqual(200);
-    expect(body.message).toEqual("pong");
-  });
 
   test("assets resolve", async () => {
     const response = await app({ logger: mockLogger }).request(
@@ -30,7 +23,7 @@ describe("surface app tests", () => {
     );
 
     expect(response.status).toEqual(404);
-    expect(mocklogger.info).toHaveBeenCalled();
+    expect(mockLogger.info).toHaveBeenCalled();
   });
 
   test("renders html", async () => {

@@ -1,10 +1,8 @@
-import { Context } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { CookieOptions } from "hono/utils/cookie";
-import { Dependencies } from "../surface.app.ctx";
+import { SurfaceContext } from "../surface.app.ctx";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function cookies(c: Context<{ Variables: Dependencies }, any, object>) {
+export function cookies(c: SurfaceContext) {
   const get = (name: string) => {
     return getCookie(c, name);
   };

@@ -6,7 +6,7 @@ export function handleStaticAssets({ logger }: Partial<Dependencies>) {
   return serveStatic({
     root: isProd ? "build/" : "./views/", // paths must end with '/'
     onNotFound: (path) => {
-      logger?.log("/asset/* requested but not found", path);
+      logger?.info("/asset/* requested but not found", path);
     },
   });
 }
