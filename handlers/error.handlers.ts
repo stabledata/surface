@@ -11,7 +11,7 @@ export const errorHandler =
 
     if (err instanceof PingError) {
       error(`some kind of error happened: ${err}`);
-      return text("on noes", 418);
+      return text("oh noes", 418);
     }
     // unknown error
     error(`unhandled service error type: ${err}`);

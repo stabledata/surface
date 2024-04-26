@@ -26,5 +26,6 @@ it("custom errors", async () => {
 
   const response = await app({ logger: mockLogger }).request("/err");
   expect(response.status).toEqual(418);
+  expect(await response.text()).toBe("oh noes");
   expect(mockLogger.error).toHaveBeenCalled();
 });
