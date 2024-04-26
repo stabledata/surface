@@ -12,6 +12,7 @@ export default defineConfig({
   },
   build: {
     outDir: "build",
+    minify: true,
     // sourcemap: "inline",
   },
   plugins: [
