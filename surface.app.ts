@@ -10,25 +10,29 @@ import { viewRouteHandler } from "./handlers/view.handler";
 
 import dotenv from "dotenv";
 import { membersRouteHandlers } from "./handlers/members.handlers";
+import { errorHandler } from "./handlers/error.handlers";
 
 dotenv.config();
 
-export const app = (injections: Partial<Dependencies> = {}) => {
+export const app = (inject: Partial<Dependencies> = {}) => {
   return (
     new Hono()
-      .use("/assets/*", handleStaticAssets(injections))
+      .use("/assets/*", handleStaticAssets(inject))
 
       // ping example (healthcheck)
-      .route("/ping", pingRouteHandler(injections))
+      .route("/ping", pingRouteHandler(inject))
 
       // auth
-      .route("/auth", authRoutesHandlers(injections))
+      .route("/auth", authRoutesHandlers(inject))
 
       // members
-      .route("/api/members", membersRouteHandlers(injections))
+      .route("/api/members", membersRouteHandlers(inject))
 
       // views
-      .route("/*", viewRouteHandler(injections))
+      .route("/*", viewRouteHandler(inject))
+
+      // handle errors
+      .onError(errorHandler(inject))
   );
 };
 

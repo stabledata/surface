@@ -6,7 +6,7 @@ import { logger } from "../logger/logger";
 it("pings", async () => {
   const mockLogger = {
     ...logger,
-    log: mock().mockImplementation((m) =>
+    info: mock().mockImplementation((m) =>
       console.log(`mock override capture log ${m}`)
     ),
   } as unknown as typeof logger;
@@ -15,5 +15,16 @@ it("pings", async () => {
   const body = await response.json();
   expect(response.status).toEqual(200);
   expect(body.message).toEqual("pong");
-  expect(mocklogger.info).toHaveBeenCalled();
+  expect(mockLogger.info).toHaveBeenCalled();
+});
+
+it("custom errors", async () => {
+  const mockLogger = {
+    ...logger,
+    error: mock().mockImplementation(() => null),
+  } as unknown as typeof logger;
+
+  const response = await app({ logger: mockLogger }).request("/err");
+  expect(response.status).toEqual(418);
+  expect(mockLogger.error).toHaveBeenCalled();
 });
