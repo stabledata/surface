@@ -15,4 +15,3 @@ const router = createRouter({ rpc: rpcClient });
 const root = document.getElementById("root")!;
 
 ReactDOM.hydrateRoot(root, <StartClient router={router} />);
-1;
