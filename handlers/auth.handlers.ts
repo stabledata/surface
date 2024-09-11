@@ -44,7 +44,7 @@ export const hasSession = async (c: SurfaceContext): Promise<boolean> => {
     const decoded = await c.var.jwt.verify(token, process.env.JWT_SECRET ?? "");
     return decoded;
   } catch (e) {
-    c.var.logger.error(`Error validating session token!`);
+    c.var.logger.error(`No valid session was found.`);
     return false;
   }
 };
