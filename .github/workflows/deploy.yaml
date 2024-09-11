@@ -57,7 +57,6 @@ jobs:
         if:
         run: |
           echo "***DO NOT USE*** THESE VALUES IN PRODUCTION!"
-          echo " I MAY NOT BE ABLE TO FIRE YOU, BUT YOU SHOULD BE FIRED IF YOU DO."
           echo "USE SECRETS MANAGER FOR JWT SIGNING KEY, OR A THIRD PARTY PROVIDER LIKE HASHICORP."
           echo "DEBUG: surface:*" >> env.yaml
           echo "SELF_RPC_HOST: https://surface-demo-app-5v6fvk5ela-uw.a.run.app/" >> env.yaml
