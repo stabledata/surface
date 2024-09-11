@@ -34,7 +34,7 @@ Routes are entirely flexible. You don't have to prefix a backend request with `/
 
 #### Loaders
 
-The loader paradigm follows the render as you fetch pattern. Newer frameworks like Remix, Astro, Modern and more have elected to pursue this way, for good reason. Loaders in our case are [provided by Tanstack Router](https://tanstack.com/router/v1/docs/framework/react/guide/data-loading) and are run on the server during an initial request the client after subsequent route navigation.
+The loader paradigm follows the render as you fetch pattern. Newer frameworks like Remix, Astro, Modern and more have elected to pursue this way, for good reason. Loaders in our case are [provided by Tanstack Router](https://tanstack.com/router/v1/docs/framework/react/guide/data-loading) and are run on the server during an initial request, and then on the client after subsequent navigation.
 
 We could inject the server context into our router context and run loaders in a forked manner, calling services directly on the service and using RPC on the client but ultimately the decision to keep this simple as possible made sense and we treat loaders as a single code path that works well on both.
 
