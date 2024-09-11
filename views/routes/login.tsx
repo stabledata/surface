@@ -18,7 +18,7 @@ function Login() {
     <div className="p-5 text-center">
       <h1 className="text-2xl mb-5">Members only area!</h1>
       <p>
-        <a href="/auth/login?return=members">Login first</a>
+        <a href="/auth/login?return=/members">Login first</a>
       </p>
     </div>
   );
