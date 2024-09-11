@@ -5,6 +5,7 @@ import {
   createHandlers,
   Dependencies,
 } from "../surface.app.ctx";
+import { JWTPayload } from "hono/utils/jwt/types";
 
 export type User = {
   id: string;
@@ -29,7 +30,9 @@ export async function getUser(c: SurfaceContext): Promise<User | undefined> {
   return fakeUser;
 }
 
-export const hasSession = async (c: SurfaceContext): Promise<boolean> => {
+export const hasSession = async (
+  c: SurfaceContext
+): Promise<boolean | JWTPayload> => {
   // we can simply check for cookie presence client side
   // but for service calls we need to check the jwt as Bearer token
   // plenty more to do here obviously but a good starting point for "real" auth.

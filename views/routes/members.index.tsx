@@ -3,11 +3,17 @@ import { Users } from "lucide-react";
 import { User } from "../../handlers/auth.handlers";
 import { useLoginRedirect } from "../hooks/use-login-redirect";
 
+type MembersResponse = {
+  members: User[];
+};
+
 export const Route = createFileRoute("/members/")({
   component: Members,
   loader: async ({ context }): Promise<{ members: User[] }> => {
     const memberRpc = await context.rpc?.api.members.$get();
-    return memberRpc?.ok ? await memberRpc.json() : { members: [] };
+    return memberRpc?.ok
+      ? ((await memberRpc.json()) as MembersResponse)
+      : { members: [] };
   },
 });
 
