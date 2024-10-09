@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:docker": "bun run --bun vite",
     "build": "tsr generate && tsc && vite build && cp -r views/assets/* build/assets/",
     "build:node": "npm run build && rollup -c rollup.config.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -21,9 +22,9 @@
     "hono": "^4.6.1",
     "install": "^0.13.0",
     "lucide-react": "^0.366.0",
-    "pino": "^9.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tslog": "^4.9.3",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

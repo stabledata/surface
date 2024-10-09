@@ -10,7 +10,7 @@ RUN bun install
 RUN bun install @rollup/rollup-linux-arm64-gnu --force
 
 FROM base as dev
-CMD ["bun", "run", "dev"]
+CMD ["bun", "run", "dev:docker"]
 
 FROM base as prod
 RUN bunx tsr generate

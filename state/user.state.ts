@@ -11,26 +11,32 @@ type UserStore = {
 };
 
 export const useUserStore = create<UserStore>()(
-  devtools((set) => ({
-    user: undefined,
-    setUser: (user: User) => set({ user }),
-  }))
+  devtools(
+    (set) => ({
+      user: undefined,
+      setUser: (user: User) => set({ user }),
+    }),
+    {
+      // debug-ability in prod is nice and nothing the user should not
+      // see will ever make it into devtools anywya
+      enabled: true,
+    }
+  )
 );
 
-// register state module
-// IMPORTANT! don't forget to add key: MyStateType to RouterContext
-// ... until we can figure out a way to do this dynamically.
+// register state module IMPORTANT! don't forget to add key: MyStateType
+// to RouterContext ... until we can figure out a way to do this
+// dynamically.
 registerStateLoader(
-  // key must be added in the RouterContext,
-  // so at least you'll be warned here if forget.
+  // key must be added in the RouterContext, so at least you'll be
+  // warned here if forget.
   "user",
   {
     // "load" returns the state to be sent though the server
     load: async (c: SurfaceContext) => {
       const user = await getUser(c);
-      // TODO: look into why this doesn't work
-      // this unfortunately has no affect on server rendering
-      // useUserStore.setState({ user });
+      // TODO: look into why this doesn't work this unfortunately has no
+      // affect on server rendering useUserStore.setState({ user });
       return user;
     },
     // "inflate" takes the entire context and can be used to populate
