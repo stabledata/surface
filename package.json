@@ -25,7 +25,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tslog": "^4.9.3",
-    "zustand": "^4.5.2"
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@hono/vite-dev-server": "^0.10.0",
