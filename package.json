@@ -12,7 +12,7 @@
     "start:node": "cross-env NODE_ENV=production DEBUG=surface:* node dist/surface.server.node.js"
   },
   "dependencies": {
-    "@hono/node-server": "^1.12.2",
+    "@hono/node-server": "^1.13.8",
     "@tanstack/react-router": "^1.28.5",
     "@tanstack/react-router-server": "^1.28.5",
     "bunyan": "^1.8.15",
