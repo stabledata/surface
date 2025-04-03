@@ -17,8 +17,8 @@ export const useUserStore = create<UserStore>()(
       setUser: (user: User) => set({ user }),
     }),
     {
-      // debug-ability in prod is nice and nothing the user should not
-      // see will ever make it into devtools anywya
+      // debug-ability in prod is nice and anything the user should not
+      // see should ever make it into devtools anyway
       enabled: true,
     }
   )
