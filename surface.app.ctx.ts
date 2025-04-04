@@ -1,12 +1,25 @@
+import { Context } from "hono";
 import { hc } from "hono/client";
 import { createFactory } from "hono/factory";
 import { decode, sign, verify } from "hono/jwt";
-import { cookies } from "./cookies/cookies";
+import { getCookie, setCookie } from "hono/cookie";
+import { CookieOptions } from "hono/utils/cookie";
 import { logger } from "./logger/logger";
 import { memberServiceClient } from "./handlers/members.handlers";
-import { Context } from "hono";
 
 const jwt = { decode, sign, verify };
+
+export function cookies(c: SurfaceContext) {
+  const get = (name: string) => {
+    return getCookie(c, name);
+  };
+
+  const set = (name: string, value: string, opt?: CookieOptions) => {
+    return setCookie(c, name, value, opt);
+  };
+
+  return { get, set };
+}
 
 export type Dependencies = {
   // utils

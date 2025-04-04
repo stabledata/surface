@@ -1,8 +1,7 @@
 import { expect, describe, mock, it } from "bun:test";
 import { app } from "../surface.app";
+import { cookies, Dependencies } from "../surface.app.ctx";
 import { logger } from "../logger/logger";
-import { cookies } from "../cookies/cookies";
-import { Dependencies } from "../surface.app.ctx";
 
 describe("members handler tests", () => {
   const mockLogger = {
