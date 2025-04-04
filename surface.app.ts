@@ -28,7 +28,7 @@ export const app = (inject: Partial<Dependencies> = {}) => {
       // members
       .route("/api/members", membersRouteHandlers(inject))
 
-      // views
+      // views (client SSR)
       .route("/*", viewRouteHandler(inject))
 
       // handle errors

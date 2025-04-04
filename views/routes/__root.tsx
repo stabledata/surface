@@ -19,7 +19,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
     // Note however, the loaderData will ONLY hold this state on the
     // first request. when you navigate on the client, loaderData is
-    // empty. surface solves for this state modules and the router.
+    // empty. surface solves for this using state modules and the router.
     return context;
   },
 });
