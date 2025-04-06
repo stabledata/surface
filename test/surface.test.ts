@@ -23,7 +23,6 @@ describe("surface app tests", () => {
     );
 
     expect(response.status).toEqual(404);
-    expect(mockLogger.info).toHaveBeenCalled();
   });
 
   test("renders html", async () => {

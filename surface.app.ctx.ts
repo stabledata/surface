@@ -34,8 +34,9 @@ export type Dependencies = {
   memberServiceClient: typeof memberServiceClient;
 };
 
-type Env = {
+export type Env = {
   Variables: Dependencies;
+  logger: typeof logger;
 };
 
 export type SurfaceContext = Context<Env>;

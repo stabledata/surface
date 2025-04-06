@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import type { Dependencies } from "./surface.app.ctx";
+import type { Dependencies, Env } from "./surface.app.ctx";
 
-import { handleStaticAssets } from "./handlers/assets.service";
-import { pingRouteHandler } from "./handlers/ping.handler";
+import { handleStaticAssets } from "./handlers/assets.handler";
+import { ping } from "./handlers/ping.handler";
 import { authRoutesHandlers } from "./handlers/auth.handlers";
 // import { members } from "./handlers/members.service";
 // renders tanstack router SSR
@@ -11,16 +11,18 @@ import { viewRouteHandler } from "./handlers/view.handler";
 import dotenv from "dotenv";
 import { membersRouteHandlers } from "./handlers/members.handlers";
 import { errorHandler } from "./handlers/error.handlers";
+import { compress } from "hono/compress";
 
 dotenv.config();
 
 export const app = (inject: Partial<Dependencies> = {}) => {
   return (
-    new Hono()
-      .use("/assets/*", handleStaticAssets(inject))
+    new Hono<Env>()
+      .use(compress())
+      .use("/assets/*", handleStaticAssets)
 
       // ping example (healthcheck)
-      .route("/ping", pingRouteHandler(inject))
+      .route("/ping", ping)
 
       // auth
       .route("/auth", authRoutesHandlers(inject))
@@ -32,7 +34,7 @@ export const app = (inject: Partial<Dependencies> = {}) => {
       .route("/*", viewRouteHandler(inject))
 
       // handle errors
-      .onError(errorHandler(inject))
+      .onError(errorHandler)
   );
 };
 
