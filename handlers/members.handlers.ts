@@ -1,20 +1,6 @@
 import { Hono } from "hono";
-import {
-  SurfaceContext,
-  Dependencies,
-  createHandlers,
-  applyContext,
-} from "../surface.app.ctx";
-import { hasSession, User } from "./auth.handlers";
-
-const fakeUser = {
-  id: "123",
-  name: "Alice",
-  email: "alice@domain.com",
-  roles: ["admin"],
-  profilePicture:
-    "https://lh3.googleusercontent.com/a/ACg8ocIBaI40KOmbbQOPIE2tzc0KDHbxc41ZrqLg6dCuQ2SUGMi0jQ5w=s576-c-no",
-};
+import { SurfaceContext } from "../surface.app.ctx";
+import { fakeUser, hasSession, User } from "./auth.handlers";
 
 const fakeMembers: User[] = [
   fakeUser,
@@ -67,10 +53,6 @@ export const handleGetMember = async (c: SurfaceContext): Promise<Response> => {
   return c.json(member);
 };
 
-export const membersRouteHandlers = (
-  injections: Partial<Dependencies> = {}
-) => {
-  return new Hono()
-    .get("/", ...createHandlers(applyContext(injections), handleGetMembers))
-    .get("/:id", ...createHandlers(applyContext(injections), handleGetMember));
-};
+export const members = new Hono()
+  .get("/", handleGetMembers)
+  .get("/:id", handleGetMember);

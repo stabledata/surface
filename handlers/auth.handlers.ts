@@ -1,10 +1,5 @@
 import { Hono } from "hono";
-import {
-  SurfaceContext,
-  applyContext,
-  createHandlers,
-  Dependencies,
-} from "../surface.app.ctx";
+import { SurfaceContext, SurfaceEnv } from "../surface.app.ctx";
 import { JWTPayload } from "hono/utils/jwt/types";
 
 export type User = {
@@ -52,8 +47,8 @@ export const hasSession = async (
   }
 };
 
-export const authRoutesHandlers = (injections: Partial<Dependencies> = {}) => {
-  const createSession = createHandlers(applyContext(injections), async (c) => {
+export const sessions = new Hono<SurfaceEnv>()
+  .get("/login", async (c) => {
     const { cookies, jwt } = c.var;
     cookies.set("user_id", fakeUser.id, { path: "/", httpOnly: true });
 
@@ -72,15 +67,9 @@ export const authRoutesHandlers = (injections: Partial<Dependencies> = {}) => {
     // redirect to location (if passed)
     const redirectTo = c.req.query("return") ?? "/";
     return c.redirect(redirectTo);
-  });
-
-  const endSession = createHandlers(applyContext(injections), async (c) => {
+  })
+  .get("/logout", async (c) => {
     c.var.cookies.set("user_id", "", { path: "/", httpOnly: true });
     const redirectTo = c.req.query("return") ?? "/";
     return c.redirect(redirectTo);
   });
-
-  return new Hono()
-    .get("/login", ...createSession)
-    .get("/logout", ...endSession);
-};

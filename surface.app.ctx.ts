@@ -5,6 +5,7 @@ import { decode, sign, verify } from "hono/jwt";
 import { getCookie, setCookie } from "hono/cookie";
 import { CookieOptions } from "hono/utils/cookie";
 import { logger } from "./logger/logger";
+
 import { memberServiceClient } from "./handlers/members.handlers";
 
 const jwt = { decode, sign, verify };
@@ -34,18 +35,14 @@ export type Dependencies = {
   memberServiceClient: typeof memberServiceClient;
 };
 
-export type Env = {
+export type SurfaceEnv = {
   Variables: Dependencies;
-  logger: typeof logger;
 };
 
-export type SurfaceContext = Context<Env>;
+export type SurfaceContext = Context<SurfaceEnv>;
 
-export const { createMiddleware, createHandlers } = createFactory<Env>();
+export const { createMiddleware, createHandlers } = createFactory<SurfaceEnv>();
 
-// type safe dependency injection via middleware.
-// more verbose than the previous pattern but no type acrobatics!
-// handlers docs here: https://hono.dev/guides/best-practices#factory-createhandlers-in-hono-factory
 export const applyContext = (injections: Partial<Dependencies>) =>
   createMiddleware(async (c, next) => {
     c.set("logger", injections.logger ?? logger);

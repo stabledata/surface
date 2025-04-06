@@ -1,46 +1,41 @@
 import { Hono } from "hono";
-import type { Dependencies, Env } from "./surface.app.ctx";
+import { applyContext, type SurfaceEnv } from "./surface.app.ctx";
 
 import { handleStaticAssets } from "./handlers/assets.handler";
 import { ping } from "./handlers/ping.handler";
-import { authRoutesHandlers } from "./handlers/auth.handlers";
-// import { members } from "./handlers/members.service";
-// renders tanstack router SSR
-import { viewRouteHandler } from "./handlers/view.handler";
+import { sessions } from "./handlers/auth.handlers";
+
+import { ssr } from "./handlers/view.handler";
 
 import dotenv from "dotenv";
-import { membersRouteHandlers } from "./handlers/members.handlers";
+import { members } from "./handlers/members.handlers";
 import { errorHandler } from "./handlers/error.handlers";
 import { compress } from "hono/compress";
 
 dotenv.config();
 
-export const app = (inject: Partial<Dependencies> = {}) => {
-  return (
-    new Hono<Env>()
-      .use(compress())
-      .use("/assets/*", handleStaticAssets)
+export const app = new Hono<SurfaceEnv>()
+  .use(compress())
+  .use(applyContext({}))
+  .use("/assets/*", handleStaticAssets)
 
-      // ping example (healthcheck)
-      .route("/ping", ping)
+  // ping
+  .route("/ping", ping)
 
-      // auth
-      .route("/auth", authRoutesHandlers(inject))
+  // auth
+  .route("/auth", sessions)
 
-      // members
-      .route("/api/members", membersRouteHandlers(inject))
+  // members (just an example - you probably don't need this)
+  .route("/api/members", members)
 
-      // views (client SSR)
-      .route("/*", viewRouteHandler(inject))
+  // views (client routing via tanstack router SSR)
+  .route("/*", ssr)
 
-      // handle errors
-      .onError(errorHandler)
-  );
-};
+  // handle errors
+  .onError(errorHandler);
 
 // export the app type for for RPC
-export type AppType = ReturnType<typeof app>;
+export type AppType = typeof app;
 
 // hono vite dev server middleware needs a default export
-const ha = app();
-export default ha;
+export default app;
