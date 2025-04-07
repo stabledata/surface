@@ -11,6 +11,7 @@ export default defineConfig({
     host: "0.0.0.0",
   },
   build: {
+    manifest: true,
     outDir: "build",
     minify: true,
     // sourcemap: "inline",
@@ -34,7 +35,7 @@ export default defineConfig({
         /^\/node_modules\/.*/,
       ],
       // This option is buggy, disable it and inject the code manually
-      // injectClientScript: false,
+      injectClientScript: false,
     }),
   ],
 });

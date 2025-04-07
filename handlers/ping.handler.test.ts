@@ -3,7 +3,7 @@ import { expect, it, mock, describe } from "bun:test";
 import { ping } from "../handlers/ping.handler";
 import { logger } from "../logger/logger";
 import { Hono } from "hono";
-import { applyContext, Env } from "../surface.app.ctx";
+import { applyContext, SurfaceEnv } from "../surface.app.ctx";
 
 describe("ping handler", () => {
   // Create a proper mock logger that extends the real logger
@@ -13,7 +13,7 @@ describe("ping handler", () => {
     error: mock().mockImplementation(() => null),
   } as unknown as typeof logger;
 
-  const test = new Hono<Env>()
+  const test = new Hono<SurfaceEnv>()
     .use(applyContext({ logger: mockLogger }))
     .route("/", ping);
   it("pings", async () => {

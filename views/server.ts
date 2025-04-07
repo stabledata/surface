@@ -19,7 +19,7 @@ export async function render(opts: {
 }) {
   const { req } = opts;
   // ensure request has headers
-  const url = new URL(req.url, "https://localhost:3000").href;
+  const url = new URL(req.url).href;
   const request = new Request(url, {
     method: req.method,
     headers: (() => {
