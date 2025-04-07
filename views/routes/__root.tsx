@@ -7,10 +7,9 @@ import {
 } from "@tanstack/react-router";
 import { RouterContext } from "../../surface.router";
 import { Header } from "../header";
-import { isDev } from "../../env";
 
 const header = () => {
-  // TODO: Using the rendering context we can probably update the title if we want, even server side.
+  // TODO: Using the rendering context we can probably update the title if we want which matters for SSR / SEO
   return {
     meta: [
       {
@@ -24,29 +23,6 @@ const header = () => {
         content: "width=device-width, initial-scale=1.0",
       },
     ],
-    scripts: isDev()
-      ? [
-          {
-            src: "https://cdn.tailwindcss.com",
-          },
-          {
-            type: "module",
-            children: `import RefreshRuntime from "/@react-refresh"
-  RefreshRuntime.injectIntoGlobalHook(window)
-  window.$RefreshReg$ = () => {}
-  window.$RefreshSig$ = () => (type) => type
-  window.__vite_plugin_react_preamble_installed__ = true`,
-          },
-          {
-            type: "module",
-            src: "/@vite/client",
-          },
-          {
-            type: "module",
-            src: "/views/client.tsx",
-          },
-        ]
-      : [],
   };
 };
 

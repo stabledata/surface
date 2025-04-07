@@ -3,8 +3,6 @@ import { SurfaceEnv } from "../surface.app.ctx";
 import { isDev } from "../env";
 
 export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
-  // For vite, you have to expose a server entry now
-  // const url = c.req.url;
   let html = "";
   if (isDev()) {
     const vite = await import("vite");
@@ -30,6 +28,21 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
     });
 
     html = await res.text();
+
+    const devHeaders = `
+      <script src="https://cdn.tailwindcss.com"></script>
+      <script type="module">
+        import RefreshRuntime from "/@react-refresh"
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+        window.__vite_plugin_react_preamble_installed__ = true
+      </script>
+      <script type="module" src="/@vite/client"></script>
+      <script type="module" src="/views/client.tsx"></script>
+    `;
+
+    html = html.replace("</head>", `${devHeaders}</head>`);
   } else {
     const entry = await import("../views/server.js");
     const res = await entry.render({
@@ -42,13 +55,23 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
 
     html = await res.text();
     const manifest = await import("../build/.vite/manifest.json");
-    console.log("got manifest!", manifest);
-    console.log("ideally, we inject it into here:", html);
-    // TODO: for prod, we have to manually inject the manifest assets into the html.
+    const headTags = [];
+
+    const indexManifest = manifest.default["index.html"];
+
+    headTags.push(
+      `<script type="module" crossorigin src="/${indexManifest.file}"></script>`
+    );
+
+    for (const css of indexManifest.css) {
+      headTags.push(`<link rel="stylesheet" crossorigin href="/${css}">`);
+    }
+
+    html = html.replace("</head>", `${headTags.join("")}</head>`);
   }
 
-  // We used to be able to do this which was nice cause there are zero instructions how to
-  // make this work in production in the docs now.
+  // We used to be able to do this which was nice but results in
+  // hydration errors.
   // const indexFilePath =
   //   process.env["NODE_ENV"] === "production"
   //     ? "build/index.html"
