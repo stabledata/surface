@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Await } from "@tanstack/react-router";
 import { Users } from "lucide-react";
 import { User } from "../../handlers/auth.handlers";
 import { useLoginRedirect } from "../hooks/use-login-redirect";
@@ -9,17 +9,28 @@ type MembersResponse = {
 
 export const Route = createFileRoute("/members/")({
   component: Members,
-  loader: async ({ context }): Promise<{ members: User[] }> => {
+  loader: async ({
+    context,
+  }): Promise<{ members: User[]; slowData: Promise<string> }> => {
     const memberRpc = await context.rpc?.api.members.$get();
-    return memberRpc?.ok
+    const members = memberRpc?.ok
       ? ((await memberRpc.json()) as MembersResponse)
       : { members: [] };
+
+    return {
+      members: members.members,
+      slowData: new Promise<string>((resolve) => {
+        setTimeout(() => {
+          resolve("Wow, yeah that is some slow data!");
+        }, 4000);
+      }),
+    };
   },
 });
 
 function Members() {
   const user = useLoginRedirect();
-  const { members } = Route.useLoaderData();
+  const { members, slowData } = Route.useLoaderData();
 
   if (!user) {
     // prevents markup from rendering server side
@@ -56,6 +67,17 @@ function Members() {
             </Link>
           </div>
         ))}
+      </div>
+      <h3 className="mt-6">Here is deferred data that takes awhile to load:</h3>
+      <div className="flex flex-col gap-3 mt-5">
+        <Await
+          promise={slowData as Promise<string>}
+          fallback={<div>Loading...</div>}
+        >
+          {(data: string) => {
+            return <div>{data}</div>;
+          }}
+        </Await>
       </div>
     </div>
   );

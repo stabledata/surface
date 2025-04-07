@@ -10,8 +10,7 @@ import { useLoginRedirect } from "../hooks/use-login-redirect";
 export const Route = createFileRoute("/members/$id")({
   loader: async ({ context, params }): Promise<User | undefined> => {
     const member = await context.rpc?.api.members[":id"].$get({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      param: { id: (params as any).id },
+      param: { id: params.id },
     });
     // throw new Error("test");
     if (!member?.ok) {
