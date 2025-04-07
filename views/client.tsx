@@ -1,9 +1,9 @@
 import ReactDOM from "react-dom/client";
 import { StartClient } from "@tanstack/react-start";
-import { createRouter } from "./surface.router";
+import { createRouter } from "../surface.router";
 import { hc } from "hono/client";
-import { AppType } from "./surface.app";
-import "./views/index.css";
+import { AppType } from "../surface.app";
+import "./index.css";
 
 export const rpcClient = hc<AppType>(`/`, {
   headers: {
@@ -12,6 +12,5 @@ export const rpcClient = hc<AppType>(`/`, {
 });
 
 const router = createRouter({ rpc: rpcClient });
-const root = document.getElementById("root")!;
 
-ReactDOM.hydrateRoot(root, <StartClient router={router} />);
+ReactDOM.hydrateRoot(document, <StartClient router={router} />);

@@ -1,34 +1,67 @@
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import type { RouterContext } from "../../surface.router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import {
+  Outlet,
+  createRootRouteWithContext,
+  HeadContent,
+  Scripts,
+} from "@tanstack/react-router";
+import { RouterContext } from "../../surface.router";
 import { Header } from "../header";
-import { RootSSRLoaderContextProvider } from "../providers/ssr-loader-context-provider";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  head: () => ({
+    meta: [
+      {
+        title: "TanStack Router SSR Basic File Based",
+      },
+      {
+        charSet: "UTF-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1.0",
+      },
+    ],
+    scripts: [
+      {
+        src: "https://unpkg.com/@tailwindcss/browser@4",
+      },
+      {
+        type: "module",
+        children: `import RefreshRuntime from "/@react-refresh"
+  RefreshRuntime.injectIntoGlobalHook(window)
+  window.$RefreshReg$ = () => {}
+  window.$RefreshSig$ = () => (type) => type
+  window.__vite_plugin_react_preamble_installed__ = true`,
+      },
+      {
+        type: "module",
+        src: "/@vite/client",
+      },
+      {
+        type: "module",
+        src: "/views/client.tsx",
+      },
+    ],
+  }),
   component: RootComponent,
-  notFoundComponent: () => <>Root Not Found</>,
-  errorComponent: () => <>Root Error</>,
-  loader: ({ context }) => {
-    // usually, "hydration" through the router using state modules
-    // suffices for SPA type needs (reducing server round trips for
-    // auth, user data, etc.)
-
-    // but... sometimes you may _need_ to render markup on the server
-    // for SEO. For that, we pass this context through to a provider so
-    // hooks can get that sweet SEO markup on the server
-
-    // Note however, the loaderData will ONLY hold this state on the
-    // first request. when you navigate on the client, loaderData is
-    // empty. surface solves for this using state modules and the router.
-    return context;
-  },
 });
 
 function RootComponent() {
-  // const loaderData = Route.useLoaderData();
   return (
-    <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
-      <Header />
-      <Outlet />
-    </div>
+    <html lang="en">
+      <head>
+        <HeadContent />
+      </head>
+
+      <body>
+        <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
+          <Header />
+          <Outlet /> {/* Start rendering router matches */}
+        </div>
+        <TanStackRouterDevtools position="bottom-right" />
+        <Scripts />
+      </body>
+    </html>
   );
 }
