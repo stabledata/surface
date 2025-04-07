@@ -6,10 +6,12 @@ import { routeTree } from "./.routes.tree";
 import { User } from "./handlers/auth.handlers";
 import { inflateState } from "./state/registry";
 import { rpcClient } from "./views/client";
+import { SurfaceContext } from "./surface.app.ctx";
 
 export type RouterContext = {
   user?: User;
   rpc?: typeof rpcClient;
+  c?: SurfaceContext; // only for SSR.
 };
 
 declare module "@tanstack/react-router" {

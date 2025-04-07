@@ -4,15 +4,18 @@ import {
 } from "@tanstack/react-start/server";
 import { createRouter } from "../surface.router";
 import { HonoRequest } from "hono";
+import { SurfaceContext } from "../surface.app.ctx";
+import { loadState } from "../state/registry";
 
 // This is from tanstack latest docs, This used to be a bit more raw but
 // now seems like it's slightly more wrapped in the react-start
 // framework
-export function render(opts: {
+export async function render(opts: {
   url: string;
   head: string;
   req: HonoRequest;
-  res: Response;
+  c: SurfaceContext;
+  // res: Response; // maybe needed later
 }) {
   const { req } = opts;
   // ensure request has headers
@@ -28,8 +31,10 @@ export function render(opts: {
     })(),
   });
 
+  const ssrState = await loadState(opts.c);
+
   return createRequestHandler({
-    createRouter,
+    createRouter: () => createRouter({ ...ssrState }),
     request,
   })(defaultStreamHandler);
 }

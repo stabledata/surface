@@ -34,7 +34,7 @@ export default defineConfig({
         /^\/node_modules\/.*/,
       ],
       // This option is buggy, disable it and inject the code manually
-      injectClientScript: false,
+      // injectClientScript: false,
     }),
   ],
 });

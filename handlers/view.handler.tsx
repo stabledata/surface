@@ -12,6 +12,9 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
       root: process.cwd(),
       server: {
         middlewareMode: true,
+        hmr: {
+          port: 4100,
+        },
       },
     });
 
@@ -22,7 +25,8 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
     const res = await entry.render({
       head: "",
       req: c.req,
-      res: c.res,
+      c: c,
+      //res: c.res,
     });
 
     html = await res.text();

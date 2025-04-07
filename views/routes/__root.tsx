@@ -12,7 +12,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       {
-        title: "TanStack Router SSR Basic File Based",
+        title: "Surface",
       },
       {
         charSet: "UTF-8",
@@ -24,7 +24,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     ],
     scripts: [
       {
-        src: "https://unpkg.com/@tailwindcss/browser@4",
+        src: "https://cdn.tailwindcss.com",
       },
       {
         type: "module",
@@ -45,6 +45,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     ],
   }),
   component: RootComponent,
+  loader: async () => {
+    // root loader
+    return {
+      foo: "bar",
+    };
+  },
 });
 
 function RootComponent() {
@@ -57,7 +63,7 @@ function RootComponent() {
       <body>
         <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
           <Header />
-          <Outlet /> {/* Start rendering router matches */}
+          <Outlet />
         </div>
         <TanStackRouterDevtools position="bottom-right" />
         <Scripts />

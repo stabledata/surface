@@ -10,12 +10,12 @@ import { ssr } from "./handlers/view.handler";
 import dotenv from "dotenv";
 import { members } from "./handlers/members.handlers";
 import { errorHandler } from "./handlers/error.handlers";
-import { compress } from "hono/compress";
+// import { compress } from "hono/compress";
 
 dotenv.config();
 
 export const app = new Hono<SurfaceEnv>()
-  .use(compress())
+  //.use(compress())
   .use(applyContext({}))
   .use("/assets/*", handleStaticAssets)
 

@@ -11,6 +11,5 @@ export const errorHandler = (err: unknown, c: SurfaceContext): Response => {
   }
   // unknown error
   error(`unhandled service error type: ${err}`);
-  console.error(err);
   return json({}, 500);
 };
