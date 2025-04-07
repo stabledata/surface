@@ -4,6 +4,7 @@ import { ping } from "../handlers/ping.handler";
 import { logger } from "../logger/logger";
 import { Hono } from "hono";
 import { applyContext, SurfaceEnv } from "../surface.app.ctx";
+import { errorHandler } from "./error.handlers";
 
 describe("ping handler", () => {
   // Create a proper mock logger that extends the real logger
@@ -15,7 +16,9 @@ describe("ping handler", () => {
 
   const test = new Hono<SurfaceEnv>()
     .use(applyContext({ logger: mockLogger }))
+    .onError(errorHandler)
     .route("/", ping);
+
   it("pings", async () => {
     const response = await test.request("/");
     const body = await response.json();

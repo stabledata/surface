@@ -24,7 +24,7 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
       head: "",
       req: c.req,
       c: c,
-      //res: c.res,
+      // res: c.res,
     });
 
     html = await res.text();
