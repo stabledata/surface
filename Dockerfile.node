@@ -6,7 +6,7 @@ COPY ./package.json /app/package.json
 COPY ./package-lock.json /app/package-lock.json
 COPY . /app
 
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 # ugly, but rollup wants what rollup wants
 RUN npm i @rollup/rollup-linux-x64-musl --force
 RUN npm i @rollup/rollup-linux-arm64-musl --force
