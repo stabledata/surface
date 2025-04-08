@@ -1,15 +1,26 @@
+import { HonoRequest } from "hono";
 import {
   createRequestHandler,
   defaultStreamHandler,
 } from "@tanstack/react-start/server";
-import { createRouter } from "../surface.router";
-import { HonoRequest } from "hono";
 import { SurfaceContext } from "../surface.app.ctx";
-import { loadState } from "../state/registry";
+import { createRouter, RouterContext } from "./router";
+import { registeredServerStateModules } from "../state/__registry";
+
+async function loadServerRouterContext(c: SurfaceContext) {
+  const ssrInjectedState: Partial<RouterContext> = {};
+  for (const fn of registeredServerStateModules) {
+    const state = await fn(c);
+    if (state !== undefined) {
+      Object.assign(ssrInjectedState, state);
+    }
+  }
+  return ssrInjectedState;
+}
 
 // This is from tanstack latest docs, This used to be a bit more raw but
 // now seems like it's slightly more wrapped in the react-start
-// framework
+// framework now, but similar principles seem to apply.
 export async function render(opts: {
   url: string;
   head: string;
@@ -31,10 +42,13 @@ export async function render(opts: {
     })(),
   });
 
-  const ssrState = await loadState(opts.c);
+  const ssrState = await loadServerRouterContext(opts.c);
 
   return createRequestHandler({
     createRouter: () => createRouter({ ...ssrState }),
     request,
+    // TODO: Maybe this is a cleaner approach than
+    // head tag bashing in view.handler
+    // getRouterManifest: () => ...
   })(defaultStreamHandler);
 }

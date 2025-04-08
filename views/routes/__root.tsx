@@ -5,7 +5,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { RouterContext } from "../../surface.router";
+import { RouterContext } from "../router";
 import { Header } from "../header";
 
 const header = () => {

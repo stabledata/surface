@@ -1,5 +1,5 @@
 import React from "react";
-import { RouterContext } from "../../surface.router";
+import { RouterContext } from "../router";
 
 export const RootSSRLoaderContext = React.createContext<
   RouterContext | undefined

@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom/client";
 import { StartClient } from "@tanstack/react-start";
-import { createRouter } from "../surface.router";
+import { createRouter } from "./router";
 import { hc } from "hono/client";
 import { AppType } from "../surface.app";
 import "./index.css";
