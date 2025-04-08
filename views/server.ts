@@ -15,7 +15,7 @@ export async function render(opts: {
   head: string;
   req: HonoRequest;
   c: SurfaceContext;
-  // res: Response; // maybe needed later
+  // res: Response; // maybe needed later?
 }) {
   const { req } = opts;
   // ensure request has headers

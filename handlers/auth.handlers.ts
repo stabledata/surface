@@ -16,7 +16,7 @@ export const fakeUser = {
   email: "alice@domain.com",
   roles: ["admin"],
   profilePicture:
-    "https://lh3.googleusercontent.com/a/ACg8ocIBaI40KOmbbQOPIE2tzc0KDHbxc41ZrqLg6dCuQ2SUGMi0jQ5w=s576-c-no",
+    "https://plus.unsplash.com/premium_photo-1672201106204-58e9af7a2888?q=80&w=80",
 };
 
 export async function getUser(c: SurfaceContext): Promise<User | undefined> {

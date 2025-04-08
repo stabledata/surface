@@ -1,28 +1,22 @@
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
 import { getUser, User } from "../handlers/auth.handlers";
 import { SurfaceContext } from "../surface.app.ctx";
 import { RouterContext } from "../surface.router";
 import { registerStateLoader } from "./registry";
+import { StoreCreator, useRootStore } from "./root.store";
 
 type UserStore = {
   user: User | undefined;
   setUser: (user: User) => void;
 };
 
-export const useUserStore = create<UserStore>()(
-  devtools(
-    (set) => ({
-      user: undefined,
-      setUser: (user: User) => set({ user }),
-    }),
-    {
-      // debug-ability in prod is nice and anything the user should not
-      // see should ever make it into devtools anyway
-      enabled: true,
-    }
-  )
-);
+declare module "./root.store" {
+  interface SurfaceState extends UserStore {}
+}
+
+export const useUserStore: StoreCreator<UserStore> = (set) => ({
+  user: undefined,
+  setUser: (user: User) => set({ user }),
+});
 
 // register state module IMPORTANT! don't forget to add key: MyStateType
 // to RouterContext ... until we can figure out a way to do this
@@ -43,7 +37,7 @@ registerStateLoader(
     // initial states on client load so you can populate state
     // arbitrarily here, not just for the specific key
     inflate: (context: RouterContext) => {
-      useUserStore.setState({ user: context.user });
+      useRootStore.setState({ user: context.user });
     },
   }
 );
