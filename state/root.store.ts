@@ -12,7 +12,7 @@ export type StoreCreator<T> = StateCreator<
 >;
 
 // TODO: This is for dynamically adding slices.
-// Neat, but not needed in demo yet...
+// Neat, but not needed in this demo yet
 export type SurfaceStore = StoreApi<SurfaceState> & {
   addSlice: <T>(name: string, slice: StoreCreator<T>) => void;
 };
