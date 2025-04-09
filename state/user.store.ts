@@ -3,6 +3,7 @@ import { SurfaceContext } from "../surface.app.ctx";
 import { RouterContext } from "../views/router";
 import { registerHydrator, registerLoader } from "./__registry";
 import { StoreCreator, useRootStore } from "./root.store";
+import { logger } from "../logger/logger";
 
 type WithUser = {
   user?: User | undefined;
@@ -27,7 +28,7 @@ export const useUserStore: StoreCreator<UserStore> = (set) => ({
 
 registerLoader(async (c: SurfaceContext) => {
   const user = await getUser(c);
-  console.log("loading user server side!", user);
+  logger.debug("loading user server side:", user);
   return {
     user,
   };
@@ -36,7 +37,7 @@ registerLoader(async (c: SurfaceContext) => {
 registerHydrator((context: RouterContext) => {
   const { user } = context;
   if (user) {
-    console.log("hydrating user client side!", user);
+    logger.debug("hydrating user client side:", user);
     useRootStore.setState({ user });
   }
 });
