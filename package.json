@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.12.2",
+    "@hono/zod-validator": "^0.4.3",
     "@tanstack/react-router": "^1.115.0",
     "@tanstack/react-start": "^1.115.1",
     "@tanstack/router-plugin": "^1.115.0",
@@ -23,11 +24,14 @@
     "debug": "^4.3.4",
     "dotenv": "^16.4.5",
     "hono": "^4.7.5",
+    "hono-openapi": "^0.4.6",
     "install": "^0.13.0",
     "lucide-react": "^0.366.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tslog": "^4.9.3",
+    "zod": "^3.24.2",
+    "zod-openapi": "^4.2.4",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
