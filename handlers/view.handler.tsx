@@ -72,8 +72,8 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
     html = html.replace("</head>", `${headTags.join("")}</head>`);
   }
 
-  // We used to be able to do this which was nice but results in
-  // hydration errors.
+  // We used to be able to do this which was a touch cleaner
+  // but results now in client hydration errors.
   // const indexFilePath =
   //   process.env["NODE_ENV"] === "production"
   //     ? "build/index.html"

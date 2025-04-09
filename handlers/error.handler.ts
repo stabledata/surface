@@ -1,5 +1,6 @@
 import { SurfaceContext } from "../surface.app.ctx";
-import { PingError } from "./ping.handler";
+
+export class PingError extends Error {}
 
 export const errorHandler = (err: unknown, c: SurfaceContext): Response => {
   const { error } = c.var.logger;

@@ -1,10 +1,10 @@
 import { expect, it, mock, describe } from "bun:test";
 
-import { ping } from "../handlers/ping.handler";
-import { logger } from "../logger/logger";
+import { ping } from "./ping.endpoints";
+import { logger } from "../../logger/logger";
 import { Hono } from "hono";
-import { applyContext, SurfaceEnv } from "../surface.app.ctx";
-import { errorHandler } from "./error.handlers";
+import { applyContext, SurfaceEnv } from "../../surface.app.ctx";
+import { errorHandler } from "../../handlers/error.handler";
 
 describe("ping handler", () => {
   // Create a proper mock logger that extends the real logger

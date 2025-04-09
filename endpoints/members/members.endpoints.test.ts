@@ -4,13 +4,14 @@ import {
   cookies,
   Dependencies,
   SurfaceEnv,
-} from "../surface.app.ctx";
-import { logger } from "../logger/logger";
-import { members } from "./members.handlers";
+} from "../../surface.app.ctx";
+import { logger } from "../../logger/logger";
+import { members } from "./members.endpoints";
 import { Hono } from "hono";
-import { fakeUser, User } from "./auth.handlers";
+import { User } from "../auth/auth.endpoints";
+import { fakeUser } from "../auth/auth.helpers";
 
-describe("members handler tests", () => {
+describe("members endpoint tests", () => {
   const mockLogger = {
     log: mock(() => null),
     error: mock(() => null),
@@ -50,24 +51,5 @@ describe("members handler tests", () => {
     const body = await response.json();
 
     expect(body.members.length).toBeGreaterThan(0);
-  });
-
-  // TODO: These are SSR but put in the same test,
-  // so, we should split them out or maybe always provide
-  // the view route handler in tests tests
-  it.skip("renders members in HTML", async () => {
-    const mockMembers = { members: [{ name: "Charlie", id: "363" }] };
-    getMembersMock.mockResolvedValue(new Response(JSON.stringify(mockMembers)));
-    const response = await testApp.request("/members");
-    const body = await response.text();
-    expect(body).toInclude("Charlie");
-  });
-
-  it.skip("renders members in HTML", async () => {
-    getMembersMock.mockRejectedValue(new Error("test"));
-
-    const response = await testApp.request("/api/members");
-    const body = await response.text();
-    expect(body).toInclude("Error");
   });
 });

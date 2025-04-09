@@ -1,6 +1,7 @@
 import { Hono } from "hono";
-import { SurfaceContext } from "../surface.app.ctx";
-import { fakeUser, hasSession, User } from "./auth.handlers";
+import { SurfaceContext } from "../../surface.app.ctx";
+import { User } from "../auth/auth.endpoints";
+import { fakeUser, hasSession } from "../auth/auth.helpers";
 
 const fakeMembers: User[] = [
   fakeUser,

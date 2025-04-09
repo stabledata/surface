@@ -1,15 +1,15 @@
 import { Hono } from "hono";
 import { applyContext, type SurfaceEnv } from "./surface.app.ctx";
 
-import { handleStaticAssets } from "./handlers/assets.handler";
-import { ping } from "./handlers/ping.handler";
-import { sessions } from "./handlers/auth.handlers";
+import { handleStaticAssets } from "./handlers/assets.middlware";
+import { ping } from "./endpoints/ping/ping.endpoints";
+import { sessions } from "./endpoints/auth/auth.endpoints";
 
 import { ssr } from "./handlers/view.handler";
 
 import dotenv from "dotenv";
-import { members } from "./handlers/members.handlers";
-import { errorHandler } from "./handlers/error.handlers";
+import { members } from "./endpoints/members/members.endpoints";
+import { errorHandler } from "./handlers/error.handler";
 // import { compress } from "hono/compress";
 
 dotenv.config();

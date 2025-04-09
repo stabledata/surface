@@ -1,4 +1,4 @@
-import { getUser, User } from "../handlers/auth.handlers";
+import { getUser, User } from "../endpoints/auth/auth.endpoints";
 import { SurfaceContext } from "../surface.app.ctx";
 import { RouterContext } from "../views/router";
 import { registerHydrator, registerLoader } from "./__registry";

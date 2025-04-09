@@ -6,7 +6,7 @@ import { getCookie, setCookie } from "hono/cookie";
 import { CookieOptions } from "hono/utils/cookie";
 import { logger } from "./logger/logger";
 
-import { memberServiceClient } from "./handlers/members.handlers";
+import { memberServiceClient } from "./endpoints/members/members.endpoints";
 
 const jwt = { decode, sign, verify };
 
