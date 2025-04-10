@@ -1,8 +1,6 @@
 import { User } from "../endpoints/auth/auth.endpoints";
 import { SurfaceContext } from "../surface.app.ctx";
-import { RouterContext } from "../views/router";
-import { registerHydrator, registerLoader } from "./__registry";
-import { StoreCreator, useRootStore } from "./root.store";
+import { registerLoader, StoreCreator } from "./__registry";
 import { logger } from "../logger/logger";
 import { getUser } from "../endpoints/auth/auth.helpers";
 
@@ -33,12 +31,4 @@ registerLoader(async (c: SurfaceContext) => {
   return {
     user,
   };
-});
-
-registerHydrator((context: RouterContext) => {
-  const { user } = context;
-  if (user) {
-    logger.debug("hydrating user client side:", user);
-    useRootStore.setState({ user });
-  }
 });

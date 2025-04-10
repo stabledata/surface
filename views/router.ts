@@ -3,8 +3,13 @@ import {
   createRouter as tanStackCreateRouter,
 } from "@tanstack/react-router";
 import { routeTree } from "../.routes.tree";
-import { registeredClientStateModules } from "../state/__registry";
+import {
+  registeredClientStateModules,
+  registerHydrator,
+} from "../state/__registry";
 import { rpcClient } from "./client";
+import { logger } from "../logger/logger";
+import { useRootStore } from "../state/root.store";
 
 export interface RouterContext {
   rpc?: typeof rpcClient;
@@ -15,6 +20,14 @@ declare module "@tanstack/react-router" {
     router: ReturnType<typeof createRouter>;
   }
 }
+
+registerHydrator((context: RouterContext) => {
+  const { user } = context;
+  if (user) {
+    logger.debug("hydrating user client side:", user);
+    useRootStore.setState({ user });
+  }
+});
 
 export function createRouter(injections?: Partial<RouterContext>): AnyRouter {
   const router = tanStackCreateRouter({

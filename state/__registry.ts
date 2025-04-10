@@ -1,5 +1,27 @@
+import { StateCreator, StoreApi } from "zustand";
 import { SurfaceContext } from "../surface.app.ctx";
 import { RouterContext } from "../views/router";
+
+export interface SurfaceState {}
+
+export type StoreCreator<T> = StateCreator<
+  SurfaceState,
+  [["zustand/devtools", never]],
+  [],
+  T
+>;
+
+// This allows for dynamically adding slices from remotely loaded client
+// modules. It's a neat feature for the future, but not in this demo yet
+declare global {
+  interface Window {
+    __SURFACE_STORE__: SurfaceStore;
+  }
+}
+
+export type SurfaceStore = StoreApi<SurfaceState> & {
+  addSlice: <T>(name: string, slice: StoreCreator<T>) => void;
+};
 
 type ServerSideLoaderFn = (
   c: SurfaceContext
