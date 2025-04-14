@@ -24,7 +24,7 @@
     "cross-env": "^7.0.3",
     "debug": "^4.3.4",
     "dotenv": "^16.4.5",
-    "hono": "^4.7.5",
+    "hono": "^4.7.6",
     "hono-openapi": "^0.4.6",
     "install": "^0.13.0",
     "lucide-react": "^0.366.0",
