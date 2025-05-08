@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { RouterContext } from "../router";
 import { Header } from "../header";
+import { RootSSRLoaderContextProvider } from "@/providers/ssr-loader-context-provider";
 
 const header = () => {
   // TODO: Using the rendering context we can probably update the title if we want which matters for SSR / SEO
@@ -29,29 +30,33 @@ const header = () => {
 export const Route = createRootRouteWithContext<RouterContext>()({
   head: header,
   component: RootComponent,
-  loader: async () => {
+  loader: async ({ context }) => {
     // root loader
+    console.log("c", context);
     return {
+      ...context,
       foo: "bar",
     };
   },
 });
 
 function RootComponent() {
+  const data = Route.useLoaderData();
   return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-
-      <body>
-        <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
-          <Header />
-          <Outlet />
-        </div>
-        <TanStackRouterDevtools position="bottom-right" />
-        <Scripts />
-      </body>
-    </html>
+    <RootSSRLoaderContextProvider value={data}>
+      <html lang="en">
+        <head>
+          <HeadContent />
+        </head>
+        <body>
+          <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
+            <Header />
+            <Outlet />
+          </div>
+          <TanStackRouterDevtools position="bottom-right" />
+          <Scripts />
+        </body>
+      </html>
+    </RootSSRLoaderContextProvider>
   );
 }

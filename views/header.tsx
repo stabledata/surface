@@ -1,9 +1,8 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { getRouteApi, Link, useRouterState } from "@tanstack/react-router";
 import { Github, RefreshCw } from "lucide-react";
 import { useBusyRouter } from "./hooks/use-busy-router";
-import { useRootSsrCtx } from "./hooks/use-root-ssr-ctx";
 import { useRootStore } from "../state/root.store";
-
+import { useRootSsrCtx } from "./hooks/use-root-ssr-ctx";
 const activeProps = {
   className: "underline",
 };
@@ -11,11 +10,10 @@ const activeProps = {
 export function Header() {
   const isLoading = useBusyRouter();
   const { location } = useRouterState();
+  const ssr = useRootSsrCtx();
   const { user: clientStoreUser } = useRootStore();
-  const ssrCtx = useRootSsrCtx();
-  const SSRUser = ssrCtx?.user;
-  const user = clientStoreUser || SSRUser;
-  console.log("loading", isLoading);
+  const user = clientStoreUser ?? ssr?.user;
+
   return (
     <div className="flex items-center justify-center gap-5">
       <Link to="/" activeProps={activeProps} activeOptions={{ exact: true }}>
