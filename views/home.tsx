@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { FileDigit } from "lucide-react";
+import { Button } from "./components/ui/button";
 function App() {
   const [count, setCount] = useState(0);
   return (
-    <div className="flex flex-col gap-5 justify-center items-center max-w-md m-auto mt-10">
-      <div className="flex gap-5 items-center">
+    <div className="flex flex-col items-center justify-center max-w-md gap-5 m-auto mt-10">
+      <div className="flex items-center gap-5">
         <img
           src="/assets/surface.svg"
           width={80}
@@ -16,24 +17,24 @@ function App() {
 
       <h1 className="text-4xl">Surface</h1>
 
-      <p className="text-md font-medium">You might have a new BFF.</p>
+      <p className="font-medium text-md">You might have a new BFF.</p>
 
-      <h3 className="text-center w-full leading-8 text-md">
+      <h3 className="w-full leading-8 text-center text-md">
         Built with Vite, React, Hono, Tanstack and Zustand.
       </h3>
 
-      <p className="text-center w-full leading-7 text-sm">
+      <p className="w-full text-sm leading-7 text-center">
         <strong className="font-semibold">Surface isn't a framework.</strong>{" "}
         It's a pattern for building web applications that unifies your client
         and service gateway.
       </p>
 
-      <div className="text-center mt-4">
-        <button onClick={() => setCount((count) => count + 1)}>
+      <div className="mt-4 text-center">
+        <Button onClick={() => setCount((count) => count + 1)}>
           count is {count}
-        </button>
+        </Button>
       </div>
-      <p className="text-xs flex gap-1 items-center">
+      <p className="flex items-center gap-1 text-xs">
         <span>Homage to Vite default page</span> <FileDigit size={13} />
       </p>
     </div>
