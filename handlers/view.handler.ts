@@ -31,7 +31,6 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
     html = await res.text();
 
     const devHeaders = `
-      <script src="https://cdn.tailwindcss.com"></script>
       <script type="module">
         import RefreshRuntime from "/@react-refresh"
         RefreshRuntime.injectIntoGlobalHook(window)
