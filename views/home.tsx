@@ -1,18 +1,13 @@
 import { useState } from "react";
 import { FileDigit } from "lucide-react";
 import { Button } from "./components/ui/button";
+import { SurfaceIcon } from "./components/icon/SurfaceIcon";
 function App() {
   const [count, setCount] = useState(0);
   return (
     <div className="flex flex-col items-center justify-center max-w-md gap-5 m-auto mt-10">
       <div className="flex items-center gap-5">
-        <img
-          src="/assets/surface.svg"
-          width={80}
-          height={80}
-          className="w-20"
-          alt="Surface logo"
-        />
+        <SurfaceIcon className="w-22 h-22" />
       </div>
 
       <h1 className="text-4xl">Surface</h1>
