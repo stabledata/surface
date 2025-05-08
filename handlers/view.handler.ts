@@ -18,7 +18,7 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
     });
 
     const entry = await (async () => {
-      return viteServer.ssrLoadModule("/views/server.ts");
+      return viteServer.ssrLoadModule("/views/ssr.ts");
     })();
 
     const res = await entry.render({
@@ -45,7 +45,7 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
 
     html = html.replace("</head>", `${devHeaders}</head>`);
   } else {
-    const entry = await import("../views/server.js");
+    const entry = await import("../views/ssr.js");
     const res = await entry.render({
       head: "",
       req: c.req,
