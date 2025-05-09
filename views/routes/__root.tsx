@@ -7,12 +7,18 @@ import {
 } from "@tanstack/react-router";
 import { RouterContext } from "../router";
 import { Header } from "../header";
+import {
+  DarkModeProvider,
+  ThemeProvider,
+} from "@/providers/dark-mode.provider";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   head: (ctx) => {
-    // TODO: Figure out how to do this in other matches better.
+    // TODO: Figure out how to do this in other matches better..
+    // ideally we can SSR for SEO here.
     const title =
-      ctx.loaderData?.title ?? "Surface: The best start to build your app";
+      (ctx.loaderData as unknown as { title?: string })?.title ??
+      "Surface: The best way to build your app";
     return {
       meta: [
         {
@@ -33,7 +39,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     return {
       ...context,
       foo: "bar",
-      title: "Surface!",
+      // title: "Surface!",
     };
   },
 });
@@ -44,14 +50,16 @@ function RootComponent() {
       <head>
         <HeadContent />
       </head>
-      <body>
-        <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
-          <Header />
-          <Outlet />
-        </div>
-        <TanStackRouterDevtools position="bottom-right" />
-        <Scripts />
-      </body>
+      <DarkModeProvider>
+        <body>
+          <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
+            <Header />
+            <Outlet />
+          </div>
+          <TanStackRouterDevtools position="bottom-right" />
+          <Scripts />
+        </body>
+      </DarkModeProvider>
     </html>
   );
 }
