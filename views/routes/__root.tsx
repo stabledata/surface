@@ -7,32 +7,39 @@ import {
 } from "@tanstack/react-router";
 import { RouterContext } from "../router";
 import { Header } from "../header";
-
-const header = () => {
-  // TODO: Using the rendering context we can probably update the title if we want which matters for SSR / SEO
-  return {
-    meta: [
-      {
-        title: "Surface",
-      },
-      {
-        charSet: "UTF-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1.0",
-      },
-    ],
-  };
-};
+import {
+  DarkModeProvider,
+  ThemeProvider,
+} from "@/providers/dark-mode.provider";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  head: header,
-  component: RootComponent,
-  loader: async () => {
-    // root loader
+  head: (ctx) => {
+    // TODO: Figure out how to do this in other matches better..
+    // ideally we can SSR for SEO here.
+    const title =
+      (ctx.loaderData as unknown as { title?: string })?.title ??
+      "Surface: The best way to build your app";
     return {
+      meta: [
+        {
+          title,
+        },
+        {
+          charSet: "UTF-8",
+        },
+        {
+          name: "viewport",
+          content: "width=device-width, initial-scale=1.0",
+        },
+      ],
+    };
+  },
+  component: RootComponent,
+  loader: async ({ context }) => {
+    return {
+      ...context,
       foo: "bar",
+      // title: "Surface!",
     };
   },
 });
@@ -43,15 +50,16 @@ function RootComponent() {
       <head>
         <HeadContent />
       </head>
-
-      <body>
-        <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
-          <Header />
-          <Outlet />
-        </div>
-        <TanStackRouterDevtools position="bottom-right" />
-        <Scripts />
-      </body>
+      <DarkModeProvider>
+        <body>
+          <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
+            <Header />
+            <Outlet />
+          </div>
+          <TanStackRouterDevtools position="bottom-right" />
+          <Scripts />
+        </body>
+      </DarkModeProvider>
     </html>
   );
 }

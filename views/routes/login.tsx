@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useUser } from "../hooks/use-user";
+import { useAppState } from "../hooks/use-app-state";
 import React from "react";
 
 export const Route = createFileRoute("/login")({
@@ -7,7 +7,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
-  const user = useUser();
+  const { user } = useAppState();
   const nav = useNavigate();
   React.useEffect(() => {
     if (user) {
@@ -16,7 +16,7 @@ function Login() {
   });
   return (
     <div className="p-5 text-center">
-      <h1 className="text-2xl mb-5">Members only area!</h1>
+      <h1 className="mb-5 text-2xl">Members only area!</h1>
       <p>
         <a href="/auth/login?return=/members">Login first</a>
       </p>

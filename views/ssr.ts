@@ -48,7 +48,7 @@ export async function render(opts: {
     createRouter: () => createRouter({ ...ssrState }),
     request,
     // TODO: Maybe this is a cleaner approach than
-    // head tag bashing in view.handler
+    // head tag bashing in handlers/view.handler.tsx
     // getRouterManifest: () => ...
   })(defaultStreamHandler);
 }
