@@ -13,7 +13,7 @@ export function Header() {
   const { user } = useAppState();
 
   return (
-    <div className="flex items-center justify-center gap-5">
+    <div className="flex items-center justify-center gap-8 py-3 text-sm bg-white border-b dark:bg-black border-border">
       <Link to="/" activeProps={activeProps} activeOptions={{ exact: true }}>
         Home
       </Link>
