@@ -7,10 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { RouterContext } from "../router";
 import { Header } from "../header";
-import {
-  DarkModeProvider,
-  ThemeProvider,
-} from "@/providers/dark-mode.provider";
+import { DarkModeProvider } from "@/providers/dark-mode.provider";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   head: (ctx) => {
