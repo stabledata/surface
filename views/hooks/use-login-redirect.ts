@@ -1,11 +1,11 @@
 import React from "react";
-import { useUser } from "./use-user";
+import { useAppState } from "./use-app-state";
 import { useNavigate } from "@tanstack/react-router";
 import { User } from "../../endpoints/auth/auth.endpoints";
 
 export function useLoginRedirect(): User | undefined {
   const nav = useNavigate();
-  const user = useUser();
+  const { user } = useAppState();
 
   React.useEffect(() => {
     if (user) return;

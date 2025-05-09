@@ -10,7 +10,7 @@ function App() {
         <SurfaceIcon className="w-22 h-22" />
       </div>
 
-      <h1 className="text-4xl">Surface</h1>
+      <h1 className="text-4xl font-bold uppercase">Surface</h1>
 
       <p className="font-medium text-md">You might have a new BFF.</p>
 

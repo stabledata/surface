@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Github, RefreshCw } from "lucide-react";
 import { useBusyRouter } from "./hooks/use-busy-router";
-import { useUser } from "./hooks/use-user";
+import { useAppState } from "./hooks/use-app-state";
 
 const activeProps = {
   className: "underline",
@@ -10,7 +10,7 @@ const activeProps = {
 export function Header() {
   const isLoading = useBusyRouter();
   const { location } = useRouterState();
-  const user = useUser();
+  const { user } = useAppState();
 
   return (
     <div className="flex items-center justify-center gap-5">
