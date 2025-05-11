@@ -30,16 +30,18 @@ export function Header() {
         <a href={`/auth/login?return=${location.pathname}`}>Login</a>
       ) : (
         <div className="flex items-center gap-5">
-          Hi {user.name}!{" "}
-          <div
-            className="w-5 h-5 bg-center bg-cover rounded-full"
-            style={{ backgroundImage: `url(${user.profilePicture})` }}
-          />
+          <a href="/team" className="flex items-center gap-2">
+            Hi {user.name}!{" "}
+            <div
+              className="w-5 h-5 bg-center bg-cover rounded-full"
+              style={{ backgroundImage: `url(${user.profilePicture})` }}
+            />
+          </a>
           <a href={`/auth/logout?return=${location.pathname}`}>Logout</a>
         </div>
       )}
       <IconSwitch
-        className="w-5"
+        className="w-5 cursor-pointer"
         onIcon={<Moon className="size-5" />}
         offIcon={<Sun className="size-5" />}
         value={mode === "dark" ? "on" : "off"}

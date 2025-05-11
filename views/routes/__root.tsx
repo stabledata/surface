@@ -6,7 +6,6 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { RouterContext } from "../router";
-import { Header } from "../header";
 import { DarkModeProvider } from "@/providers/dark-mode.provider";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -50,7 +49,6 @@ function RootComponent() {
       <DarkModeProvider>
         <body>
           <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
-            <Header />
             <Outlet />
           </div>
           <TanStackRouterDevtools position="bottom-right" />

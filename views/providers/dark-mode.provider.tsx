@@ -2,6 +2,10 @@ import { createContext, useState, useEffect } from "react";
 
 const getPreferredDarkMode = (): Mode => {
   if (typeof window !== "undefined") {
+    const storedMode = localStorage.getItem("darkMode") as Mode | null;
+    if (storedMode) {
+      return storedMode;
+    }
     const preferredDarkMode = window.matchMedia("(prefers-color-scheme: dark)")
       .matches
       ? "dark"
@@ -27,6 +31,7 @@ export const DarkModeProvider: React.FC<React.PropsWithChildren> = ({
 }) => {
   const [mode, setMode] = useState(getPreferredDarkMode);
 
+  console.log("DarkModeProvider", mode);
   useEffect(() => {
     if (mode === "dark") {
       document.body.classList.add("dark");
@@ -37,6 +42,7 @@ export const DarkModeProvider: React.FC<React.PropsWithChildren> = ({
 
   const setDarkMode = (mode: Mode) => {
     setMode(mode);
+    localStorage.setItem("darkMode", mode);
   };
 
   return (
