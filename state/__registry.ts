@@ -1,7 +1,8 @@
 import { StateCreator, StoreApi } from "zustand";
 import { SurfaceContext } from "../surface.app.ctx";
 import { RouterContext } from "../views/router";
-import { AppState } from "./root.store";
+
+export interface AppState {}
 
 export type StoreCreator<T> = StateCreator<
   AppState,
@@ -35,6 +36,6 @@ export const registerLoader = (fn: ServerSideLoaderFn) => {
   registeredServerStateModules.push(fn);
 };
 
-export const registerHydrator = (fn: ClientSideHydrateFn) => {
+export const hydrateClient = (fn: ClientSideHydrateFn) => {
   registeredClientStateModules.push(fn);
 };

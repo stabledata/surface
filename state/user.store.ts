@@ -1,10 +1,8 @@
 import { User } from "../endpoints/auth/auth.endpoints";
 import { SurfaceContext } from "../surface.app.ctx";
-import { registerHydrator, registerLoader, StoreCreator } from "./__registry";
+import { registerLoader, StoreCreator } from "./__registry";
 import { logger } from "../logger/logger";
 import { getUser } from "../endpoints/auth/auth.helpers";
-import { RouterContext } from "@/router";
-import { useAppStore } from "./root.store";
 
 type WithUser = {
   user?: User | undefined;
@@ -14,7 +12,7 @@ type UserStore = WithUser & {
   setUser: (user: User) => void;
 };
 
-declare module "./root.store" {
+declare module "./__registry" {
   interface AppState extends UserStore {}
 }
 
@@ -33,12 +31,4 @@ registerLoader(async (c: SurfaceContext) => {
   return {
     user,
   };
-});
-
-registerHydrator((context: RouterContext) => {
-  const { user } = context;
-  if (user) {
-    logger.debug("hydrating user client side:", user);
-    useAppStore.setState({ user });
-  }
 });

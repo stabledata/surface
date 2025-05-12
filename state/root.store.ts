@@ -4,8 +4,8 @@ import { useUserStore } from "./user.store";
 import { useCount } from "./count";
 import { useThemeStore } from "./theme";
 import { persist } from "zustand/middleware";
-
-export interface AppState {}
+import { AppState, hydrateClient } from "./__registry";
+import { RouterContext } from "@/router";
 
 export const useAppStore = create<AppState>()(
   devtools(
@@ -27,3 +27,10 @@ export const useAppStore = create<AppState>()(
     }
   )
 );
+
+hydrateClient((context: RouterContext) => {
+  const { user } = context;
+  if (user) {
+    useAppStore.setState({ count: 0, user });
+  }
+});

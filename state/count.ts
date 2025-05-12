@@ -1,7 +1,4 @@
-import { registerHydrator, StoreCreator } from "./__registry";
-import { logger } from "../logger/logger";
-import { RouterContext } from "@/router";
-import { useAppStore } from "./root.store";
+import { StoreCreator } from "./__registry";
 
 type WithCount = {
   count: number;
@@ -12,7 +9,7 @@ type CountStore = WithCount & {
   decrement: () => void;
 };
 
-declare module "./root.store" {
+declare module "./__registry" {
   interface AppState extends CountStore {}
 }
 
@@ -22,12 +19,4 @@ export const useCount: StoreCreator<CountStore> = (set, get) => ({
     set({ count: get().count + 1 }, false, { type: "count/increment" }),
   decrement: () =>
     set({ count: get().count + 1 }, false, { type: "count/decrement" }),
-});
-
-registerHydrator((context: RouterContext) => {
-  const { user } = context;
-  if (user) {
-    logger.debug("hydrating count client side:", user);
-    useAppStore.setState({ count: 0 });
-  }
 });

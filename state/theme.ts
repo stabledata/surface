@@ -9,7 +9,7 @@ type ThemeStore = WithTheme & {
   setIsDarkMode: (isDarkMode: boolean) => void;
 };
 
-declare module "./root.store" {
+declare module "./__registry" {
   interface AppState extends ThemeStore {}
 }
 
