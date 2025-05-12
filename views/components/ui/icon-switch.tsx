@@ -20,12 +20,14 @@ export const IconSwitch = React.forwardRef<
     "top-0 group-hover:top-[-40px] group-focus-visible:top-[-40px]";
 
   // If just toggled is true we invert the positions so it stays "switched"
+  console.log("justToggled", justToggled);
+  console.log("value", value);
   const usePositions = React.useMemo(() => {
-    if (justToggled) {
-      return value === "off" ? onPositions : offPositions;
-    }
+    // if (justToggled) {
+    //   return value === "off" ? onPositions : offPositions;
+    // }
     return value === "off" ? offPositions : onPositions;
-  }, [justToggled, value]);
+  }, [value]);
 
   return (
     <Button

@@ -24,7 +24,7 @@ declare module "../views/router" {
 
 export const useUserStore: StoreCreator<UserStore> = (set) => ({
   user: undefined,
-  setUser: (user: User) => set({ user }),
+  setUser: (user: User) => set({ user }, false, { type: "user/setUser" }),
 });
 
 registerLoader(async (c: SurfaceContext) => {
@@ -34,7 +34,6 @@ registerLoader(async (c: SurfaceContext) => {
     user,
   };
 });
-``;
 
 registerHydrator((context: RouterContext) => {
   const { user } = context;

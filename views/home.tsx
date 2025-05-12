@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { FileDigit } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { SurfaceIcon } from "./components/icon/SurfaceIcon";
 import { Header } from "./header";
+import { useAppState } from "./hooks/use-app-state";
 function App() {
-  const [count, setCount] = useState(0);
+  const { count, increment } = useAppState();
   return (
     <div>
       <Header />
@@ -28,9 +28,7 @@ function App() {
         </p>
 
         <div className="mt-4 text-center">
-          <Button onClick={() => setCount((count) => count + 1)}>
-            count is {count}
-          </Button>
+          <Button onClick={() => increment()}>count is {count}</Button>
         </div>
         <p className="flex items-center gap-1 text-xs">
           <span>Homage to Vite default page</span> <FileDigit size={13} />

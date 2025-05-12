@@ -1,8 +1,7 @@
 import { StateCreator, StoreApi } from "zustand";
 import { SurfaceContext } from "../surface.app.ctx";
 import { RouterContext } from "../views/router";
-
-export interface AppState {}
+import { AppState } from "./root.store";
 
 export type StoreCreator<T> = StateCreator<
   AppState,
