@@ -13,8 +13,6 @@ export function Header() {
   const { location } = useRouterState();
   const { user, isDarkMode, toggleDarkMode } = useAppState();
 
-  console.log("dark mode header wtf???", isDarkMode);
-
   return (
     <div className="flex items-center justify-center gap-6 py-3 text-sm bg-white border-b dark:bg-black border-sidebar-border">
       <Link to="/" activeProps={activeProps} activeOptions={{ exact: true }}>

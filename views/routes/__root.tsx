@@ -38,7 +38,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootComponent() {
   const ctx = Route.useLoaderData();
   const { isDarkMode } = useAppState();
-  console.log("is dark mode? root", isDarkMode);
+
   return (
     <html lang="en">
       <head>
