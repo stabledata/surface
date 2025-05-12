@@ -4,7 +4,7 @@ import { registerHydrator, registerLoader, StoreCreator } from "./__registry";
 import { logger } from "../logger/logger";
 import { getUser } from "../endpoints/auth/auth.helpers";
 import { RouterContext } from "@/router";
-import { useRootStore } from "./root.store";
+import { useAppStore } from "./root.store";
 
 type WithUser = {
   user?: User | undefined;
@@ -15,7 +15,7 @@ type UserStore = WithUser & {
 };
 
 declare module "./root.store" {
-  interface SurfaceState extends UserStore {}
+  interface AppState extends UserStore {}
 }
 
 declare module "../views/router" {
@@ -34,11 +34,12 @@ registerLoader(async (c: SurfaceContext) => {
     user,
   };
 });
+``;
 
 registerHydrator((context: RouterContext) => {
   const { user } = context;
   if (user) {
     logger.debug("hydrating user client side:", user);
-    useRootStore.setState({ user });
+    useAppStore.setState({ user });
   }
 });

@@ -2,10 +2,10 @@ import { StateCreator, StoreApi } from "zustand";
 import { SurfaceContext } from "../surface.app.ctx";
 import { RouterContext } from "../views/router";
 
-export interface SurfaceState {}
+export interface AppState {}
 
 export type StoreCreator<T> = StateCreator<
-  SurfaceState,
+  AppState,
   [["zustand/devtools", never]],
   [],
   T
@@ -19,7 +19,7 @@ declare global {
   }
 }
 
-export type SurfaceStore = StoreApi<SurfaceState> & {
+export type SurfaceStore = StoreApi<AppState> & {
   addSlice: <T>(name: string, slice: StoreCreator<T>) => void;
 };
 

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { useUserStore } from "./user.store";
 
-export const useRootStore = create<SurfaceState>()(
+export const useAppStore = create<AppState>()(
   devtools(
     (get, set, store) => {
       return {

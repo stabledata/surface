@@ -1,10 +1,10 @@
 import { getRouteApi } from "@tanstack/react-router";
-import { useRootStore } from "../../state/root.store";
+import { useAppStore } from "../../state/root.store";
 
 export function useAppState() {
   const ssrLoader = getRouteApi("__root__");
   const ssrContext = ssrLoader.useLoaderData();
-  const state = useRootStore();
+  const state = useAppStore();
   return {
     ...ssrContext,
     ...state,
