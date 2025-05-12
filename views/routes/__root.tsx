@@ -7,18 +7,14 @@ import {
 } from "@tanstack/react-router";
 import { RouterContext } from "../router";
 import { DarkModeProvider } from "@/providers/dark-mode.provider";
+import { RootContextProvider } from "@/providers/root-context-provider";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  head: (ctx) => {
-    // TODO: Figure out how to do this in other matches better..
-    // ideally we can SSR for SEO here.
-    const title =
-      (ctx.loaderData as unknown as { title?: string })?.title ??
-      "Surface: The best way to build your app";
+  head: () => {
     return {
       meta: [
         {
-          title,
+          title: "Surface: The best way to build your app",
         },
         {
           charSet: "UTF-8",
@@ -35,26 +31,28 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     return {
       ...context,
       foo: "bar",
-      // title: "Surface!",
     };
   },
 });
 
 function RootComponent() {
+  const ctx = Route.useLoaderData();
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
-      <DarkModeProvider>
-        <body>
-          <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
-            <Outlet />
-          </div>
-          <TanStackRouterDevtools position="bottom-right" />
-          <Scripts />
-        </body>
-      </DarkModeProvider>
+      <RootContextProvider ctx={ctx}>
+        <DarkModeProvider>
+          <body>
+            <div className="background-base background-gradient min-h-[100vh] w-full pb-10">
+              <Outlet />
+            </div>
+            <TanStackRouterDevtools position="bottom-right" />
+            <Scripts />
+          </body>
+        </DarkModeProvider>
+      </RootContextProvider>
     </html>
   );
 }

@@ -10,7 +10,7 @@ export const useAppStore = create<AppState>()(
       };
     },
     {
-      enabled: true,
+      enabled: typeof window !== "undefined",
     }
   )
 );

@@ -14,12 +14,15 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useAppState } from "@/hooks/use-app-state";
 
 export const Route = createFileRoute("/team")({
   component: TeamDashboard,
 });
 
 function TeamDashboard() {
+  const { user } = useAppState();
+  console.log("user on server?", user);
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -32,7 +35,7 @@ function TeamDashboard() {
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">
-                    Building Your Application
+                    Building Your Application {user?.name}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
