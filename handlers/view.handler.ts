@@ -40,6 +40,8 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
       </script>
       <script type="module" src="/@vite/client"></script>
       <script type="module" src="/views/client.tsx"></script>
+      <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+      
     `;
 
     html = html.replace("</head>", `${devHeaders}</head>`);
@@ -68,16 +70,12 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
       headTags.push(`<link rel="stylesheet" crossorigin href="/${css}">`);
     }
 
+    // TODO: favicon could be more robust here
+    headTags.push(
+      `<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />`
+    );
+
     html = html.replace("</head>", `${headTags.join("")}</head>`);
   }
-
-  // We used to be able to do this which was a touch cleaner
-  // but results now in client hydration errors.
-  // const indexFilePath =
-  //   process.env["NODE_ENV"] === "production"
-  //     ? "build/index.html"
-  //     : "./index.dev.html";
-  // const indexContents = await readFile(indexFilePath, "utf-8");
-
   return c.html(html);
 });
