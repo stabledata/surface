@@ -19,6 +19,10 @@ export const bindOpenAPIRouteToApp = (
           },
           servers: [
             { url: "http://localhost:4000", description: "Local Dev Server" },
+            {
+              url: "https://surface.makeitstable.com",
+              description: "Demo Live Server",
+            },
           ],
         },
       })
