@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import dotenv from "dotenv";
 
 import { applyContext, type SurfaceEnv } from "./surface.app.ctx";
-import { handleStaticAssets } from "./handlers/assets.middlware";
+import { handleStaticAssets } from "./handlers/assets.handler";
 import { ping } from "./endpoints/ping/ping.endpoints";
 import { sessions } from "./endpoints/auth/auth.endpoints";
 import { members } from "./endpoints/members/members.endpoints";
@@ -16,7 +16,7 @@ export const app = new Hono<SurfaceEnv>();
 // TODO: security and all the other things should be done here e.g.:
 // hono.dev/docs/middleware/builtin/secure-headers#secure-headers-middleware
 //.use(compress())
-// app.use(secureHeaders())
+//.use(secureHeaders())
 
 // bind the openapi specs to the app
 // https://hono.dev/examples/hono-openapi#hono-openapi

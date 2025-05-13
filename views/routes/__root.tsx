@@ -8,6 +8,7 @@ import {
 import { RouterContext } from "../router";
 import { RootContextProvider } from "@/providers/root-context-provider";
 import { useAppState } from "@/hooks/use-app-state";
+import { NotFound } from "@/error";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => {
@@ -27,6 +28,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     };
   },
   component: RootComponent,
+  notFoundComponent: NotFound,
   loader: async ({ context }) => {
     return {
       ...context,
