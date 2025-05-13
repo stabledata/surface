@@ -15,7 +15,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     return {
       meta: [
         {
-          title: "Surface: The best way to build your app",
+          title: "Surface: A backend for Vite clients with built-in auth",
+          description:
+            "Surface is a backend for Vite clients with built-in auth",
         },
         {
           charSet: "UTF-8",

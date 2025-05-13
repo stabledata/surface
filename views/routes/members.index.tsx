@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Await } from "@tanstack/react-router";
 import { Users } from "lucide-react";
-import { User } from "../../endpoints/auth/auth.endpoints";
+import { User } from "../../service/auth/auth.endpoints";
 import { useLoginRedirect } from "../hooks/use-login-redirect";
 
 type MembersResponse = {

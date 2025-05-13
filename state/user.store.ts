@@ -1,8 +1,8 @@
-import { User } from "../endpoints/auth/auth.endpoints";
+import { User } from "../service/auth/auth.endpoints";
 import { SurfaceContext } from "../surface.app.ctx";
 import { registerLoader, StoreCreator } from "./__registry";
 import { logger } from "../logger/logger";
-import { getUser } from "../endpoints/auth/auth.helpers";
+import { getUser } from "../service/auth/auth.helpers";
 
 type WithUser = {
   user?: User | undefined;

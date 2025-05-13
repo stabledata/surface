@@ -3,9 +3,9 @@ import dotenv from "dotenv";
 
 import { applyContext, type SurfaceEnv } from "./surface.app.ctx";
 import { handleStaticAssets } from "./handlers/assets.handler";
-import { ping } from "./endpoints/ping/ping.endpoints";
-import { sessions } from "./endpoints/auth/auth.endpoints";
-import { members } from "./endpoints/members/members.endpoints";
+import { ping } from "./service/ping/ping.endpoints";
+import { sessions } from "./service/auth/auth.endpoints";
+import { members } from "./service/members/members.endpoints";
 import { ssr } from "./handlers/view.handler";
 import { errorHandler } from "./handlers/error.handler";
 import { bindOpenAPIRouteToApp } from "./handlers/openapi.handler";
