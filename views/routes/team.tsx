@@ -22,7 +22,7 @@ export const Route = createFileRoute("/team")({
 
 function TeamDashboard() {
   const { user } = useAppState();
-  console.log("user on server?", user);
+
   return (
     <SidebarProvider>
       <AppSidebar />
