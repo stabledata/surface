@@ -70,7 +70,7 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
       headTags.push(`<link rel="stylesheet" crossorigin href="/${css}">`);
     }
 
-    // TODO: favicon could be more robust here
+    // TODO: icon generator could be more robust here, maybe via manifest or something nicer...
     headTags.push(
       `<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />`
     );
