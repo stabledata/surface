@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:docker": "bun run --bun vite",
-    "build": "tsr generate && vite build && cp -r views/assets/ build/assets/",
+    "build": "tsr generate && vite build && cp -r views/assets/* build/assets/",
     "build:node": "npm run build && rollup -c rollup.config.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "start:node": "cross-env NODE_ENV=production DEBUG=surface:* node dist/surface.server.node.js",

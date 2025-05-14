@@ -54,7 +54,6 @@ jobs:
           credentials_json: "${{ secrets.GCP_CICD_KEY }}"
 
       - name: "Deploy"
-        if:
         run: |
           echo "***DO NOT USE*** THESE VALUES IN PRODUCTION!"
           echo "USE SECRETS MANAGER FOR JWT SIGNING KEY, OR A THIRD PARTY PROVIDER LIKE HASHICORP."
