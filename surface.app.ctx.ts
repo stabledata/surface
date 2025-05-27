@@ -1,15 +1,19 @@
 import { Context } from "hono";
 import { hc } from "hono/client";
 import { createFactory } from "hono/factory";
-import { decode, sign, verify } from "hono/jwt";
+import * as jwt from "hono/jwt";
 import { getCookie, setCookie } from "hono/cookie";
 import { CookieOptions } from "hono/utils/cookie";
 import { logger } from "./logger/logger";
 
 import { memberServiceClient } from "./service/members/member.service.client";
 
-const jwt = { decode, sign, verify };
-
+/**
+ * This is a wrapper around the hono cookie utils to make them easier to use in the context
+ * of surface.
+ * @param c - The context of the request
+ * @returns An object with get and set methods for cookies
+ */
 export function cookies(c: SurfaceContext) {
   const get = (name: string) => {
     return getCookie(c, name);

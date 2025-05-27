@@ -6,6 +6,8 @@ import {
 import { SurfaceContext } from "../surface.app.ctx";
 import { createRouter, RouterContext } from "./router";
 import { registeredServerStateModules } from "../state/__registry";
+import { Api } from "surface.app";
+import { hc } from "hono/client";
 
 async function loadServerRouterContext(c: SurfaceContext) {
   const ssrInjectedState: Partial<RouterContext> = {};
@@ -43,9 +45,15 @@ export async function render(opts: {
   });
 
   const ssrState = await loadServerRouterContext(opts.c);
+  const rpcClient = hc<Api>(`${process.env.SELF_RPC_HOST}/`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${opts.c.var.cookies.get("session")}`,
+    },
+  });
 
   return createRequestHandler({
-    createRouter: () => createRouter({ ...ssrState }),
+    createRouter: () => createRouter({ ...ssrState, rpc: rpcClient }),
     request,
     // TODO: Maybe this is a cleaner approach than
     // head tag bashing in handlers/view.handler.tsx
