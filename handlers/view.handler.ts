@@ -55,6 +55,7 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
     });
 
     html = await res.text();
+    // This will produce an error (not resolved) until you build locally
     const manifest = await import("../build/.vite/manifest.json");
     const headTags = [];
     const indexManifest = manifest.default["index.html"];

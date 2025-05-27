@@ -9,7 +9,7 @@
     "build": "tsr generate && vite build && cp -r views/assets/* build/assets/",
     "build:node": "npm run build && rollup -c rollup.config.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "start:node": "cross-env NODE_ENV=production DEBUG=surface:* node dist/surface.server.node.js",
+    "start:node": "cross-env NODE_ENV=production DEBUG=surface:* node build/surface.server.node.js",
     "start:bun": "NODE_ENV=production bun surface.server.bun.ts",
     "start:bun:dev": "NODE_ENV=production bun --watch surface.server.bun.ts"
   },

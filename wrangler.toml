@@ -1,0 +1,16 @@
+name = "surface-worker"
+main = "build/surface.server.node.js"
+compatibility_date = "2024-06-01"
+account_id = "b62e074d4aec654a7525041d31ee63f2"
+workers_dev = true
+
+# Uncomment and edit the following if you want to use custom routes
+# routes = [
+#   "https://yourdomain.com/*"
+#]
+
+[env]
+NODE_ENV = "production"
+
+[assets]
+directory = "./build/assets" 

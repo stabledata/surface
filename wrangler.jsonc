@@ -3,7 +3,7 @@
   "name": "surface-worker",
 
   // The entry point for your Worker (adjust as needed)
-  "main": "dist/surface.server.node.js",
+  "main": "build/surface.server.node.wrangler.js",
 
   // The compatibility date for the Workers runtime
   "compatibility_date": "2024-06-01",
