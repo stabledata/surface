@@ -8,7 +8,6 @@
     "dev:docker": "bun run --bun vite",
     "build": "tsr generate && vite build && cp -r views/assets/* build/assets/",
     "build:node": "npm run build && rollup -c rollup.config.mjs",
-    "build:node:wrangler": "npm run build && rollup -c rollup.config.wrangler.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "start:node": "cross-env NODE_ENV=production DEBUG=surface:* node dist/surface.server.node.js",
     "start:bun": "NODE_ENV=production bun surface.server.bun.ts",

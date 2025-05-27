@@ -4,7 +4,6 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Scripts,
-  Manifest,
 } from "@tanstack/react-router";
 import { RouterContext } from "../router";
 import { RootContextProvider } from "@/providers/root-context-provider";
@@ -12,23 +11,7 @@ import { useAppState } from "@/hooks/use-app-state";
 import { NotFound } from "@/error";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  head: (ctx) => {
-    // This is gnar-bar but createRequestHandler is more start vs router so we pass through
-    // the same way we do for all the other data and the head gets the context and voila
-    const loaderData = ctx.loaderData as unknown as { manifest: Manifest };
-    const assets = loaderData.manifest.routes.__root__?.assets ?? [];
-    const links = assets
-      .filter((asset) => asset.tag === "link")
-      .map((link) => ({
-        rel: link.attrs?.rel,
-        href: link.attrs?.href,
-      }));
-
-    // console.log(
-    //   "loaderData with manifest links???",
-    //   JSON.stringify(assets, null, 2),
-    //   JSON.stringify(links, null, 2)
-    // );
+  head: () => {
     return {
       meta: [
         {
@@ -44,7 +27,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           content: "width=device-width, initial-scale=1.0",
         },
       ],
-      links: links,
     };
   },
   component: RootComponent,
