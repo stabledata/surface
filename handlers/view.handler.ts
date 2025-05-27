@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { SurfaceEnv } from "../surface.app.ctx";
 import { isDev } from "../env";
-import { readFile } from "node:fs/promises";
 
 export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
   let html = "";
@@ -56,11 +55,9 @@ export const ssr = new Hono<SurfaceEnv>().get("", async (c) => {
     });
 
     html = await res.text();
-    const manifest = JSON.parse(
-      (await readFile("./build/.vite/manifest.json")).toString()
-    );
+    const manifest = await import("../build/.vite/manifest.json");
     const headTags = [];
-    const indexManifest = manifest["index.html"];
+    const indexManifest = manifest.default["index.html"];
 
     headTags.push(
       `<script type="module" crossorigin src="/${indexManifest.file}"></script>`
