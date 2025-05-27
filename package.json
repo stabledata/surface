@@ -72,6 +72,6 @@
     "rollup-plugin-ignore-import": "^1.3.2",
     "tw-animate-css": "^1.2.9",
     "typescript": "^5.2.2",
-    "vite": "6.0.0"
+    "vite": "6.3.5"
   }
 }
