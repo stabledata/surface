@@ -17,7 +17,7 @@ const fakeMembers: User[] = [
 export const memberServiceClient = {
   getMembers: async (): Promise<User[]> => {
     // testing this method as an example now, so don't delay too much
-    // await new Promise((r) => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, 200));
     return fakeMembers;
   },
   getMember: async (id: string) => {

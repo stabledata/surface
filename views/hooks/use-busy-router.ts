@@ -10,7 +10,7 @@ export function useBusyRouter() {
     // don't actually set this state until the delay is over
     const delaySetBusy = setTimeout(() => {
       setIsBusy(busy);
-    }, 20);
+    }, 90);
 
     return () => {
       clearTimeout(delaySetBusy);
