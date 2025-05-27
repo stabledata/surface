@@ -1,5 +1,6 @@
 import {
   AnyRouter,
+  Manifest,
   createRouter as tanStackCreateRouter,
 } from "@tanstack/react-router";
 import { routeTree } from "../.routes.tree";
@@ -8,6 +9,7 @@ import { rpcClient } from "./client";
 
 export interface RouterContext {
   rpc?: typeof rpcClient;
+  manifest?: Manifest;
 }
 
 declare module "@tanstack/react-router" {
