@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.12.2",
-    "@hono/swagger-ui": "^0.5.1",
+    "@hono/swagger-ui": "^0.5.2",
     "@hono/zod-validator": "^0.4.3",
     "@radix-ui/react-avatar": "^1.1.9",
     "@radix-ui/react-collapsible": "^1.1.10",
