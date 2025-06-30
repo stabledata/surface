@@ -56,7 +56,7 @@
     "@rollup/plugin-typescript": "^11.1.6",
     "@tanstack/react-router-devtools": "^1.115.0",
     "@tanstack/router-cli": "^1.28.2",
-    "@types/bun": "^1.0.12",
+    "@types/bun": "^1.2.17",
     "@types/debug": "^4.1.12",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
