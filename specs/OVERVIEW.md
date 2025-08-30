@@ -48,7 +48,7 @@ No matter where in the app someone logs in, they should be redirected to the sam
 
 
 
-### Phase Two
+## Phase Two
 
 ### Starting a new project
 
@@ -65,11 +65,13 @@ We should also have a /home route that shows you what organizations you're a mem
 The user can now add instances of the three pillars as needed to the space.
 
 
-### File Management to Start
+## Phase Three
 
-To start, we will only be working with the silo service but later on we can add CMS type features beyond file/asset management.
+Create a silo space and create UI for a "photo/asset management library".
 
 
-### Baked in LLM Chat
+## Phase Four
 
-We also want to make sure you can chat with suface, so a hono endpoint capable of a set of tool calls and system prompt should be added as a route.
+### LLM Chat
+
+We also want to make sure you can chat with suface, so a hono endpoint `/chat` capable of a set of tool calls and system prompt should be added as a route.
