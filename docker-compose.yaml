@@ -1,42 +1,24 @@
-version: "3"
+version: "3.8"
 
 services:
-  surface-node:
-    build:
-      context: .
-      dockerfile: Dockerfile.node
-    env_file:
-      - .env
-    ports:
-      - "4001:4000"
-
-  surface-bun:
-    build:
-      context: .
-      dockerfile: Dockerfile.bun
-      target: prod
+  postgres:
+    image: postgres:16
+    container_name: surface-postgres
     environment:
-      - NODE_ENV=production
-    env_file:
-      - .env
+      POSTGRES_DB: surface
+      POSTGRES_USER: surface
+      POSTGRES_PASSWORD: surface
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "4002:4000"
-
-  dev:
-    build:
-      context: .
-      dockerfile: Dockerfile.bun
-      target: dev
-
-    environment:
-      - NODE_ENV=development
-      - DEBUG=surface:*
-      - JWT_SECRET=foo.bar.baz
-      - SELF_RPC_HOST=http://dev:4000
-
-    ports:
-      - "4000:4000"
-
+      - "5433:5432"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U surface -d surface"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  postgres_data:
