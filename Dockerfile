@@ -1,0 +1,17 @@
+FROM oven/bun:latest as base
+
+WORKDIR /app
+COPY ./tsconfig.json /app/tsconfig.json
+COPY ./package.json /app/package.json
+COPY ./bun.lockb /app/bun.lockb
+COPY . /app
+
+RUN bun install
+RUN bun install @rollup/rollup-linux-arm64-gnu --force
+
+FROM base as dev
+CMD ["bun", "run", "dev:docker"]
+
+FROM base as prod
+RUN bunx tsr generate
+CMD ["bun", "server/index.ts"]
