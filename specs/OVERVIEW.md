@@ -27,6 +27,13 @@ We will probably need a master db (postgres) used to track user projects (workos
 
 The deployment target for the application is a docker image for long term flexibility and future stateless scaling.
 
+
+## Phase One
+
+As a user, I should be able to see the landing page hit the create project button and be prompted to login via work OS. '
+
+If I am logged in, I land on the projects page.
+
 # User Experience
 
 ### Landing Page
@@ -38,6 +45,10 @@ For now, a temporary landing page is rendered with a simple logo and a button th
 ### Login
 
 No matter where in the app someone logs in, they should be redirected to the same place they came from after the flow.
+
+
+
+### Phase Two
 
 ### Starting a new project
 
