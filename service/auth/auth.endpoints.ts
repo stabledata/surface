@@ -5,6 +5,7 @@ import { describeRoute } from "hono-openapi";
 import { resolver } from "hono-openapi/zod";
 import { z } from "zod";
 import { AuthError } from "../../handlers/error.handler";
+import * as jose from "jose";
 
 export type User = {
   id: string;
@@ -203,6 +204,24 @@ export const sessions = new Hono<SurfaceEnv>()
       logger.info("User logging out");
 
       try {
+        // Get the access token to extract session ID
+        const accessToken = cookies.get("wos_access_token");
+        let sessionId: string | undefined;
+
+        if (accessToken) {
+          try {
+            // Extract session ID from the access token
+            const payload = jose.decodeJwt(accessToken);
+            sessionId = payload.sid as string;
+            logger.info(`Extracted session ID for logout: ${sessionId}`);
+          } catch (jwtError) {
+            logger.warn(
+              "Failed to extract session ID from access token",
+              jwtError,
+            );
+          }
+        }
+
         // Clear all auth cookies first
         cookies.set("wos_access_token", "", {
           path: "/",
@@ -230,10 +249,17 @@ export const sessions = new Hono<SurfaceEnv>()
         // Get the return URL for after logout
         const redirectTo = c.req.query("return") ?? "/";
 
-        // Create WorkOS logout URL that will properly terminate the session
-        const logoutUrl = workos.userManagement.getLogoutUrl({
-          redirectUri: `${env("BASE_URL")}${redirectTo}`, // Full URL where to redirect after logout
-        });
+        // Create WorkOS logout URL with session ID to properly terminate the session
+        const logoutParams: any = {
+          redirectUri: `${env("BASE_URL")}${redirectTo}`,
+        };
+
+        // Include session ID if we were able to extract it
+        if (sessionId) {
+          logoutParams.sessionId = sessionId;
+        }
+
+        const logoutUrl = workos.userManagement.getLogoutUrl(logoutParams);
 
         logger.info("Redirecting to WorkOS logout URL to terminate session");
         return c.redirect(logoutUrl);
