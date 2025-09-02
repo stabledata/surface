@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JWT_SECRET: "test.fake.secret"
+      WORKOS_API_KEY: "test.fake.workos.api.key"
+      WORKOS_CLIENT_ID: "test.fake.client.id"
+      WORKOS_REDIRECT_URI: "http://localhost:3000/auth/callback"
+      NODE_ENV: "test"
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
