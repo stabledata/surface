@@ -39,7 +39,7 @@ jobs:
       - name: "Push to AR"
         run: |
           docker build . \
-            -f Dockerfile.node \
+            -f Dockerfile.bun \
             -t ${{ secrets.GCP_AR_PATH }}/app:${GITHUB_SHA::6} \
             -t ${{ secrets.GCP_AR_PATH }}/app:latest
           docker push ${{ secrets.GCP_AR_PATH }}/app:${GITHUB_SHA::6}
