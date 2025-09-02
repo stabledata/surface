@@ -13,5 +13,5 @@ FROM base as dev
 CMD ["bun", "run", "dev:docker"]
 
 FROM base as prod
-RUN bunx tsr generate
+RUN bun run build
 CMD ["bun", "surface.server.bun.ts"]
