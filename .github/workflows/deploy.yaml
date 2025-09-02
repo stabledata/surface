@@ -59,10 +59,9 @@ jobs:
       - name: "Deploy"
         run: |
           echo "DEBUG: surface:*" >> env.yaml
-          echo "SELF_RPC_HOST: https://surface-demo-app-5v6fvk5ela-uw.a.run.app/" >> env.yaml
+          echo "SELF_RPC_HOST: https://surface.makeitstable.com/" >> env.yaml
           echo "NODE_ENV: production" >> env.yaml
-
-          echo "WORKOS_REDIRECT_URI: https://surface-demo-app-5v6fvk5ela-uw.a.run.app/auth/callback" >> env.yaml
+          echo "WORKOS_REDIRECT_URI: https://surface.makeitstable.com/auth/callback" >> env.yaml
           gcloud run deploy surface-demo-app \
             --image "${{ secrets.GCP_AR_PATH }}/app:${GITHUB_SHA::6}" \
             --env-vars-file env.yaml \
