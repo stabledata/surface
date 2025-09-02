@@ -12,14 +12,6 @@ Lots of credit is due to this [really great post](https://ayon.li/full-stack-dev
 
 You might notice both package-lock.json and bun.lockb. This is intentional as we intend to keep this code compatible with both run times for as long as necessary. Dockerfile examples for both will be included soon.
 
-# Principals
-
-Consciously working to reduce complexity is paramount to any software project, but perhaps even more so when we begin to blur the lines between client and server. Javascript has afforded us this ability, but we must wield the power responsibly.
-
-#### No Magic
-
-Nothing is abstracted away. This is a pattern for building web clients. There is no library, SDK, framework or anything more than a starting point. You can use it as a reference or a head start on your next project.
-
 #### Single Service BFF and Client
 
 Surface is deployed as a NodeJS (or Bun) app container with a [Hono](https://hono.dev/) backend. Routes are first matched by Hono and the catch all is delegated to [Tanstack Router](https://tanstack.com/router/latest) and renders a client that builds and runs a dev server on [Vite](https://vitejs.dev/).
