@@ -7,6 +7,9 @@ import { WorkOS } from "@workos-inc/node";
 import { errorHandler } from "../../handlers/error.handler";
 
 describe("auth endpoints", () => {
+  // Set up test environment variables
+  process.env.WORKOS_CLIENT_ID = "client_test_123";
+  process.env.WORKOS_REDIRECT_URI = "http://localhost:4000/auth/callback";
   // Mock logger
   const mockLogger = {
     ...logger,
@@ -15,7 +18,7 @@ describe("auth endpoints", () => {
   } as unknown as typeof logger;
 
   // Mock functions for WorkOS
-  const mockGetAuthorizationURL = mock();
+  const mockGetAuthorizationUrl = mock();
   const mockAuthenticateWithCode = mock();
   const mockAuthenticateWithRefreshToken = mock();
   const mockGetLogoutUrl = mock();
@@ -23,7 +26,7 @@ describe("auth endpoints", () => {
   // Mock WorkOS
   const mockWorkOS = {
     userManagement: {
-      getAuthorizationUrl: mockGetAuthorizationURL,
+      getAuthorizationUrl: mockGetAuthorizationUrl,
       authenticateWithCode: mockAuthenticateWithCode,
       authenticateWithRefreshToken: mockAuthenticateWithRefreshToken,
       getLogoutUrl: mockGetLogoutUrl,
@@ -50,7 +53,7 @@ describe("auth endpoints", () => {
     (mockLogger.error as any).mockClear?.();
     (mockCookies.get as any).mockClear?.();
     (mockCookies.set as any).mockClear?.();
-    mockGetAuthorizationURL.mockClear?.();
+    mockGetAuthorizationUrl.mockClear?.();
     mockAuthenticateWithCode.mockClear?.();
     mockAuthenticateWithRefreshToken.mockClear?.();
     mockGetLogoutUrl.mockClear?.();
@@ -75,16 +78,16 @@ describe("auth endpoints", () => {
       const mockAuthUrl =
         "https://api.workos.com/sso/authorize?response_type=code&client_id=test&redirect_uri=http://localhost:4000/api/auth/callback";
 
-      mockGetAuthorizationURL.mockReturnValue(mockAuthUrl);
+      mockGetAuthorizationUrl.mockReturnValue(mockAuthUrl);
 
       const response = await testApp.request("/login");
 
       expect(response.status).toBe(302);
       expect(response.headers.get("Location")).toBe(mockAuthUrl);
-      expect(mockGetAuthorizationURL).toHaveBeenCalledWith({
+      expect(mockGetAuthorizationUrl).toHaveBeenCalledWith({
         provider: "authkit",
-        redirectUri: "http://localhost:4000/api/auth/callback",
-        clientId: "client_01HRQ08WC5PECTJJFEVW410MC5",
+        redirectUri: "http://localhost:4000/auth/callback",
+        clientId: "client_test_123",
         state: "/",
       });
       expect(mockLogger.info).toHaveBeenCalledWith(
@@ -94,21 +97,21 @@ describe("auth endpoints", () => {
 
     it("should use return query parameter as state", async () => {
       const mockAuthUrl = "https://api.workos.com/sso/authorize";
-      mockGetAuthorizationURL.mockReturnValue(mockAuthUrl);
+      mockGetAuthorizationUrl.mockReturnValue(mockAuthUrl);
 
       await testApp.request("/login?return=/dashboard");
 
-      expect(mockGetAuthorizationURL).toHaveBeenCalledWith({
+      expect(mockGetAuthorizationUrl).toHaveBeenCalledWith({
         provider: "authkit",
-        redirectUri: "http://localhost:4000/api/auth/callback",
-        clientId: "client_01HRQ08WC5PECTJJFEVW410MC5",
+        redirectUri: "http://localhost:4000/auth/callback",
+        clientId: "client_test_123",
         state: "/dashboard",
       });
     });
 
     it("should return JSON for test requests", async () => {
       const mockAuthUrl = "https://api.workos.com/sso/authorize";
-      mockGetAuthorizationURL.mockReturnValue(mockAuthUrl);
+      mockGetAuthorizationUrl.mockReturnValue(mockAuthUrl);
 
       const response = await testApp.request("/login?test=true");
       const body = await response.json();
@@ -118,7 +121,7 @@ describe("auth endpoints", () => {
     });
 
     it("should handle WorkOS errors", async () => {
-      mockGetAuthorizationURL.mockImplementation(() => {
+      mockGetAuthorizationUrl.mockImplementation(() => {
         throw new Error("WorkOS error");
       });
 
@@ -163,7 +166,7 @@ describe("auth endpoints", () => {
 
       expect(mockAuthenticateWithCode).toHaveBeenCalledWith({
         code: "auth_code_123",
-        clientId: "client_01HRQ08WC5PECTJJFEVW410MC5",
+        clientId: "client_test_123",
       });
 
       expect(mockCookies.set).toHaveBeenCalledWith(
@@ -308,7 +311,10 @@ describe("auth endpoints", () => {
 
     it("should redirect to WorkOS logout URL when access token is present", async () => {
       // Mock getting an access token
-      (mockCookies.get as any).mockReturnValueOnce("mock.workos.access.token");
+      (mockCookies.get as any).mockImplementation((key: string) => {
+        if (key === "wos_access_token") return "mock.workos.access.token";
+        return undefined;
+      });
 
       // Mock WorkOS getLogoutUrl
       mockGetLogoutUrl.mockReturnValue(
@@ -343,7 +349,10 @@ describe("auth endpoints", () => {
     });
 
     it("should switch organization successfully", async () => {
-      (mockCookies.get as any).mockReturnValueOnce("valid.refresh.token");
+      (mockCookies.get as any).mockImplementation((key: string) => {
+        if (key === "wos_refresh_token") return "valid.refresh.token";
+        return undefined;
+      });
 
       const response = await testApp.request("/switch-organization", {
         method: "POST",
@@ -357,13 +366,13 @@ describe("auth endpoints", () => {
 
       expect(mockAuthenticateWithRefreshToken).toHaveBeenCalledWith({
         refreshToken: "valid.refresh.token",
-        clientId: "client_01HRQ08WC5PECTJJFEVW410MC5",
+        clientId: "client_test_123",
         organizationId: "org_123",
       });
     });
 
     it("should return 401 when no refresh token", async () => {
-      (mockCookies.get as any).mockReturnValueOnce(undefined);
+      (mockCookies.get as any).mockImplementation(() => undefined);
 
       const response = await testApp.request("/switch-organization", {
         method: "POST",
@@ -377,7 +386,10 @@ describe("auth endpoints", () => {
     });
 
     it("should handle WorkOS errors", async () => {
-      (mockCookies.get as any).mockReturnValueOnce("valid.refresh.token");
+      (mockCookies.get as any).mockImplementation((key: string) => {
+        if (key === "wos_refresh_token") return "valid.refresh.token";
+        return undefined;
+      });
       mockAuthenticateWithRefreshToken.mockRejectedValue(
         new Error("Organization not accessible"),
       );

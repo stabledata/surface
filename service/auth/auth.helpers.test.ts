@@ -1,13 +1,17 @@
-import { expect, it, mock, describe, beforeEach } from "bun:test";
+import { expect, it, mock, describe, beforeEach, spyOn } from "bun:test";
 import { getUser, hasSession, requireAuth } from "./auth.helpers";
 import { SurfaceContext } from "../../surface.app.ctx";
 import { WorkOS } from "@workos-inc/node";
 import * as jose from "jose";
 
 describe("auth helpers", () => {
+  // Set up test environment variables
+  process.env.WORKOS_CLIENT_ID = "client_test_123";
+
   const mockLogger = {
     error: mock(),
     info: mock(),
+    debug: mock(),
   };
 
   const mockCookies = {
@@ -20,9 +24,12 @@ describe("auth helpers", () => {
     sign: mock(),
   };
 
+  const mockGetUser = mock();
+
   const mockWorkOS = {
     userManagement: {
       authenticateWithRefreshToken: mock(),
+      getUser: mockGetUser,
     },
   } as unknown as WorkOS;
 
@@ -43,14 +50,18 @@ describe("auth helpers", () => {
     } as unknown as SurfaceContext;
   };
 
+  let jwtVerifySpy: any;
+
   beforeEach(() => {
-    // Reset all mocks without restoring them
-    (mockLogger.error as any).mockClear?.();
-    (mockLogger.info as any).mockClear?.();
-    (mockCookies.get as any).mockClear?.();
-    (mockCookies.set as any).mockClear?.();
-    (mockJwt.verify as any).mockClear?.();
-    (mockJwt.sign as any).mockClear?.();
+    // Reset existing spy or create new one
+    if (jwtVerifySpy) {
+      jwtVerifySpy.mockClear();
+    } else {
+      jwtVerifySpy = spyOn(jose, "jwtVerify");
+    }
+
+    // Reset WorkOS API mocks
+    mockGetUser.mockClear();
   });
 
   describe("getUser", () => {
@@ -58,7 +69,10 @@ describe("auth helpers", () => {
       const mockPayload = {
         sub: "user_123",
         email: "john@example.com",
+        given_name: "John",
+        family_name: "Doe",
         name: "John Doe",
+        picture: undefined,
         iat: 1234567890,
         exp: 1234567990,
         org_id: "org_123",
@@ -66,56 +80,76 @@ describe("auth helpers", () => {
         permissions: ["read", "write"],
       };
 
-      (mockCookies.get as any).mockReturnValue("valid.workos.access.token");
+      const context = createMockContext({
+        cookies: {
+          get: mock().mockReturnValue("valid.workos.access.token"),
+          set: mock(),
+        },
+      });
 
-      // Mock jose.jwtVerify
-      const mockJwtVerify = mock(() =>
-        Promise.resolve({ payload: mockPayload }),
-      );
-      (jose as any).jwtVerify = mockJwtVerify;
+      jwtVerifySpy.mockResolvedValue({ payload: mockPayload });
 
-      const context = createMockContext();
+      // Mock WorkOS User Management API response
+      mockGetUser.mockResolvedValue({
+        id: "user_123",
+        email: "john@example.com",
+        firstName: "John",
+        lastName: "Doe",
+        profilePictureUrl: null,
+      });
+
       const user = await getUser(context);
 
       expect(user).toEqual({
         id: "user_123",
-        name: "John Doe",
         email: "john@example.com",
-        roles: [],
-        profilePicture: undefined,
-        organizationId: "org_123",
+        given_name: "John",
+        family_name: "Doe",
+        name: "John Doe",
+        picture: null,
+        org_id: "org_123",
         role: "admin",
         permissions: ["read", "write"],
+        // Legacy compatibility
+        profilePicture: null,
+        organizationId: "org_123",
+        roles: ["read", "write"],
       });
 
-      expect(mockCookies.get).toHaveBeenCalledWith("wos_access_token");
+      expect(context.var.cookies.get).toHaveBeenCalledWith("wos_access_token");
+      expect(mockGetUser).toHaveBeenCalledWith("user_123");
     });
 
     it("should return undefined when no access token and refresh fails", async () => {
-      (mockCookies.get as any).mockReturnValue(undefined);
-
-      const context = createMockContext();
+      const context = createMockContext({
+        cookies: {
+          get: mock().mockReturnValue(undefined),
+          set: mock(),
+        },
+      });
       const user = await getUser(context);
 
       expect(user).toBeUndefined();
     });
 
     it("should attempt refresh when JWT verification fails", async () => {
-      (mockCookies.get as any)
+      const mockGet = mock()
         .mockReturnValueOnce("invalid.access.token")
         .mockReturnValueOnce("valid.refresh.token")
         .mockReturnValueOnce(undefined); // No new access token after failed refresh
 
-      const mockJwtVerify = mock(() =>
-        Promise.reject(new Error("Invalid token")),
-      );
-      (jose as any).jwtVerify = mockJwtVerify;
+      const context = createMockContext({
+        cookies: {
+          get: mockGet,
+          set: mock(),
+        },
+      });
+
+      jwtVerifySpy.mockRejectedValue(new Error("Invalid token"));
 
       (
         mockWorkOS.userManagement.authenticateWithRefreshToken as any
       ).mockRejectedValue(new Error("Refresh failed"));
-
-      const context = createMockContext();
       const user = await getUser(context);
 
       expect(user).toBeUndefined();
@@ -136,14 +170,15 @@ describe("auth helpers", () => {
         exp: 1234567990,
       };
 
-      (mockCookies.get as any).mockReturnValue("valid.workos.access.token");
+      const context = createMockContext({
+        cookies: {
+          get: mock().mockReturnValue("valid.workos.access.token"),
+          set: mock(),
+        },
+      });
 
-      const mockJwtVerify = mock(() =>
-        Promise.resolve({ payload: mockPayload }),
-      );
-      (jose as any).jwtVerify = mockJwtVerify;
+      jwtVerifySpy.mockResolvedValue({ payload: mockPayload });
 
-      const context = createMockContext();
       const session = await hasSession(context);
 
       expect(session).toEqual(mockPayload);
@@ -158,17 +193,17 @@ describe("auth helpers", () => {
         exp: 1234567990,
       };
 
-      (mockCookies.get as any).mockReturnValue(undefined);
-
-      const context = createMockContext();
+      const context = createMockContext({
+        cookies: {
+          get: mock().mockReturnValue(undefined),
+          set: mock(),
+        },
+      });
       context.req.header = mock().mockReturnValue(
         "Bearer valid.workos.access.token",
       );
 
-      const mockJwtVerify = mock(() =>
-        Promise.resolve({ payload: mockPayload }),
-      );
-      (jose as any).jwtVerify = mockJwtVerify;
+      jwtVerifySpy.mockResolvedValue({ payload: mockPayload });
 
       const session = await hasSession(context);
 
@@ -177,9 +212,12 @@ describe("auth helpers", () => {
     });
 
     it("should return false when no token available", async () => {
-      (mockCookies.get as any).mockReturnValue(undefined);
-
-      const context = createMockContext();
+      const context = createMockContext({
+        cookies: {
+          get: mock().mockReturnValue(undefined),
+          set: mock(),
+        },
+      });
       context.req.header = mock().mockReturnValue(undefined);
 
       const session = await hasSession(context);
@@ -188,26 +226,28 @@ describe("auth helpers", () => {
     });
 
     it("should return false when JWT verification fails and refresh fails", async () => {
-      (mockCookies.get as any)
+      const mockGet = mock()
         .mockReturnValueOnce("invalid.token")
         .mockReturnValueOnce("valid.refresh.token")
         .mockReturnValueOnce(undefined); // No new access token
 
-      const mockJwtVerify = mock(() =>
-        Promise.reject(new Error("Invalid token")),
-      );
-      (jose as any).jwtVerify = mockJwtVerify;
+      const context = createMockContext({
+        cookies: {
+          get: mockGet,
+          set: mock(),
+        },
+      });
+
+      jwtVerifySpy.mockRejectedValue(new Error("Invalid token"));
 
       (
         mockWorkOS.userManagement.authenticateWithRefreshToken as any
       ).mockRejectedValue(new Error("Refresh failed"));
-
-      const context = createMockContext();
       const session = await hasSession(context);
 
       expect(session).toBe(false);
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "No valid WorkOS session found",
+        "Failed to refresh WorkOS tokens",
         expect.any(Error),
       );
     });
@@ -216,14 +256,16 @@ describe("auth helpers", () => {
   describe("requireAuth", () => {
     it("should call next() for authenticated requests", async () => {
       const mockPayload = { sub: "user_123" };
-      (mockCookies.get as any).mockReturnValue("valid.workos.access.token");
 
-      const mockJwtVerify = mock(() =>
-        Promise.resolve({ payload: mockPayload }),
-      );
-      (jose as any).jwtVerify = mockJwtVerify;
+      const context = createMockContext({
+        cookies: {
+          get: mock().mockReturnValue("valid.workos.access.token"),
+          set: mock(),
+        },
+      });
 
-      const context = createMockContext();
+      jwtVerifySpy.mockResolvedValue({ payload: mockPayload });
+
       const next = mock();
 
       await requireAuth(context, next);
@@ -233,9 +275,12 @@ describe("auth helpers", () => {
     });
 
     it("should return 401 for unauthenticated requests", async () => {
-      (mockCookies.get as any).mockReturnValue(undefined);
-
-      const context = createMockContext();
+      const context = createMockContext({
+        cookies: {
+          get: mock().mockReturnValue(undefined),
+          set: mock(),
+        },
+      });
       context.req.header = mock().mockReturnValue(undefined);
       context.json = mock().mockReturnValue(new Response());
 

@@ -29,7 +29,7 @@ registerLoader(async (c: SurfaceContext) => {
   try {
     const user = await getUser(c);
     if (user) {
-      logger.debug(`User ${user.email} loaded for SSR`);
+      logger.debug(`User ${user.email || user.id || "unknown"} loaded for SSR`);
     }
 
     return {

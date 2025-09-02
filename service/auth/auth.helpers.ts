@@ -28,38 +28,60 @@ export async function getUser(c: SurfaceContext): Promise<User | undefined> {
         issuer: "https://api.workos.com",
       });
 
-      // Extract user info from WorkOS JWT claims
-      // Try different possible field names that WorkOS might use
-      const email =
-        (payload.email as string) || ((payload as any).user_email as string);
-      const name =
-        (payload.name as string) ||
-        ((payload as any).user_name as string) ||
-        ((payload as any).given_name as string) ||
-        ((payload as any).first_name as string) ||
-        email;
+      // Validate we got a payload
+      if (!payload || !payload.sub) {
+        c.var.logger.error("Invalid JWT payload - missing sub claim");
+        throw new Error("Invalid JWT payload");
+      }
 
-      const user: User = {
-        id: payload.sub as string,
-        name: name || email,
-        email: email,
-        roles: [], // Could be enhanced to derive from payload
-        profilePicture:
-          (payload.picture as string) ||
-          ((payload as any).profile_picture_url as string),
-        // Organization context from JWT
-        organizationId:
-          (payload.org_id as string) ||
-          ((payload as any).organization_id as string),
-        role:
-          (payload.role as string) || ((payload as any).user_role as string),
-        permissions:
-          (payload.permissions as string[]) ||
-          ((payload as any).user_permissions as string[]),
-      };
+      // WorkOS JWT only contains minimal claims (sub, org_id, role, permissions)
+      // We need to fetch full user details from the User Management API
+      const userId = payload.sub as string;
 
-      c.var.logger.debug(`User ${user.email} authenticated from WorkOS token`);
-      return user;
+      try {
+        // Fetch user details from WorkOS User Management API
+        const workosUser = await c.var.workos.userManagement.getUser(userId);
+
+        const user: User = {
+          id: workosUser.id,
+          email: workosUser.email,
+          given_name: workosUser.firstName,
+          family_name: workosUser.lastName,
+          name:
+            `${workosUser.firstName || ""} ${workosUser.lastName || ""}`.trim() ||
+            workosUser.email,
+          picture: workosUser.profilePictureUrl,
+          org_id: payload.org_id as string,
+          role: payload.role as string,
+          permissions: payload.permissions as string[],
+          // Legacy compatibility mappings
+          profilePicture: workosUser.profilePictureUrl,
+          organizationId: payload.org_id as string,
+          roles: payload.permissions as string[],
+        };
+
+        c.var.logger.info(`User authenticated: ${user.email} (${user.name})`);
+        return user;
+      } catch (userFetchError) {
+        c.var.logger.error(
+          "Failed to fetch user details from WorkOS",
+          userFetchError,
+        );
+
+        // Fallback: create minimal user object from JWT claims only
+        const user: User = {
+          id: userId,
+          org_id: payload.org_id as string,
+          role: payload.role as string,
+          permissions: payload.permissions as string[],
+          // Legacy compatibility mappings
+          organizationId: payload.org_id as string,
+          roles: payload.permissions as string[],
+        };
+
+        c.var.logger.info(`User authenticated (minimal): ${user.id}`);
+        return user;
+      }
     } catch (jwtError) {
       c.var.logger.debug("Access token validation failed, attempting refresh");
       // Token might be expired, try to refresh
@@ -127,15 +149,19 @@ async function refreshAndGetUser(c: SurfaceContext): Promise<User | undefined> {
     // Convert WorkOS user to our User type
     const surfaceUser: User = {
       id: user.id,
+      email: user.email,
+      given_name: user.firstName ?? undefined,
+      family_name: user.lastName ?? undefined,
       name:
         `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.email,
-      email: user.email,
-      roles: [],
+      picture: user.profilePictureUrl ?? undefined,
+      // Legacy compatibility
       profilePicture: user.profilePictureUrl ?? undefined,
+      roles: [],
     };
 
     c.var.logger.info(
-      `Successfully refreshed tokens for user ${surfaceUser.email}`,
+      `Successfully refreshed tokens for user ${surfaceUser.email || surfaceUser.id}`,
     );
     return surfaceUser;
   } catch (error) {

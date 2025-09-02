@@ -3,18 +3,27 @@ import { User } from "../auth/auth.endpoints";
 const fakeMembers: User[] = [
   {
     id: "123",
-    name: "Alice",
     email: "alice@domain.com",
-    roles: ["admin"],
+    given_name: "Alice",
+    family_name: "Smith",
+    name: "Alice Smith",
+    picture:
+      "https://plus.unsplash.com/premium_photo-1672201106204-58e9af7a2888?q=80&w=80",
+    // Legacy compatibility
     profilePicture:
       "https://plus.unsplash.com/premium_photo-1672201106204-58e9af7a2888?q=80&w=80",
+    roles: ["admin"],
   },
   {
-    name: "Bob",
-    email: "bob@member.net",
     id: "2",
-    roles: [],
+    email: "bob@member.net",
+    given_name: "Bob",
+    family_name: "Johnson",
+    name: "Bob Johnson",
+    picture: "",
+    // Legacy compatibility
     profilePicture: "",
+    roles: [],
   },
 ];
 

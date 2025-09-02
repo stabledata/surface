@@ -5,17 +5,21 @@ import { describeRoute } from "hono-openapi";
 import { resolver } from "hono-openapi/zod";
 import { z } from "zod";
 import { AuthError } from "../../handlers/error.handler";
-import * as jose from "jose";
 
 export type User = {
   id: string;
-  name: string;
-  email: string;
-  roles: string[];
-  profilePicture?: string;
-  organizationId?: string;
+  email?: string;
+  given_name?: string;
+  family_name?: string;
+  name?: string;
+  picture?: string;
+  org_id?: string;
   role?: string;
   permissions?: string[];
+  // Legacy fields for backward compatibility
+  profilePicture?: string;
+  organizationId?: string;
+  roles?: string[];
 };
 
 // Zod schemas for OpenAPI documentation
@@ -38,13 +42,18 @@ const switchOrganizationResponse = z.object({
 
 const userResponse = z.object({
   id: z.string(),
-  name: z.string(),
-  email: z.string(),
-  roles: z.array(z.string()),
-  profilePicture: z.string().optional(),
-  organizationId: z.string().optional(),
+  email: z.string().optional(),
+  given_name: z.string().optional(),
+  family_name: z.string().optional(),
+  name: z.string().optional(),
+  picture: z.string().optional(),
+  org_id: z.string().optional(),
   role: z.string().optional(),
   permissions: z.array(z.string()).optional(),
+  // Legacy fields for backward compatibility
+  profilePicture: z.string().optional(),
+  organizationId: z.string().optional(),
+  roles: z.array(z.string()).optional(),
 });
 
 export const sessions = new Hono<SurfaceEnv>()
@@ -194,8 +203,6 @@ export const sessions = new Hono<SurfaceEnv>()
       logger.info("User logging out");
 
       try {
-        const accessToken = cookies.get("wos_access_token");
-
         // Clear all auth cookies first
         cookies.set("wos_access_token", "", {
           path: "/",
@@ -220,28 +227,9 @@ export const sessions = new Hono<SurfaceEnv>()
           return c.json({ message: "Logged out successfully" });
         }
 
-        if (accessToken) {
-          try {
-            // Extract session ID from WorkOS access token
-            const decoded = jose.decodeJwt(accessToken);
-            const sessionId = decoded.sid as string;
-
-            if (sessionId) {
-              // Redirect to WorkOS logout endpoint to properly end the session
-              const logoutUrl = workos.userManagement.getLogoutUrl({
-                sessionId,
-              });
-              return c.redirect(logoutUrl);
-            }
-          } catch (decodeError) {
-            logger.error(
-              "Failed to decode access token for logout",
-              decodeError,
-            );
-          }
-        }
-
-        // Fallback redirect if we can't get session ID
+        // Simple logout: just clear cookies and redirect
+        // Note: This doesn't invalidate the WorkOS session, but clears our local session
+        logger.info("Performing local logout - clearing session cookies");
         const redirectTo = c.req.query("return") ?? "/";
         return c.redirect(redirectTo);
       } catch (error) {

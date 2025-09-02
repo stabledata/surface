@@ -156,9 +156,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Use real user data if available, otherwise fallback to default
   const userData = user
     ? {
-        name: user.name,
-        email: user.email,
-        avatar: user.profilePicture || "/avatars/default.jpg",
+        name:
+          user.name ||
+          (user.given_name && user.family_name
+            ? `${user.given_name} ${user.family_name}`.trim()
+            : user.given_name || user.family_name) ||
+          user.email ||
+          "Unknown User",
+        email: user.email || "unknown@example.com",
+        avatar: user.picture || user.profilePicture || "/avatars/default.jpg",
       }
     : {
         name: "Guest",

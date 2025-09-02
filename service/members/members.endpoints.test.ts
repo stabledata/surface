@@ -1,4 +1,4 @@
-import { expect, describe, mock, it, beforeEach } from "bun:test";
+import { expect, describe, mock, it, beforeEach, spyOn } from "bun:test";
 import {
   applyContext,
   cookies,
@@ -42,11 +42,16 @@ describe("members endpoint tests", () => {
 
   const fakeUser: User = {
     id: "123",
-    name: "Alice",
     email: "alice@domain.com",
-    roles: ["admin"],
+    given_name: "Alice",
+    family_name: "Smith",
+    name: "Alice Smith",
+    picture:
+      "https://plus.unsplash.com/premium_photo-1672201106204-58e9af7a2888?q=80&w=80",
+    // Legacy compatibility
     profilePicture:
       "https://plus.unsplash.com/premium_photo-1672201106204-58e9af7a2888?q=80&w=80",
+    roles: ["admin"],
   };
 
   // Set default implementation
@@ -80,9 +85,8 @@ describe("members endpoint tests", () => {
       exp: Date.now() / 1000 + 3600,
     };
 
-    (jose as any).jwtVerify = mock(() =>
-      Promise.resolve({ payload: mockPayload }),
-    );
+    // Use spyOn to mock jose.jwtVerify properly
+    spyOn(jose, "jwtVerify").mockResolvedValue({ payload: mockPayload });
   });
 
   it("returns members from api", async () => {
