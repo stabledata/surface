@@ -45,17 +45,17 @@ export async function getUser(c: SurfaceContext): Promise<User | undefined> {
         const user: User = {
           id: workosUser.id,
           email: workosUser.email,
-          given_name: workosUser.firstName,
-          family_name: workosUser.lastName,
+          given_name: workosUser.firstName ?? "",
+          family_name: workosUser.lastName ?? "",
           name:
             `${workosUser.firstName || ""} ${workosUser.lastName || ""}`.trim() ||
             workosUser.email,
-          picture: workosUser.profilePictureUrl,
+          picture: workosUser.profilePictureUrl ?? "",
           org_id: payload.org_id as string,
           role: payload.role as string,
           permissions: payload.permissions as string[],
           // Legacy compatibility mappings
-          profilePicture: workosUser.profilePictureUrl,
+          profilePicture: workosUser.profilePictureUrl ?? "",
           organizationId: payload.org_id as string,
           roles: payload.permissions as string[],
         };

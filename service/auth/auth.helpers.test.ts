@@ -106,12 +106,12 @@ describe("auth helpers", () => {
         given_name: "John",
         family_name: "Doe",
         name: "John Doe",
-        picture: null,
+        picture: "",
         org_id: "org_123",
         role: "admin",
         permissions: ["read", "write"],
         // Legacy compatibility
-        profilePicture: null,
+        profilePicture: "",
         organizationId: "org_123",
         roles: ["read", "write"],
       });

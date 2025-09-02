@@ -198,7 +198,7 @@ export const sessions = new Hono<SurfaceEnv>()
       },
     }),
     async (c) => {
-      const { cookies, logger, workos } = c.var;
+      const { cookies, logger } = c.var;
 
       logger.info("User logging out");
 

@@ -86,7 +86,7 @@ describe("members endpoint tests", () => {
     };
 
     // Use spyOn to mock jose.jwtVerify properly
-    spyOn(jose, "jwtVerify").mockResolvedValue({ payload: mockPayload });
+    spyOn(jose, "jwtVerify").mockResolvedValue({ payload: mockPayload } as any);
   });
 
   it("returns members from api", async () => {

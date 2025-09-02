@@ -4,7 +4,7 @@ import { SurfaceIcon } from "./components/icon/SurfaceIcon";
 import { Header } from "./header";
 import { useAppState } from "./hooks/use-app-state";
 function App() {
-  const { count, increment, user } = useAppState();
+  const { count, increment } = useAppState();
   return (
     <div>
       <Header />
