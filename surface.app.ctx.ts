@@ -5,7 +5,8 @@ import * as jwt from "hono/jwt";
 import { getCookie, setCookie } from "hono/cookie";
 import { CookieOptions } from "hono/utils/cookie";
 import { logger } from "./logger/logger";
-
+import { WorkOS } from "@workos-inc/node";
+import { env } from "./env";
 import { memberServiceClient } from "./service/members/member.service.client";
 
 /**
@@ -26,11 +27,23 @@ export function cookies(c: SurfaceContext) {
   return { get, set };
 }
 
+// works as singleton
+const workos: WorkOS | undefined = undefined;
+export const getWorkOS = () => {
+  if (workos !== undefined) {
+    return workos;
+  }
+  return new WorkOS(env("WORKOS_API_KEY"));
+};
+
 export type Dependencies = {
   // utils
   logger: typeof logger;
   cookies: ReturnType<typeof cookies>;
   jwt: typeof jwt;
+
+  // auth via workos
+  workos: WorkOS;
 
   // specifically for testing, allows overwriting the rpc client
   rpcClientMock?: typeof hc;
@@ -52,10 +65,15 @@ export const applyContext = (injections: Partial<Dependencies>) =>
     c.set("logger", injections.logger ?? logger);
     c.set("cookies", injections.cookies ?? cookies(c));
     c.set("jwt", jwt);
+    c.set("workos", injections.workos ?? getWorkOS());
+
+    // For demo only, remove as this gets cooler.
     c.set(
       "memberServiceClient",
-      injections.memberServiceClient ?? memberServiceClient
+      injections.memberServiceClient ?? memberServiceClient,
     );
+
+    // for testing only
     c.set("rpcClientMock", injections.rpcClientMock);
     await next();
   });
