@@ -26,9 +26,19 @@ export const useUserStore: StoreCreator<UserStore> = (set) => ({
 });
 
 registerLoader(async (c: SurfaceContext) => {
-  const user = await getUser(c);
-  logger.debug("loading user server side:", user);
-  return {
-    user,
-  };
+  try {
+    const user = await getUser(c);
+    if (user) {
+      logger.debug(`User ${user.email} loaded for SSR`);
+    }
+
+    return {
+      user,
+    };
+  } catch (error) {
+    logger.error("Error loading user data server side:", error);
+    return {
+      user: undefined,
+    };
+  }
 });

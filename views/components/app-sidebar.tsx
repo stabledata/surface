@@ -23,14 +23,10 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useAppState } from "@/hooks/use-app-state";
 
-// This is sample data.
+// This is sample data for teams and navigation.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Acme Inc",
@@ -155,6 +151,21 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAppState();
+
+  // Use real user data if available, otherwise fallback to default
+  const userData = user
+    ? {
+        name: user.name,
+        email: user.email,
+        avatar: user.profilePicture || "/avatars/default.jpg",
+      }
+    : {
+        name: "Guest",
+        email: "guest@example.com",
+        avatar: "/avatars/default.jpg",
+      };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -165,7 +176,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

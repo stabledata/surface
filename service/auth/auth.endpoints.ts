@@ -5,6 +5,7 @@ import { describeRoute } from "hono-openapi";
 import { resolver } from "hono-openapi/zod";
 import { z } from "zod";
 import { AuthError } from "../../handlers/error.handler";
+import * as jose from "jose";
 
 export type User = {
   id: string;
@@ -12,6 +13,9 @@ export type User = {
   email: string;
   roles: string[];
   profilePicture?: string;
+  organizationId?: string;
+  role?: string;
+  permissions?: string[];
 };
 
 // Zod schemas for OpenAPI documentation
@@ -21,6 +25,26 @@ const loginRedirectResponse = z.object({
 
 const logoutResponse = z.object({
   message: z.string(),
+});
+
+const switchOrganizationRequest = z.object({
+  organizationId: z.string(),
+});
+
+const switchOrganizationResponse = z.object({
+  success: z.boolean(),
+  organizationId: z.string(),
+});
+
+const userResponse = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string(),
+  roles: z.array(z.string()),
+  profilePicture: z.string().optional(),
+  organizationId: z.string().optional(),
+  role: z.string().optional(),
+  permissions: z.array(z.string()).optional(),
 });
 
 export const sessions = new Hono<SurfaceEnv>()
@@ -85,7 +109,7 @@ export const sessions = new Hono<SurfaceEnv>()
       },
     }),
     async (c) => {
-      const { workos, cookies, jwt, logger } = c.var;
+      const { workos, cookies, logger } = c.var;
 
       try {
         const code = c.req.query("code");
@@ -98,50 +122,40 @@ export const sessions = new Hono<SurfaceEnv>()
 
         logger.info("Processing WorkOS callback with authorization code");
 
-        // Exchange code for user information
-        const { user } = await workos.userManagement.authenticateWithCode({
-          code,
-          clientId: env("WORKOS_CLIENT_ID"),
-        });
+        // Exchange code for WorkOS tokens and user information
+        const { user, accessToken, refreshToken } =
+          await workos.userManagement.authenticateWithCode({
+            code,
+            clientId: env("WORKOS_CLIENT_ID"),
+          });
 
-        // Create our user object from WorkOS user
-        const surfaceUser: User = {
-          id: user.id,
-          name:
-            `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
-            user.email,
-          email: user.email,
-          roles: [], // You might want to fetch roles from WorkOS organizations
-          profilePicture: user.profilePictureUrl ?? undefined,
-        };
-
-        // Store user ID in cookie
-        cookies.set("user_id", surfaceUser.id, {
+        // Store WorkOS access token (short-lived JWT)
+        cookies.set("wos_access_token", accessToken, {
           path: "/",
           httpOnly: true,
           secure: env("NODE_ENV") === "production",
           sameSite: "lax",
         });
 
-        // Generate JWT session token
-        const now = Math.floor(Date.now() / 1000);
-        const payload = {
-          sub: surfaceUser.id,
-          email: surfaceUser.email,
-          name: surfaceUser.name,
-          iat: now,
-          exp: now + 60 * 60 * 24, // 24 hours
-        };
-
-        const token = await jwt.sign(payload, env("JWT_SECRET"));
-        cookies.set("session", token, {
+        // Store WorkOS refresh token (longer-lived)
+        cookies.set("wos_refresh_token", refreshToken, {
           path: "/",
           httpOnly: true,
           secure: env("NODE_ENV") === "production",
           sameSite: "lax",
         });
 
-        logger.info(`User ${surfaceUser.email} authenticated successfully`);
+        // Also store user ID for quick reference (optional)
+        cookies.set("user_id", user.id, {
+          path: "/",
+          httpOnly: true,
+          secure: env("NODE_ENV") === "production",
+          sameSite: "lax",
+        });
+
+        logger.info(
+          `User ${user.email} authenticated successfully with WorkOS session`,
+        );
 
         // Redirect to original destination or home page
         const redirectTo = state || "/";
@@ -161,10 +175,10 @@ export const sessions = new Hono<SurfaceEnv>()
   .get(
     "/logout",
     describeRoute({
-      description: "Clear user session and logout",
+      description: "Clear user session and logout from WorkOS",
       responses: {
         302: {
-          description: "Redirect to specified location or home page",
+          description: "Redirect to WorkOS logout URL or specified location",
         },
         200: {
           description: "Logout confirmation (for testing)",
@@ -175,30 +189,183 @@ export const sessions = new Hono<SurfaceEnv>()
       },
     }),
     async (c) => {
-      const { cookies, logger } = c.var;
+      const { cookies, logger, workos } = c.var;
 
       logger.info("User logging out");
 
-      // Clear all auth cookies
-      cookies.set("user_id", "", {
-        path: "/",
-        httpOnly: true,
-        expires: new Date(0),
-      });
+      try {
+        const accessToken = cookies.get("wos_access_token");
 
-      cookies.set("session", "", {
-        path: "/",
-        httpOnly: true,
-        expires: new Date(0),
-      });
+        // Clear all auth cookies first
+        cookies.set("wos_access_token", "", {
+          path: "/",
+          httpOnly: true,
+          expires: new Date(0),
+        });
 
-      const redirectTo = c.req.query("return") ?? "/";
+        cookies.set("wos_refresh_token", "", {
+          path: "/",
+          httpOnly: true,
+          expires: new Date(0),
+        });
 
-      // For testing purposes, if test=true query param is present, return JSON
-      if (c.req.query("test") === "true") {
-        return c.json({ message: "Logged out successfully" });
+        cookies.set("user_id", "", {
+          path: "/",
+          httpOnly: true,
+          expires: new Date(0),
+        });
+
+        // For testing purposes, if test=true query param is present, return JSON
+        if (c.req.query("test") === "true") {
+          return c.json({ message: "Logged out successfully" });
+        }
+
+        if (accessToken) {
+          try {
+            // Extract session ID from WorkOS access token
+            const decoded = jose.decodeJwt(accessToken);
+            const sessionId = decoded.sid as string;
+
+            if (sessionId) {
+              // Redirect to WorkOS logout endpoint to properly end the session
+              const logoutUrl = workos.userManagement.getLogoutUrl({
+                sessionId,
+              });
+              return c.redirect(logoutUrl);
+            }
+          } catch (decodeError) {
+            logger.error(
+              "Failed to decode access token for logout",
+              decodeError,
+            );
+          }
+        }
+
+        // Fallback redirect if we can't get session ID
+        const redirectTo = c.req.query("return") ?? "/";
+        return c.redirect(redirectTo);
+      } catch (error) {
+        logger.error("Error during logout", error);
+
+        // Always redirect somewhere even if logout fails
+        const redirectTo = c.req.query("return") ?? "/";
+        return c.redirect(redirectTo);
       }
+    },
+  )
+  .post(
+    "/switch-organization",
+    describeRoute({
+      description:
+        "Switch to a different organization context within the same session",
+      requestBody: {
+        content: {
+          "application/json": { schema: resolver(switchOrganizationRequest) },
+        },
+      },
+      responses: {
+        200: {
+          description: "Successfully switched organization",
+          content: {
+            "application/json": {
+              schema: resolver(switchOrganizationResponse),
+            },
+          },
+        },
+        401: {
+          description: "No active session",
+        },
+        400: {
+          description: "Failed to switch organization",
+        },
+      },
+    }),
+    async (c) => {
+      const { workos, cookies, logger } = c.var;
 
-      return c.redirect(redirectTo);
+      try {
+        const { organizationId } = await c.req.json();
+        const refreshToken = cookies.get("wos_refresh_token");
+
+        if (!refreshToken) {
+          return c.json({ error: "No active session" }, 401);
+        }
+
+        logger.info(`Switching to organization: ${organizationId}`);
+
+        // Get new access token for the specific organization
+        const { accessToken, refreshToken: newRefreshToken } =
+          await workos.userManagement.authenticateWithRefreshToken({
+            refreshToken,
+            clientId: env("WORKOS_CLIENT_ID"),
+            organizationId, // This will set the org context in the new token
+          });
+
+        // Update stored access token
+        cookies.set("wos_access_token", accessToken, {
+          path: "/",
+          httpOnly: true,
+          secure: env("NODE_ENV") === "production",
+          sameSite: "lax",
+        });
+
+        // Update refresh token if it was rotated
+        if (newRefreshToken) {
+          cookies.set("wos_refresh_token", newRefreshToken, {
+            path: "/",
+            httpOnly: true,
+            secure: env("NODE_ENV") === "production",
+            sameSite: "lax",
+          });
+        }
+
+        logger.info(`Successfully switched to organization: ${organizationId}`);
+        return c.json({ success: true, organizationId });
+      } catch (error) {
+        logger.error("Failed to switch organization", error);
+        return c.json(
+          {
+            error: "Failed to switch organization",
+            message: error instanceof Error ? error.message : "Unknown error",
+          },
+          400,
+        );
+      }
+    },
+  )
+  .get(
+    "/me",
+    describeRoute({
+      description: "Get current user information from WorkOS session",
+      responses: {
+        200: {
+          description: "Current user information",
+          content: {
+            "application/json": { schema: resolver(userResponse) },
+          },
+        },
+        401: {
+          description: "Not authenticated",
+        },
+      },
+    }),
+    async (c) => {
+      const { logger } = c.var;
+
+      try {
+        // Use the getUser helper to get current user from WorkOS session
+        const { getUser } = await import("./auth.helpers");
+        const user = await getUser(c);
+
+        if (!user) {
+          return c.json({ error: "Not authenticated" }, 401);
+        }
+
+        logger.info(`Retrieved user info for: ${user.email}`);
+        return c.json(user);
+      } catch (error) {
+        logger.error("Failed to get current user", error);
+        return c.json({ error: "Failed to get user information" }, 500);
+      }
     },
   );

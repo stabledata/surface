@@ -10,15 +10,23 @@ describe("auth endpoints", () => {
   // Mock logger
   const mockLogger = {
     ...logger,
-    info: mock().mockImplementation(() => null),
-    error: mock().mockImplementation(() => null),
+    info: mock(() => null),
+    error: mock(() => null),
   } as unknown as typeof logger;
+
+  // Mock functions for WorkOS
+  const mockGetAuthorizationURL = mock();
+  const mockAuthenticateWithCode = mock();
+  const mockAuthenticateWithRefreshToken = mock();
+  const mockGetLogoutUrl = mock();
 
   // Mock WorkOS
   const mockWorkOS = {
     userManagement: {
-      getAuthorizationUrl: mock(),
-      authenticateWithCode: mock(),
+      getAuthorizationUrl: mockGetAuthorizationURL,
+      authenticateWithCode: mockAuthenticateWithCode,
+      authenticateWithRefreshToken: mockAuthenticateWithRefreshToken,
+      getLogoutUrl: mockGetLogoutUrl,
     },
   } as unknown as WorkOS;
 
@@ -37,15 +45,17 @@ describe("auth endpoints", () => {
   let testApp: Hono<SurfaceEnv>;
 
   beforeEach(() => {
-    // Reset all mocks without restoring them
-    mockLogger.info.mockClear();
-    mockLogger.error.mockClear();
-    mockCookies.get.mockClear();
-    mockCookies.set.mockClear();
-    mockWorkOS.userManagement.getAuthorizationUrl.mockClear();
-    mockWorkOS.userManagement.authenticateWithCode.mockClear();
-    mockJwt.sign.mockClear();
-    mockJwt.verify.mockClear();
+    // Reset all mocks
+    (mockLogger.info as any).mockClear?.();
+    (mockLogger.error as any).mockClear?.();
+    (mockCookies.get as any).mockClear?.();
+    (mockCookies.set as any).mockClear?.();
+    mockGetAuthorizationURL.mockClear?.();
+    mockAuthenticateWithCode.mockClear?.();
+    mockAuthenticateWithRefreshToken.mockClear?.();
+    mockGetLogoutUrl.mockClear?.();
+    (mockJwt.sign as any).mockClear?.();
+    (mockJwt.verify as any).mockClear?.();
 
     testApp = new Hono<SurfaceEnv>()
       .use(
@@ -53,7 +63,7 @@ describe("auth endpoints", () => {
           logger: mockLogger,
           cookies: mockCookies,
           workos: mockWorkOS,
-          jwt: mockJwt,
+          jwt: mockJwt as any,
         }),
       )
       .route("/", sessions)
@@ -65,17 +75,13 @@ describe("auth endpoints", () => {
       const mockAuthUrl =
         "https://api.workos.com/sso/authorize?response_type=code&client_id=test&redirect_uri=http://localhost:4000/api/auth/callback";
 
-      mockWorkOS.userManagement.getAuthorizationUrl.mockReturnValue(
-        mockAuthUrl,
-      );
+      mockGetAuthorizationURL.mockReturnValue(mockAuthUrl);
 
       const response = await testApp.request("/login");
 
       expect(response.status).toBe(302);
       expect(response.headers.get("Location")).toBe(mockAuthUrl);
-      expect(
-        mockWorkOS.userManagement.getAuthorizationUrl,
-      ).toHaveBeenCalledWith({
+      expect(mockGetAuthorizationURL).toHaveBeenCalledWith({
         provider: "authkit",
         redirectUri: "http://localhost:4000/api/auth/callback",
         clientId: "client_01HRQ08WC5PECTJJFEVW410MC5",
@@ -88,15 +94,11 @@ describe("auth endpoints", () => {
 
     it("should use return query parameter as state", async () => {
       const mockAuthUrl = "https://api.workos.com/sso/authorize";
-      mockWorkOS.userManagement.getAuthorizationUrl.mockReturnValue(
-        mockAuthUrl,
-      );
+      mockGetAuthorizationURL.mockReturnValue(mockAuthUrl);
 
       await testApp.request("/login?return=/dashboard");
 
-      expect(
-        mockWorkOS.userManagement.getAuthorizationUrl,
-      ).toHaveBeenCalledWith({
+      expect(mockGetAuthorizationURL).toHaveBeenCalledWith({
         provider: "authkit",
         redirectUri: "http://localhost:4000/api/auth/callback",
         clientId: "client_01HRQ08WC5PECTJJFEVW410MC5",
@@ -106,9 +108,7 @@ describe("auth endpoints", () => {
 
     it("should return JSON for test requests", async () => {
       const mockAuthUrl = "https://api.workos.com/sso/authorize";
-      mockWorkOS.userManagement.getAuthorizationUrl.mockReturnValue(
-        mockAuthUrl,
-      );
+      mockGetAuthorizationURL.mockReturnValue(mockAuthUrl);
 
       const response = await testApp.request("/login?test=true");
       const body = await response.json();
@@ -118,7 +118,7 @@ describe("auth endpoints", () => {
     });
 
     it("should handle WorkOS errors", async () => {
-      mockWorkOS.userManagement.getAuthorizationUrl.mockImplementation(() => {
+      mockGetAuthorizationURL.mockImplementation(() => {
         throw new Error("WorkOS error");
       });
 
@@ -146,10 +146,11 @@ describe("auth endpoints", () => {
     };
 
     beforeEach(() => {
-      mockWorkOS.userManagement.authenticateWithCode.mockResolvedValue({
+      mockAuthenticateWithCode.mockResolvedValue({
         user: mockUser,
+        accessToken: "mock.workos.access.token",
+        refreshToken: "mock.workos.refresh.token",
       });
-      mockJwt.sign.mockResolvedValue("mock.jwt.token");
     });
 
     it("should authenticate user and create session", async () => {
@@ -160,32 +161,25 @@ describe("auth endpoints", () => {
       expect(response.status).toBe(302);
       expect(response.headers.get("Location")).toBe("/dashboard");
 
-      expect(
-        mockWorkOS.userManagement.authenticateWithCode,
-      ).toHaveBeenCalledWith({
+      expect(mockAuthenticateWithCode).toHaveBeenCalledWith({
         code: "auth_code_123",
         clientId: "client_01HRQ08WC5PECTJJFEVW410MC5",
       });
 
-      expect(mockCookies.set).toHaveBeenCalledWith("user_id", "user_123", {
-        path: "/",
-        httpOnly: true,
-        secure: false, // development mode
-        sameSite: "lax",
-      });
-
-      expect(mockJwt.sign).toHaveBeenCalledWith(
-        expect.objectContaining({
-          sub: "user_123",
-          email: "john.doe@example.com",
-          name: "John Doe",
-        }),
-        "sup4h.secr1t.jwt.🔑",
+      expect(mockCookies.set).toHaveBeenCalledWith(
+        "wos_access_token",
+        "mock.workos.access.token",
+        {
+          path: "/",
+          httpOnly: true,
+          secure: false, // development mode
+          sameSite: "lax",
+        },
       );
 
       expect(mockCookies.set).toHaveBeenCalledWith(
-        "session",
-        "mock.jwt.token",
+        "wos_refresh_token",
+        "mock.workos.refresh.token",
         {
           path: "/",
           httpOnly: true,
@@ -194,8 +188,15 @@ describe("auth endpoints", () => {
         },
       );
 
+      expect(mockCookies.set).toHaveBeenCalledWith("user_id", "user_123", {
+        path: "/",
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+      });
+
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "User john.doe@example.com authenticated successfully",
+        "User john.doe@example.com authenticated successfully with WorkOS session",
       );
     });
 
@@ -219,9 +220,7 @@ describe("auth endpoints", () => {
     });
 
     it("should handle WorkOS authentication failure", async () => {
-      mockWorkOS.userManagement.authenticateWithCode.mockRejectedValue(
-        new Error("Invalid code"),
-      );
+      mockAuthenticateWithCode.mockRejectedValue(new Error("Invalid code"));
 
       const response = await testApp.request("/callback?code=invalid_code");
 
@@ -242,17 +241,24 @@ describe("auth endpoints", () => {
         lastName: null,
       };
 
-      mockWorkOS.userManagement.authenticateWithCode.mockResolvedValue({
+      mockAuthenticateWithCode.mockResolvedValue({
         user: userWithoutName,
+        accessToken: "mock.workos.access.token",
+        refreshToken: "mock.workos.refresh.token",
       });
 
       const response = await testApp.request("/callback?code=auth_code_123");
 
-      expect(mockJwt.sign).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: "john.doe@example.com", // Should fallback to email
-        }),
-        expect.any(String),
+      expect(response.status).toBe(302);
+      expect(mockCookies.set).toHaveBeenCalledWith(
+        "wos_access_token",
+        "mock.workos.access.token",
+        {
+          path: "/",
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+        },
       );
     });
   });
@@ -264,13 +270,19 @@ describe("auth endpoints", () => {
       expect(response.status).toBe(302);
       expect(response.headers.get("Location")).toBe("/login");
 
-      expect(mockCookies.set).toHaveBeenCalledWith("user_id", "", {
+      expect(mockCookies.set).toHaveBeenCalledWith("wos_access_token", "", {
         path: "/",
         httpOnly: true,
         expires: new Date(0),
       });
 
-      expect(mockCookies.set).toHaveBeenCalledWith("session", "", {
+      expect(mockCookies.set).toHaveBeenCalledWith("wos_refresh_token", "", {
+        path: "/",
+        httpOnly: true,
+        expires: new Date(0),
+      });
+
+      expect(mockCookies.set).toHaveBeenCalledWith("user_id", "", {
         path: "/",
         httpOnly: true,
         expires: new Date(0),
@@ -292,6 +304,93 @@ describe("auth endpoints", () => {
 
       expect(response.status).toBe(200);
       expect(body).toEqual({ message: "Logged out successfully" });
+    });
+
+    it("should redirect to WorkOS logout URL when access token is present", async () => {
+      // Mock getting an access token
+      (mockCookies.get as any).mockReturnValueOnce("mock.workos.access.token");
+
+      // Mock WorkOS getLogoutUrl
+      mockGetLogoutUrl.mockReturnValue(
+        "https://api.workos.com/sso/logout?session_id=test_session",
+      );
+
+      const response = await testApp.request("/logout");
+
+      expect(response.status).toBe(302);
+    });
+  });
+
+  describe("POST /switch-organization", () => {
+    beforeEach(() => {
+      const updatedMockUser = {
+        id: "user_123",
+        email: "test@example.com",
+        firstName: "Test",
+        lastName: "User",
+        profilePictureURL: "https://example.com/avatar.jpg",
+        createdAt: "2023-01-01T00:00:00Z",
+        updatedAt: "2023-01-01T00:00:00Z",
+        emailVerified: true,
+      };
+
+      mockAuthenticateWithRefreshToken.mockResolvedValue({
+        user: updatedMockUser,
+        organizationId: "org_123",
+        accessToken: "new_access_token_123",
+        refreshToken: "new_refresh_token_123",
+      });
+    });
+
+    it("should switch organization successfully", async () => {
+      (mockCookies.get as any).mockReturnValueOnce("valid.refresh.token");
+
+      const response = await testApp.request("/switch-organization", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ organizationId: "org_123" }),
+      });
+
+      expect(response.status).toBe(200);
+      const body = await response.json();
+      expect(body).toEqual({ success: true, organizationId: "org_123" });
+
+      expect(mockAuthenticateWithRefreshToken).toHaveBeenCalledWith({
+        refreshToken: "valid.refresh.token",
+        clientId: "client_01HRQ08WC5PECTJJFEVW410MC5",
+        organizationId: "org_123",
+      });
+    });
+
+    it("should return 401 when no refresh token", async () => {
+      (mockCookies.get as any).mockReturnValueOnce(undefined);
+
+      const response = await testApp.request("/switch-organization", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ organizationId: "org_123" }),
+      });
+
+      expect(response.status).toBe(401);
+      const body = await response.json();
+      expect(body.error).toBe("No active session");
+    });
+
+    it("should handle WorkOS errors", async () => {
+      (mockCookies.get as any).mockReturnValueOnce("valid.refresh.token");
+      mockAuthenticateWithRefreshToken.mockRejectedValue(
+        new Error("Organization not accessible"),
+      );
+
+      const response = await testApp.request("/switch-organization", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ organizationId: "invalid_org" }),
+      });
+
+      expect(response.status).toBe(400);
+      const body = await response.json();
+      expect(body.error).toBe("Failed to switch organization");
     });
   });
 });

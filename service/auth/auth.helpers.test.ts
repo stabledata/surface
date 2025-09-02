@@ -1,6 +1,8 @@
 import { expect, it, mock, describe, beforeEach } from "bun:test";
 import { getUser, hasSession, requireAuth } from "./auth.helpers";
 import { SurfaceContext } from "../../surface.app.ctx";
+import { WorkOS } from "@workos-inc/node";
+import * as jose from "jose";
 
 describe("auth helpers", () => {
   const mockLogger = {
@@ -18,12 +20,19 @@ describe("auth helpers", () => {
     sign: mock(),
   };
 
+  const mockWorkOS = {
+    userManagement: {
+      authenticateWithRefreshToken: mock(),
+    },
+  } as unknown as WorkOS;
+
   const createMockContext = (overrides = {}): SurfaceContext => {
     return {
       var: {
         logger: mockLogger,
         cookies: mockCookies,
         jwt: mockJwt,
+        workos: mockWorkOS,
         ...overrides,
       },
       req: {
@@ -36,26 +45,34 @@ describe("auth helpers", () => {
 
   beforeEach(() => {
     // Reset all mocks without restoring them
-    mockLogger.error.mockClear();
-    mockLogger.info.mockClear();
-    mockCookies.get.mockClear();
-    mockCookies.set.mockClear();
-    mockJwt.verify.mockClear();
-    mockJwt.sign.mockClear();
+    (mockLogger.error as any).mockClear?.();
+    (mockLogger.info as any).mockClear?.();
+    (mockCookies.get as any).mockClear?.();
+    (mockCookies.set as any).mockClear?.();
+    (mockJwt.verify as any).mockClear?.();
+    (mockJwt.sign as any).mockClear?.();
   });
 
   describe("getUser", () => {
-    it("should return user from valid session token", async () => {
+    it("should return user from valid WorkOS access token", async () => {
       const mockPayload = {
         sub: "user_123",
         email: "john@example.com",
         name: "John Doe",
         iat: 1234567890,
         exp: 1234567990,
+        org_id: "org_123",
+        role: "admin",
+        permissions: ["read", "write"],
       };
 
-      mockCookies.get.mockReturnValue("valid.jwt.token");
-      mockJwt.verify.mockResolvedValue(mockPayload);
+      (mockCookies.get as any).mockReturnValue("valid.workos.access.token");
+
+      // Mock jose.jwtVerify
+      const mockJwtVerify = mock(() =>
+        Promise.resolve({ payload: mockPayload }),
+      );
+      (jose as any).jwtVerify = mockJwtVerify;
 
       const context = createMockContext();
       const user = await getUser(context);
@@ -66,42 +83,51 @@ describe("auth helpers", () => {
         email: "john@example.com",
         roles: [],
         profilePicture: undefined,
+        organizationId: "org_123",
+        role: "admin",
+        permissions: ["read", "write"],
       });
 
-      expect(mockCookies.get).toHaveBeenCalledWith("session");
-      expect(mockJwt.verify).toHaveBeenCalledWith(
-        "valid.jwt.token",
-        "sup4h.secr1t.jwt.🔑",
-      );
+      expect(mockCookies.get).toHaveBeenCalledWith("wos_access_token");
     });
 
-    it("should return undefined when no session token", async () => {
-      mockCookies.get.mockReturnValue(undefined);
+    it("should return undefined when no access token and refresh fails", async () => {
+      (mockCookies.get as any).mockReturnValue(undefined);
 
       const context = createMockContext();
       const user = await getUser(context);
 
       expect(user).toBeUndefined();
-      expect(mockJwt.verify).not.toHaveBeenCalled();
     });
 
-    it("should return undefined when JWT verification fails", async () => {
-      mockCookies.get.mockReturnValue("invalid.jwt.token");
-      mockJwt.verify.mockRejectedValue(new Error("Invalid token"));
+    it("should attempt refresh when JWT verification fails", async () => {
+      (mockCookies.get as any)
+        .mockReturnValueOnce("invalid.access.token")
+        .mockReturnValueOnce("valid.refresh.token")
+        .mockReturnValueOnce(undefined); // No new access token after failed refresh
+
+      const mockJwtVerify = mock(() =>
+        Promise.reject(new Error("Invalid token")),
+      );
+      (jose as any).jwtVerify = mockJwtVerify;
+
+      (
+        mockWorkOS.userManagement.authenticateWithRefreshToken as any
+      ).mockRejectedValue(new Error("Refresh failed"));
 
       const context = createMockContext();
       const user = await getUser(context);
 
       expect(user).toBeUndefined();
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Failed to get user from session",
+        "Failed to refresh WorkOS tokens",
         expect.any(Error),
       );
     });
   });
 
   describe("hasSession", () => {
-    it("should return JWT payload for valid session cookie", async () => {
+    it("should return JWT payload for valid WorkOS access token", async () => {
       const mockPayload = {
         sub: "user_123",
         email: "john@example.com",
@@ -110,8 +136,12 @@ describe("auth helpers", () => {
         exp: 1234567990,
       };
 
-      mockCookies.get.mockReturnValue("valid.jwt.token");
-      mockJwt.verify.mockResolvedValue(mockPayload);
+      (mockCookies.get as any).mockReturnValue("valid.workos.access.token");
+
+      const mockJwtVerify = mock(() =>
+        Promise.resolve({ payload: mockPayload }),
+      );
+      (jose as any).jwtVerify = mockJwtVerify;
 
       const context = createMockContext();
       const session = await hasSession(context);
@@ -128,12 +158,17 @@ describe("auth helpers", () => {
         exp: 1234567990,
       };
 
-      mockCookies.get.mockReturnValue(undefined);
+      (mockCookies.get as any).mockReturnValue(undefined);
 
       const context = createMockContext();
-      context.req.header = mock().mockReturnValue("Bearer valid.jwt.token");
+      context.req.header = mock().mockReturnValue(
+        "Bearer valid.workos.access.token",
+      );
 
-      mockJwt.verify.mockResolvedValue(mockPayload);
+      const mockJwtVerify = mock(() =>
+        Promise.resolve({ payload: mockPayload }),
+      );
+      (jose as any).jwtVerify = mockJwtVerify;
 
       const session = await hasSession(context);
 
@@ -142,7 +177,7 @@ describe("auth helpers", () => {
     });
 
     it("should return false when no token available", async () => {
-      mockCookies.get.mockReturnValue(undefined);
+      (mockCookies.get as any).mockReturnValue(undefined);
 
       const context = createMockContext();
       context.req.header = mock().mockReturnValue(undefined);
@@ -152,16 +187,27 @@ describe("auth helpers", () => {
       expect(session).toBe(false);
     });
 
-    it("should return false when JWT verification fails", async () => {
-      mockCookies.get.mockReturnValue("invalid.token");
-      mockJwt.verify.mockRejectedValue(new Error("Invalid token"));
+    it("should return false when JWT verification fails and refresh fails", async () => {
+      (mockCookies.get as any)
+        .mockReturnValueOnce("invalid.token")
+        .mockReturnValueOnce("valid.refresh.token")
+        .mockReturnValueOnce(undefined); // No new access token
+
+      const mockJwtVerify = mock(() =>
+        Promise.reject(new Error("Invalid token")),
+      );
+      (jose as any).jwtVerify = mockJwtVerify;
+
+      (
+        mockWorkOS.userManagement.authenticateWithRefreshToken as any
+      ).mockRejectedValue(new Error("Refresh failed"));
 
       const context = createMockContext();
       const session = await hasSession(context);
 
       expect(session).toBe(false);
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "No valid session was found",
+        "No valid WorkOS session found",
         expect.any(Error),
       );
     });
@@ -170,8 +216,12 @@ describe("auth helpers", () => {
   describe("requireAuth", () => {
     it("should call next() for authenticated requests", async () => {
       const mockPayload = { sub: "user_123" };
-      mockCookies.get.mockReturnValue("valid.token");
-      mockJwt.verify.mockResolvedValue(mockPayload);
+      (mockCookies.get as any).mockReturnValue("valid.workos.access.token");
+
+      const mockJwtVerify = mock(() =>
+        Promise.resolve({ payload: mockPayload }),
+      );
+      (jose as any).jwtVerify = mockJwtVerify;
 
       const context = createMockContext();
       const next = mock();
@@ -183,7 +233,7 @@ describe("auth helpers", () => {
     });
 
     it("should return 401 for unauthenticated requests", async () => {
-      mockCookies.get.mockReturnValue(undefined);
+      (mockCookies.get as any).mockReturnValue(undefined);
 
       const context = createMockContext();
       context.req.header = mock().mockReturnValue(undefined);
