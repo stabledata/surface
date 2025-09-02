@@ -1,8 +1,14 @@
 import { User } from "../auth/auth.endpoints";
-import { fakeUser } from "../auth/auth.helpers";
 
 const fakeMembers: User[] = [
-  fakeUser,
+  {
+    id: "123",
+    name: "Alice",
+    email: "alice@domain.com",
+    roles: ["admin"],
+    profilePicture:
+      "https://plus.unsplash.com/premium_photo-1672201106204-58e9af7a2888?q=80&w=80",
+  },
   {
     name: "Bob",
     email: "bob@member.net",

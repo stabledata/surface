@@ -64,7 +64,7 @@ export const applyContext = (injections: Partial<Dependencies>) =>
   createMiddleware(async (c, next) => {
     c.set("logger", injections.logger ?? logger);
     c.set("cookies", injections.cookies ?? cookies(c));
-    c.set("jwt", jwt);
+    c.set("jwt", injections.jwt ?? jwt);
     c.set("workos", injections.workos ?? getWorkOS());
 
     // For demo only, remove as this gets cooler.
