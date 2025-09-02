@@ -187,7 +187,7 @@ export const sessions = new Hono<SurfaceEnv>()
       description: "Clear user session and logout from WorkOS",
       responses: {
         302: {
-          description: "Redirect to WorkOS logout URL or specified location",
+          description: "Redirect to WorkOS logout URL to terminate session",
         },
         200: {
           description: "Logout confirmation (for testing)",
@@ -198,7 +198,7 @@ export const sessions = new Hono<SurfaceEnv>()
       },
     }),
     async (c) => {
-      const { cookies, logger } = c.var;
+      const { cookies, logger, workos } = c.var;
 
       logger.info("User logging out");
 
@@ -227,15 +227,20 @@ export const sessions = new Hono<SurfaceEnv>()
           return c.json({ message: "Logged out successfully" });
         }
 
-        // Simple logout: just clear cookies and redirect
-        // Note: This doesn't invalidate the WorkOS session, but clears our local session
-        logger.info("Performing local logout - clearing session cookies");
+        // Get the return URL for after logout
         const redirectTo = c.req.query("return") ?? "/";
-        return c.redirect(redirectTo);
+
+        // Create WorkOS logout URL that will properly terminate the session
+        const logoutUrl = workos.userManagement.getLogoutUrl({
+          redirectUri: `${env("BASE_URL")}${redirectTo}`, // Full URL where to redirect after logout
+        });
+
+        logger.info("Redirecting to WorkOS logout URL to terminate session");
+        return c.redirect(logoutUrl);
       } catch (error) {
         logger.error("Error during logout", error);
 
-        // Always redirect somewhere even if logout fails
+        // Fallback: just redirect locally if WorkOS logout fails
         const redirectTo = c.req.query("return") ?? "/";
         return c.redirect(redirectTo);
       }
