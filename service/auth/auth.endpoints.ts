@@ -249,20 +249,24 @@ export const sessions = new Hono<SurfaceEnv>()
         // Get the return URL for after logout
         const redirectTo = c.req.query("return") ?? "/";
 
-        // Create WorkOS logout URL with session ID to properly terminate the session
-        const logoutParams: any = {
-          redirectUri: `${env("BASE_URL")}${redirectTo}`,
-        };
-
-        // Include session ID if we were able to extract it
+        // Revoke the session directly via WorkOS API to properly terminate the session
         if (sessionId) {
-          logoutParams.sessionId = sessionId;
+          try {
+            await workos.userManagement.revokeSession({
+              sessionId: sessionId,
+            });
+            logger.info(`Successfully revoked WorkOS session: ${sessionId}`);
+          } catch (revokeError) {
+            logger.error("Failed to revoke WorkOS session", revokeError);
+            // Continue with logout even if revoke fails
+          }
+        } else {
+          logger.warn("No session ID found, performing local logout only");
         }
 
-        const logoutUrl = workos.userManagement.getLogoutUrl(logoutParams);
-
-        logger.info("Redirecting to WorkOS logout URL to terminate session");
-        return c.redirect(logoutUrl);
+        // Redirect after session is revoked
+        logger.info("Session revoked, redirecting user");
+        return c.redirect(redirectTo);
       } catch (error) {
         logger.error("Error during logout", error);
 
