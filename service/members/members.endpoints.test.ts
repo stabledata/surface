@@ -1,4 +1,4 @@
-import { expect, describe, mock, it } from "bun:test";
+import { expect, describe, mock, it, beforeEach, spyOn } from "bun:test";
 import {
   applyContext,
   cookies,
@@ -9,7 +9,7 @@ import { logger } from "../../logger/logger";
 import { members } from "./members.endpoints";
 import { Hono } from "hono";
 import { User } from "../auth/auth.endpoints";
-import { fakeUser } from "../auth/auth.helpers";
+import * as jose from "jose";
 
 describe("members endpoint tests", () => {
   const mockLogger = {
@@ -19,12 +19,40 @@ describe("members endpoint tests", () => {
   } as unknown as typeof logger;
 
   const mockCookies = {
-    get: mock(() => "fake-session"),
+    get: mock(() => "valid.workos.access.token"),
+    set: mock(),
   } as unknown as ReturnType<typeof cookies>;
+
+  const mockJwt = {
+    verify: mock(() =>
+      Promise.resolve({ sub: "user_123", email: "test@example.com" }),
+    ),
+    sign: mock(() => Promise.resolve("token")),
+  };
+
+  const mockWorkOS = {
+    userManagement: {
+      authenticateWithRefreshToken: mock(),
+    },
+  };
 
   // Create mocks with correct return types to avoid type errors
   const getMembersMock = mock<() => Promise<User[] | Response>>();
   const getMemberMock = mock<() => Promise<User | null>>();
+
+  const fakeUser: User = {
+    id: "123",
+    email: "alice@domain.com",
+    given_name: "Alice",
+    family_name: "Smith",
+    name: "Alice Smith",
+    picture:
+      "https://plus.unsplash.com/premium_photo-1672201106204-58e9af7a2888?q=80&w=80",
+    // Legacy compatibility
+    profilePicture:
+      "https://plus.unsplash.com/premium_photo-1672201106204-58e9af7a2888?q=80&w=80",
+    roles: ["admin"],
+  };
 
   // Set default implementation
   getMembersMock.mockImplementation(() => Promise.resolve([fakeUser]));
@@ -41,9 +69,25 @@ describe("members endpoint tests", () => {
         logger: mockLogger,
         memberServiceClient: mockMemberServiceClient,
         cookies: mockCookies,
-      })
+        jwt: mockJwt as any,
+        workos: mockWorkOS as any,
+      }),
     )
     .route("/api/members", members);
+
+  beforeEach(() => {
+    // Mock jose.jwtVerify to simulate valid WorkOS token
+    const mockPayload = {
+      sub: "user_123",
+      email: "test@example.com",
+      name: "Test User",
+      iat: Date.now() / 1000,
+      exp: Date.now() / 1000 + 3600,
+    };
+
+    // Use spyOn to mock jose.jwtVerify properly
+    spyOn(jose, "jwtVerify").mockResolvedValue({ payload: mockPayload } as any);
+  });
 
   it("returns members from api", async () => {
     // the mock service method delays for a second for UI, skipping this.
