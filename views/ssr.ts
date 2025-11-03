@@ -45,10 +45,11 @@ export async function render(opts: {
   });
 
   const ssrState = await loadServerRouterContext(opts.c);
+  const accessToken = opts.c.var.cookies.get("wos_access_token");
   const rpcClient = hc<Api>(`${process.env.SELF_RPC_HOST}/`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${opts.c.var.cookies.get("session")}`,
+      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
     },
   });
 

@@ -33,7 +33,8 @@ services:
       - DEBUG=surface:*
       - JWT_SECRET=foo.bar.baz
       - SELF_RPC_HOST=http://dev:4000
-
+    env_file:
+      - .env
     ports:
       - "4000:4000"
 
